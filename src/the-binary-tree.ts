@@ -120,6 +120,12 @@ export interface BinaryTreeApi {
   regrow(seconds?: number): void
   /** Camera closeness, 0 far out and 1 pressed against the centre. */
   zoom(): number
+  /**
+   * Reserve space at the edges of the canvas. Shifts the drawn centre of the
+   * ball away from the reserved area and keeps labels out of it, so a bottom
+   * sheet or a side panel does not cover whatever you just navigated to.
+   */
+  setSafeArea(inset: Partial<{ top: number; right: number; bottom: number; left: number }>): void
   destroy(): void
 }
 
@@ -157,6 +163,12 @@ export class BinaryTree {
   private lastFrame = 0
   private growthStart = Number.NaN
   private reveal = Number.POSITIVE_INFINITY
+  /**
+   * Held until the stage exists. `setSafeArea` is a layout fact, and callers
+   * naturally work it out before the async init has finished; dropping the call
+   * silently left the desktop panel covering the centre of the ball.
+   */
+  private safeArea = { top: 0, right: 0, bottom: 0, left: 0 }
 
   constructor(component: ComponentConfig, config: TreeConfig) {
     this.config = config
@@ -223,9 +235,22 @@ export class BinaryTree {
       this.element,
       this.stage,
       {
-        pick: (ndc) => this.nodesLayer.pick(ndc, this.stage.camera),
+        pick: (ndc, tolerance) =>
+          this.nodesLayer.pick(ndc, this.stage.camera, tolerance, this.stage.size),
         onHover: (node) => this.setHovered(node),
         onSelect: (node) => this.handleSelect(node),
+        onDoubleTap: (node) => {
+          // A second tap means "closer". On a node that is select plus dolly in,
+          // which is the one-handed equivalent of a pinch; on the backdrop it
+          // pulls back out, so there is always a way to undo it.
+          if (node) {
+            this.handleSelect(node)
+            this.stage.dolly(0.55)
+          } else {
+            this.stage.dolly(1.9)
+          }
+          this.dirty = true
+        },
         onDragStart: () => this.navigator.snapshot(),
         onDrag: (from, to) => {
           this.navigator.cancel()
@@ -244,16 +269,30 @@ export class BinaryTree {
     )
 
     this.refilter(this.config.filter)
+    this.applySafeArea()
     this.observeSize()
     this.loop()
 
     this.config.interaction?.onInit?.(this)
   }
 
+  private applySafeArea(): void {
+    if (!this.stage) return
+    const { top, right, bottom, left } = this.safeArea
+    // Half the difference on each axis: reserving space on one side moves the
+    // visual centre by half of it, which is what puts the origin in the middle
+    // of what is left rather than at the edge of it.
+    this.stage.setFocusOffset((right - left) / 2, (bottom - top) / 2)
+    this.labelsLayer?.setInset(this.safeArea)
+    this.dirty = true
+  }
+
   private observeSize(): void {
     const apply = () => {
       const rect = this.element.getBoundingClientRect()
       this.stage.resize(rect.width, rect.height)
+      // `resize` rebuilds the projection, so the view offset has to go back on.
+      this.applySafeArea()
       this.dirty = true
     }
     apply()
@@ -498,6 +537,10 @@ export class BinaryTree {
         this.dirty = true
       },
       zoom: () => this.stage?.zoom ?? 0,
+      setSafeArea: (inset) => {
+        this.safeArea = { ...this.safeArea, ...inset }
+        this.applySafeArea()
+      },
       destroy: () => this.destroy(),
     }
   }

@@ -15,6 +15,7 @@ import {
   MeshBasicMaterial,
   MeshStandardMaterial,
   Object3D,
+  type PerspectiveCamera,
   type Quaternion,
   Raycaster,
   SphereGeometry,
@@ -73,6 +74,7 @@ export class NodesLayer {
   private readonly background = new Color()
   private readonly highlight = new Color()
   private readonly raycaster = new Raycaster()
+  private readonly projected = new Vector3()
   /** Euclidean radius actually used per node, needed for hit testing and labels. */
   readonly radii: Float32Array
 
@@ -205,8 +207,19 @@ export class NodesLayer {
   /**
    * Node under the pointer, or null. `ndc` is in normalised device coordinates.
    * Ties are broken toward the node nearest the camera.
+   *
+   * `tolerance` widens the hit test to the nearest node within that many CSS
+   * pixels when the ray misses everything. A fingertip is about 8mm across and a
+   * node away from the centre of the ball is a few pixels, so an exact ray test
+   * makes most of the tree untouchable on a phone. It is opt-in because on a
+   * mouse an exact test is what the user expects: the cursor is a point.
    */
-  pick(ndc: Vector2, camera: Parameters<Raycaster['setFromCamera']>[1]): TreeNode | null {
+  pick(
+    ndc: Vector2,
+    camera: PerspectiveCamera,
+    tolerance = 0,
+    viewport?: { width: number; height: number },
+  ): TreeNode | null {
     this.raycaster.setFromCamera(ndc, camera)
     const hits = this.raycaster.intersectObject(this.mesh, false)
     for (const hit of hits) {
@@ -215,7 +228,37 @@ export class NodesLayer {
       const node = this.nodes[id]
       if (node?.visible) return node
     }
-    return null
+
+    if (tolerance <= 0 || !viewport) return null
+
+    const halfHeight = viewport.height / 2
+    const tapX = (ndc.x * 0.5 + 0.5) * viewport.width
+    const tapY = (-ndc.y * 0.5 + 0.5) * viewport.height
+
+    let best: TreeNode | null = null
+    let bestScore = Number.POSITIVE_INFINITY
+
+    for (const node of this.nodes) {
+      if (!node.visible || node.state.dimmed) continue
+      this.projected.set(node.view.x, node.view.y, node.view.z).project(camera)
+      if (this.projected.z < -1 || this.projected.z > 1) continue
+
+      const sx = (this.projected.x * 0.5 + 0.5) * viewport.width
+      const sy = (-this.projected.y * 0.5 + 0.5) * viewport.height
+      const dx = sx - tapX
+      const dy = sy - tapY
+      const distance = Math.hypot(dx, dy)
+      if (distance > tolerance) continue
+
+      // Prefer the closest to the finger, but let a visibly bigger node win a
+      // near tie: the large one is almost certainly what was aimed at.
+      const score = distance - Math.min(tolerance * 0.5, this.radii[node.index] * halfHeight * 0.6)
+      if (score < bestScore) {
+        bestScore = score
+        best = node
+      }
+    }
+    return best
   }
 
   /** World position of a node's centre, for projection to screen. */

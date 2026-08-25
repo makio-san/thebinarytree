@@ -79,9 +79,18 @@ interface Rect {
   y1: number
 }
 
+/** Region of the canvas labels may occupy, in CSS pixels from each edge. */
+export interface LabelInset {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
 export class LabelsLayer {
   readonly element: HTMLDivElement
   private readonly options: LabelsOptions
+  private inset: LabelInset = { top: 0, right: 0, bottom: 0, left: 0 }
   private readonly pool: HTMLDivElement[] = []
   private readonly world = new Vector3()
   private readonly placed: Rect[] = []
@@ -103,6 +112,15 @@ export class LabelsLayer {
   setActivateHandler(handler: (node: TreeNode) => void): void {
     this.onActivate = handler
     this.element.classList.add('bt-labels--interactive')
+  }
+
+  /**
+   * Keep labels out of the given margins. Used for the bottom sheet on a phone:
+   * a label placed behind it is not hidden, it is invisible and still occupying
+   * a collision slot that a readable label could have had.
+   */
+  setInset(inset: Partial<LabelInset>): void {
+    this.inset = { ...this.inset, ...inset }
   }
 
   private acquire(index: number): HTMLDivElement {
@@ -191,9 +209,14 @@ export class LabelsLayer {
       if (depth < -1 || depth > 1) continue
       // Allowance for a label whose anchor is just off screen. Scaled to the
       // viewport, or on a phone every edge label is a clipped fragment.
+      //
+      // Cheap early cull on the anchor: anything well off canvas cannot produce
+      // a visible label whatever its size. The inset is checked later against
+      // the label's own box, because a label is drawn *above* its node and an
+      // anchor that clears the app bar can still put its text underneath it.
       const slackX = Math.min(140, width * 0.1)
       const slackY = Math.min(60, height * 0.06)
-      if (x < -slackX || y < -slackY || x > width + slackX || y > height + slackY) continue
+      if (x < -slackX || x > width + slackX || y < -slackY || y > height + slackY) continue
 
       const r = radii[node.index]
       const size = node.screenSize
@@ -229,6 +252,14 @@ export class LabelsLayer {
         x1: cx + w / 2 + padding,
         y1: cy + h / 2 + padding,
       }
+
+      // Hard boundary, applied to the box rather than the anchor. Something is
+      // covering that region of the canvas, so a label there is not merely
+      // cropped, it is invisible and still holding a collision slot a readable
+      // label could have used.
+      const { top, right, bottom, left } = this.inset
+      if (rect.y0 < top || rect.y1 > height - bottom) continue
+      if (rect.x1 < left || rect.x0 > width - right) continue
 
       const forced = node.state.selected || node.depth === 0
       if (!forced && this.collides(rect)) continue

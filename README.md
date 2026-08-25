@@ -119,7 +119,11 @@ new BinaryTree(
     interaction: {
       onNodeClick, onNodeHover, onSelectionChange, onCenterNodeChange, onInit,
       focusOnClick: true,
-      controls: { orbitSpeed, zoomSpeed, clickSlop, enableKeyboard },
+      controls: {
+        orbitSpeed, zoomSpeed, clickSlop, enableKeyboard,
+        touchTolerance: 24,   // hit slop for touch and pen, in CSS pixels
+        doubleTapWindow: 300,
+      },
       flight:   { duration: 620, easing },
     },
   },
@@ -146,6 +150,7 @@ On `tree.api`:
 | `render()` | Requests a frame |
 | `regrow(seconds?)` | Replays the growth animation from the root |
 | `zoom()` | Camera closeness, 0 far out to 1 pressed against the centre |
+| `setSafeArea(inset)` | Reserve edges covered by your own UI; see **Touch** |
 | `resize()`, `destroy()` | Sizing and teardown |
 
 ### Your own data
@@ -171,15 +176,39 @@ folded.
 | Shift + drag | Pulls the centre of the ball |
 | Wheel / pinch | Moves the camera in and out |
 | Click a node | Selects it and flies it to the centre |
+| Double tap | Closer on a node, back out on the backdrop |
 | Arrows | Parent, child, previous and next sibling |
 | Enter, Home, Esc | Focus, return to root, clear selection |
 
 Labels are clickable too. On a touch screen a word is a far easier target than a
 sphere a few pixels across.
 
-## The demo on a phone
+## Touch, and the demo on a phone
 
-Below 860px the explorer becomes an app rather than a shrunken desktop tool:
+Three things make a hyperbolic tree awkward on a phone, and each has a specific
+answer.
+
+**Nodes are smaller than a fingertip.** A finger covers about 8mm and a node away
+from the centre of the ball is a few pixels, so an exact ray test leaves most of
+the tree untappable. Touch and pen get a hit slop: if the ray misses, the nearest
+node within `touchTolerance` pixels wins, with a visibly bigger node breaking a
+near tie. A mouse keeps the exact test, because a cursor really is a point, and
+hover stays exact too or the highlight jumps to nodes you are not on.
+
+**Panels cover the centre of the ball**, which is exactly where navigation puts
+things. `api.setSafeArea({top, right, bottom, left})` reserves the covered
+regions: the scene is shifted by half the difference on each axis so the origin
+is drawn in the middle of what is left, and labels are kept out of the reserved
+area entirely. It uses the projection's view offset rather than moving the
+camera, so the geometric centre of the ball is still the centre of the ball; it
+is simply drawn somewhere else. This helps the desktop card as much as the phone
+sheet.
+
+**There are no arrow keys.** The same four moves - parent, previous sibling, next
+sibling, first branch - get real buttons in the sheet header, disabled when there
+is nowhere to go. It is how you get somewhere without aiming at all.
+
+The rest of the phone layout, below 860px:
 
 - The detail card becomes a **bottom sheet** with a drag handle and three snap
   points. It sits at full height and is translated down, so expanding it never
@@ -189,7 +218,13 @@ Below 860px the explorer becomes an app rather than a shrunken desktop tool:
   the viewport, so an inline field at the top would put the results behind it.
   The input is 16px, below which iOS zooms the page on focus.
 - A **tab bar** carries the actions, and the year filter and legend become a
-  drawer above it.
+  drawer above it. Opening the drawer collapses the sheet, since together they
+  would leave no canvas at all.
+- Double tap zooms in on a node and back out on the backdrop, which is the
+  one-handed equivalent of a pinch.
+- Selection buzzes for 8ms where the platform supports it. The nodes are small
+  and confirmation that you hit the one you aimed at is worth more here than
+  anywhere else.
 - Bloom defaults off for coarse pointers, and labels get fewer slots, smaller
   type and one card at a time. Safe area insets are respected throughout.
 

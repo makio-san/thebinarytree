@@ -122,6 +122,77 @@ body {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 8h16M4 16h16'/%3E%3Ccircle cx='9' cy='8' r='2.4' fill='black'/%3E%3Ccircle cx='15' cy='16' r='2.4' fill='black'/%3E%3C/svg%3E");
 }
 
+.icon-up {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14l6-6 6 6'/%3E%3C/svg%3E");
+}
+
+.icon-down {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 10l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.icon-left {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 6l-6 6 6 6'/%3E%3C/svg%3E");
+}
+
+.icon-right {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 6l6 6-6 6'/%3E%3C/svg%3E");
+}
+
+/* --- tree walker (phone) ------------------------------------------------ */
+
+/* Arrow keys are the fastest way through a tree and a phone has none, so the
+   same four moves get real buttons. Hitting a node with a finger is possible
+   but this is how you get somewhere without aiming at all. */
+.walk {
+  display: none;
+  gap: 6px;
+  padding: 0 12px 10px;
+  flex: 0 0 auto;
+}
+
+.walk button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-sm);
+  color: var(--fg-dim);
+  background: rgb(255 255 255 / 4%);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  flex: 1 1 auto;
+}
+
+body.theme-light .walk button {
+  background: rgb(15 22 36 / 4%);
+}
+
+.walk button:active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.walk button:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.walk button[data-walk='prev'],
+.walk button[data-walk='next'] {
+  flex: 0 0 46px;
+  padding: 0;
+}
+
+.walk button [class^='icon-'] {
+  width: 17px;
+  height: 17px;
+}
+
 /* --- buttons ------------------------------------------------------------ */
 
 .btn,
@@ -984,6 +1055,14 @@ body.theme-light .help kbd {
     margin: 0 auto;
     border-radius: 2px;
     background: var(--ring-strong);
+  }
+
+  .walk {
+    display: flex;
+  }
+
+  .panel[data-sheet='peek'] .walk {
+    display: none;
   }
 
   .panel__body {

@@ -57,6 +57,7 @@ const panelEl = $<HTMLElement>('panel')
 const panelGrab = $<HTMLElement>('panel-grab')
 const panelPeek = $<HTMLElement>('panel-peek')
 const panelBody = $<HTMLElement>('panel-body')
+const walkEl = $<HTMLElement>('panel-walk')
 const searchEl = $<HTMLElement>('search')
 const searchInput = $<HTMLInputElement>('search-input')
 const searchResults = $<HTMLUListElement>('search-results')
@@ -124,7 +125,14 @@ const tree = new BinaryTree(
       },
       onSelectionChange: (node) => {
         panel.show(node)
-        if (sheetEnabled() && node && sheet.current === 'peek') sheet.setState('half')
+        syncWalk(node)
+        if (sheetEnabled() && node) {
+          // A short buzz on selection. The nodes are small and the confirmation
+          // that you hit the one you aimed at is worth more on a phone than
+          // anywhere else. Android only; iOS Safari ignores it.
+          navigator.vibrate?.(8)
+          if (sheet.current === 'peek') sheet.setState('half')
+        }
       },
       onInit: () => {
         renderLegend()
@@ -147,12 +155,37 @@ const sheet = new Sheet(panelEl, panelGrab, {
   peek: 118,
   half: 0.46,
   onStateChange: (state) => {
-    // A full sheet would cover the thing it describes; give the canvas back.
     document.body.dataset.sheet = state
+    syncSafeArea()
   },
 })
 
 const sheetEnabled = (): boolean => isPhone()
+
+/**
+ * Tell the tree how much of the canvas is covered, so it draws the centre of
+ * the ball in the part you can still see and keeps labels out of the rest.
+ * Without this, tapping a node flies it to a point behind the sheet.
+ */
+function syncSafeArea(): void {
+  if (!isPhone()) {
+    // The detail card sits over the right of the window, so reserve its column.
+    const covered = panelEl.getBoundingClientRect()
+    const right = Math.max(0, Math.round(globalThis.innerWidth - covered.left + 12))
+    tree.api.setSafeArea({ top: 64, right, bottom: 96, left: 0 })
+    return
+  }
+  const height = globalThis.innerHeight
+  const state = sheet.current
+  const covered =
+    state === 'full'
+      ? height * 0.5
+      : state === 'half'
+        ? Math.min(height * 0.42, panelEl.offsetHeight * (1 - 0.46))
+        : 118
+  const tabbar = document.getElementById('tabbar')?.offsetHeight ?? 0
+  tree.api.setSafeArea({ top: 56, bottom: Math.round(covered + tabbar * 0.35), right: 0, left: 0 })
+}
 
 function syncLayout(): void {
   const phone = isPhone()
@@ -161,6 +194,44 @@ function syncLayout(): void {
   if (phone && sheet.current === 'hidden') sheet.setState('peek')
   if (!phone) bottomEl.dataset.open = 'true'
   tree.api.resize()
+  syncSafeArea()
+}
+
+// --- tree walker ----------------------------------------------------------
+
+type Walk = 'parent' | 'prev' | 'next' | 'child'
+
+function neighbour(node: TreeNode | null, move: Walk): TreeNode | null {
+  if (!node) return null
+  const siblings = node.parent?.children ?? []
+  const at = siblings.indexOf(node)
+  switch (move) {
+    case 'parent':
+      return node.parent
+    case 'child':
+      return node.children[0] ?? null
+    case 'prev':
+      return at > 0 ? siblings[at - 1] : null
+    case 'next':
+      return at >= 0 && at < siblings.length - 1 ? siblings[at + 1] : null
+  }
+}
+
+const walkButtons = [...walkEl.querySelectorAll<HTMLButtonElement>('button[data-walk]')]
+
+function syncWalk(node: TreeNode | null): void {
+  for (const button of walkButtons) {
+    button.disabled = !neighbour(node, button.dataset.walk as Walk)
+  }
+}
+
+for (const button of walkButtons) {
+  button.addEventListener('click', () => {
+    const target = neighbour(tree.api.selectedNode(), button.dataset.walk as Walk)
+    if (!target) return
+    stopTour()
+    void tree.api.select(target)
+  })
 }
 
 // --- search ----------------------------------------------------------------
@@ -259,6 +330,9 @@ filterTab.addEventListener('click', () => {
   const open = bottomEl.dataset.open !== 'true'
   bottomEl.dataset.open = String(open)
   filterTab.setAttribute('aria-pressed', String(open))
+  // The drawer and an expanded sheet would stack on top of each other and leave
+  // no canvas at all, so opening one collapses the other.
+  if (open && sheetEnabled() && sheet.current !== 'peek') sheet.setState('peek')
 })
 
 $('menu').addEventListener('click', () => {
@@ -271,12 +345,17 @@ $('menu').addEventListener('click', () => {
 matchMedia('(max-width: 860px)').addEventListener('change', syncLayout)
 globalThis.addEventListener('resize', () => {
   if (sheetEnabled()) sheet.measure()
+  syncSafeArea()
 })
+// A phone keyboard resizes the visual viewport but not the layout viewport, so
+// this is the only event that fires when it opens or closes.
+globalThis.visualViewport?.addEventListener('resize', syncSafeArea)
 // Stop the page itself from bouncing on a phone; the canvas handles gestures.
 document.addEventListener('gesturestart', (event) => event.preventDefault())
 
 syncLayout()
 panel.show(null)
+syncWalk(null)
 
 // Handy from the console: `binaryTree.api.gotoNode('unix')`.
 Object.assign(globalThis, { binaryTree: tree })

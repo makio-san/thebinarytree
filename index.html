@@ -78,6 +78,20 @@
         <span class="panel__handle" aria-hidden="true"></span>
         <div id="panel-peek" class="peek"></div>
       </div>
+      <nav id="panel-walk" class="walk" aria-label="Move through the tree">
+        <button type="button" data-walk="parent" title="Parent">
+          <span class="icon-up"></span><span>Parent</span>
+        </button>
+        <button type="button" data-walk="prev" title="Previous sibling" aria-label="Previous sibling">
+          <span class="icon-left"></span>
+        </button>
+        <button type="button" data-walk="next" title="Next sibling" aria-label="Next sibling">
+          <span class="icon-right"></span>
+        </button>
+        <button type="button" data-walk="child" title="First branch">
+          <span class="icon-down"></span><span>Branch</span>
+        </button>
+      </nav>
       <div id="panel-body" class="panel__body"></div>
     </aside>
 

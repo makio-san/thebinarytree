@@ -102,6 +102,8 @@ export class Stage {
   private theme: Theme
   private width = 1
   private height = 1
+  private focusOffsetX = 0
+  private focusOffsetY = 0
 
   constructor(container: HTMLElement, theme: Theme, options: Partial<StageOptions> = {}) {
     this.options = { ...defaultStageOptions, ...options }
@@ -215,9 +217,49 @@ export class Stage {
     this.camera.aspect = this.width / this.height
     // Pull back on narrow viewports so the ball still fits.
     this.camera.fov = this.camera.aspect < 0.85 ? 56 : 42
-    this.camera.updateProjectionMatrix()
+    this.applyFocusOffset()
     this.composer?.setSize(this.width, this.height)
     this.bloomPass?.setSize(this.width, this.height)
+  }
+
+  /**
+   * Shift the whole scene on screen without moving the camera. Positive `y`
+   * moves it up, positive `x` moves it left.
+   *
+   * Needed because a bottom sheet covers the lower half of a phone, and a detail
+   * card covers the right of a desktop window - which is exactly where the
+   * centre of the ball is, so the node you just picked flies to a point you
+   * cannot see. Done with the projection's view offset rather than by moving the
+   * camera, so the geometric centre of the ball stays the centre of the ball:
+   * navigation still brings a node to the origin, the origin is simply drawn
+   * somewhere else. `project()` picks the change up for free, because it goes
+   * through the same projection matrix.
+   */
+  setFocusOffset(x: number, y: number): void {
+    const nextX = Math.max(-this.width * 0.42, Math.min(this.width * 0.42, x))
+    const nextY = Math.max(-this.height * 0.42, Math.min(this.height * 0.42, y))
+    if (Math.abs(nextX - this.focusOffsetX) < 0.5 && Math.abs(nextY - this.focusOffsetY) < 0.5) {
+      return
+    }
+    this.focusOffsetX = nextX
+    this.focusOffsetY = nextY
+    this.applyFocusOffset()
+  }
+
+  private applyFocusOffset(): void {
+    if (Math.abs(this.focusOffsetX) > 0.5 || Math.abs(this.focusOffsetY) > 0.5) {
+      this.camera.setViewOffset(
+        this.width,
+        this.height,
+        this.focusOffsetX,
+        this.focusOffsetY,
+        this.width,
+        this.height,
+      )
+    } else {
+      this.camera.clearViewOffset()
+    }
+    this.camera.updateProjectionMatrix()
   }
 
   get size(): { width: number; height: number } {

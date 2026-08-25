@@ -22,9 +22,12 @@ import { Navigator } from './navigator'
 export type KeyCommand = 'parent' | 'child' | 'prev' | 'next' | 'home' | 'focus' | 'clear'
 
 export interface ControlsHandlers {
-  pick: (ndc: Vector2) => TreeNode | null
+  /** `tolerance` is a hit slop in CSS pixels; 0 means an exact ray test. */
+  pick: (ndc: Vector2, tolerance: number) => TreeNode | null
   onHover: (node: TreeNode | null) => void
   onSelect: (node: TreeNode | null) => void
+  /** Second tap on the same spot. `null` means the backdrop was tapped. */
+  onDoubleTap?: (node: TreeNode | null) => void
   onDragStart: () => void
   onDrag: (from: Vec3, to: Vec3) => void
   onDragEnd: () => void
@@ -38,6 +41,15 @@ export interface ControlsOptions {
   /** Pointer travel in CSS pixels below which a drag counts as a click. */
   clickSlop: number
   enableKeyboard: boolean
+  /**
+   * Hit slop for touch and pen, in CSS pixels. A fingertip is about 8mm and a
+   * node away from the centre of the ball is a few pixels across, so an exact
+   * ray test leaves most of the tree untappable. A mouse keeps an exact test,
+   * because a cursor really is a point.
+   */
+  touchTolerance: number
+  /** Milliseconds within which a second tap counts as a double tap. */
+  doubleTapWindow: number
 }
 
 export const defaultControlsOptions: ControlsOptions = {
@@ -45,6 +57,8 @@ export const defaultControlsOptions: ControlsOptions = {
   zoomSpeed: 0.0013,
   clickSlop: 5,
   enableKeyboard: true,
+  touchTolerance: 24,
+  doubleTapWindow: 300,
 }
 
 type Mode = 'idle' | 'pull' | 'orbit' | 'pinch'
@@ -61,6 +75,9 @@ export class Controls {
   private grabbedNode: TreeNode | null = null
   private hovered: TreeNode | null = null
   private pinchDistance = 0
+  private lastTapTime = 0
+  private lastTapX = 0
+  private lastTapY = 0
 
   private readonly ndc = new Vector2()
   private readonly plane = new Plane()
@@ -150,7 +167,7 @@ export class Controls {
     this.startY = this.lastY = event.clientY
     this.travelled = 0
 
-    const node = event.shiftKey ? null : this.handlers.pick(this.toNdc(event))
+    const node = event.shiftKey ? null : this.handlers.pick(this.toNdc(event), this.slopFor(event))
 
     if (node || event.shiftKey) {
       this.mode = 'pull'
@@ -183,7 +200,9 @@ export class Controls {
     }
 
     if (this.mode === 'idle') {
-      const node = this.handlers.pick(this.toNdc(event))
+      // Hover is a mouse idea, and it should stay exact: a generous hover slop
+      // means the highlight jumps to nodes the cursor is not on.
+      const node = this.handlers.pick(this.toNdc(event), 0)
       if (node !== this.hovered) {
         this.hovered = node
         this.root.dataset.cursor = node ? 'pointer' : 'grab'
@@ -229,7 +248,21 @@ export class Controls {
     if (this.mode === 'pull') this.handlers.onDragEnd()
 
     if (!moved) {
-      this.handlers.onSelect(this.mode === 'pull' ? this.grabbedNode : null)
+      const tapped = this.mode === 'pull' ? this.grabbedNode : null
+      const near =
+        Math.abs(event.clientX - this.lastTapX) + Math.abs(event.clientY - this.lastTapY) < 34
+      const quick = event.timeStamp - this.lastTapTime < this.options.doubleTapWindow
+
+      if (near && quick && this.handlers.onDoubleTap) {
+        this.handlers.onDoubleTap(tapped)
+        // Consume it, so a triple tap is not read as two double taps.
+        this.lastTapTime = 0
+      } else {
+        this.handlers.onSelect(tapped)
+        this.lastTapTime = event.timeStamp
+        this.lastTapX = event.clientX
+        this.lastTapY = event.clientY
+      }
     }
 
     this.mode = 'idle'
@@ -267,6 +300,11 @@ export class Controls {
     if (!command) return
     event.preventDefault()
     this.handlers.onKey(command)
+  }
+
+  /** Hit slop appropriate to the input device. */
+  private slopFor(event: PointerEvent): number {
+    return event.pointerType === 'mouse' ? 0 : this.options.touchTolerance
   }
 
   private currentPinchDistance(): number {
