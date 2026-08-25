@@ -1,0 +1,113 @@
+/* computer-tree: minimal chrome for the canvas and its label overlay. */
+
+.ct-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  --ct-label-fg: #eef2f8;
+  --ct-label-bg: rgb(8 10 17 / 62%);
+  --ct-label-detail: #93a1b8;
+  --ct-label-selected-fg: #ffffff;
+  --ct-label-selected-bg: rgb(70 106 168 / 82%);
+  --ct-label-ring: rgb(255 255 255 / 14%);
+  --ct-font:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.ct-root[data-theme='light'] {
+  --ct-label-fg: #131720;
+  --ct-label-bg: rgb(255 255 255 / 74%);
+  --ct-label-detail: #5b6678;
+  --ct-label-selected-fg: #ffffff;
+  --ct-label-selected-bg: rgb(38 78 148 / 88%);
+  --ct-label-ring: rgb(16 22 34 / 12%);
+}
+
+.ct-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.ct-root[data-cursor='grabbing'] .ct-canvas {
+  cursor: grabbing;
+}
+
+.ct-root[data-cursor='pointer'] .ct-canvas {
+  cursor: pointer;
+}
+
+.ct-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--ct-font);
+  contain: layout style;
+}
+
+.ct-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 0.14em 0.45em;
+  border-radius: 0.45em;
+  color: var(--ct-label-fg);
+  background: var(--ct-label-bg);
+  box-shadow: inset 0 0 0 1px var(--ct-label-ring);
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+  will-change: transform, opacity;
+}
+
+.ct-label[hidden] {
+  display: none;
+}
+
+.ct-label__detail {
+  color: var(--ct-label-detail);
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ct-label__detail:empty {
+  display: none;
+}
+
+.ct-label[data-state='selected'] {
+  z-index: 3;
+  color: var(--ct-label-selected-fg);
+  background: var(--ct-label-selected-bg);
+  font-weight: 650;
+}
+
+.ct-label[data-state='selected'] .ct-label__detail,
+.ct-label[data-state='hovered'] .ct-label__detail {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.ct-label[data-state='hovered'] {
+  z-index: 2;
+  font-weight: 650;
+}
+
+.ct-label[data-state='path'] {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-label {
+    will-change: auto;
+  }
+}
