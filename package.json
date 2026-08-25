@@ -1,0 +1,61 @@
+{
+  "name": "computer-tree",
+  "version": "0.1.0",
+  "description": "3D hyperbolic tree browser for the history of computing. A three.js take on d3-hypertree.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "hyperbolic",
+    "poincare-ball",
+    "tree",
+    "hierarchy",
+    "visualization",
+    "three",
+    "webgl",
+    "computer-history"
+  ],
+  "main": "./dist/computer-tree.umd.cjs",
+  "module": "./dist/computer-tree.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/computer-tree.js",
+      "require": "./dist/computer-tree.umd.cjs"
+    },
+    "./style.css": "./dist/computer-tree.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview --config vite.demo.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "three": ">=0.160.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.3.0",
+    "@types/three": "^0.185.4",
+    "@typescript/typescript6": "^6.0.2",
+    "three": "^0.185.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.0.3",
+    "vitest": "^4.1.11"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
