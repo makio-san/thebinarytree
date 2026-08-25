@@ -288,17 +288,13 @@ body.theme-light .walk button {
   min-width: 0;
 }
 
+/* A computed Poincaré disc: see scripts/make-logo.ts. It carries the era palette
+   and the geometry itself, and it is legible on both grounds, so there is nothing
+   here to theme. */
 .brand__mark {
-  position: relative;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--ring-strong);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 28%, #e2564c 0 11%, transparent 12%),
-    radial-gradient(circle at 70% 40%, #58c07a 0 10%, transparent 11%),
-    radial-gradient(circle at 46% 74%, #4a8fe0 0 11%, transparent 12%),
-    radial-gradient(circle at 50% 50%, rgb(130 160 210 / 26%), transparent 70%);
+  display: block;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
 }
 
@@ -943,8 +939,8 @@ body.theme-light .help kbd {
   }
 
   .brand__mark {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
   }
 
   .brand__text strong {
