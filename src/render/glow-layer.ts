@@ -15,6 +15,7 @@ import {
   Color,
   InstancedMesh,
   MeshBasicMaterial,
+  NormalBlending,
   Object3D,
   PlaneGeometry,
   type Quaternion,
@@ -66,8 +67,12 @@ export class GlowLayer {
   private readonly color = new Color()
   private readonly texture: Texture
 
+  /** `ink` mode dims rather than adds; see `setTheme`. */
+  private mode: Theme['glow'] = 'additive'
+
   constructor(
     private readonly nodes: TreeNode[],
+    theme: Theme,
     options: Partial<GlowOptions> = {},
   ) {
     this.options = { ...defaultGlowOptions, ...options }
@@ -85,20 +90,35 @@ export class GlowLayer {
 
     this.mesh = new InstancedMesh(new PlaneGeometry(1, 1), material, nodes.length)
     this.mesh.frustumCulled = false
-    // Behind the node spheres but in front of the links.
+    // Behind the node spheres but in front of the filaments.
     this.mesh.renderOrder = 2
+    this.setTheme(theme)
   }
 
   /**
-   * `radii` is the drawn node radius per node, `pulse` a 0..1 breathing value
-   * shared with the link flow so the whole scene beats together.
+   * On a dark ground a halo is added light. On a light ground added light can
+   * only reach white, so the same halo becomes an ink bleed: the era colour laid
+   * over the page at low opacity, which reads as depth rather than as haze.
    */
-  update(theme: Theme, radii: Float32Array, faceCamera: Quaternion, pulse: number): void {
+  setTheme(theme: Theme): void {
+    this.mode = theme.glow
+    const material = this.mesh.material as MeshBasicMaterial
+    material.blending = theme.glow === 'additive' ? AdditiveBlending : NormalBlending
+    material.needsUpdate = true
+  }
+
+  /**
+   * `radii` is the drawn node radius per node. Firing comes from each node's own
+   * membrane potential, so a soma flares exactly when the spike reaches it.
+   */
+  update(theme: Theme, radii: Float32Array, faceCamera: Quaternion): void {
     const { scale, minScale, color, intensity } = this.options
+    const ink = this.mode === 'ink'
 
     for (let i = 0; i < this.nodes.length; i++) {
       const node = this.nodes[i]
       const p = node.view
+      const fire = Math.max(0, node.fire)
 
       if (!node.visible || node.state.dimmed) {
         this.dummy.position.set(p.x, p.y, p.z)
@@ -109,8 +129,10 @@ export class GlowLayer {
         continue
       }
 
-      let size = Math.max(radii[i] * scale, minScale)
-      if (node.state.selected) size *= 1.7 + pulse * 0.28
+      // The flare is the visible part of the spike arriving at the soma, so it
+      // is driven by the potential rather than by a decorative oscillation.
+      let size = Math.max(radii[i] * scale, minScale) * (1 + fire * 0.55)
+      if (node.state.selected) size *= 1.75
       else if (node.state.hovered) size *= 1.3
       else if (node.state.onPath) size *= 1.16
 
@@ -124,16 +146,18 @@ export class GlowLayer {
       // Nodes near the centre are the ones being read; let them burn brighter
       // and keep the rim quiet so it stays a backdrop.
       const focus = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
-      let strength = 0.35 + focus * 0.65
-      if (node.state.selected) strength = 1.15 + pulse * 0.2
+      let strength = 0.35 + focus * 0.65 + fire * 0.8
+      if (node.state.selected) strength = 1.1 + fire * 0.5
       else if (node.state.hovered || node.state.onPath) strength *= 1.35
-      this.color.multiplyScalar(strength)
+      // In ink mode the alpha does the work and a scaled-up colour just washes
+      // out, so the colour stays saturated and only the opacity varies.
+      this.color.multiplyScalar(ink ? Math.min(1, 0.55 + strength * 0.25) : strength)
       this.mesh.setColorAt(i, this.color)
     }
 
     this.mesh.instanceMatrix.needsUpdate = true
     if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true
-    ;(this.mesh.material as MeshBasicMaterial).opacity = intensity
+    ;(this.mesh.material as MeshBasicMaterial).opacity = ink ? intensity * 0.26 : intensity
   }
 
   setIntensity(intensity: number): void {

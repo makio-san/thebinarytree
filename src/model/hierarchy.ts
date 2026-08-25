@@ -45,6 +45,7 @@ export function hierarchy(datum: TreeDatum): Tree {
       maxDepth: 0,
       caliber: 1,
       pathLength: 0,
+      fire: 0,
       position: clone(ZERO),
       view: clone(ZERO),
       viewStart: clone(ZERO),

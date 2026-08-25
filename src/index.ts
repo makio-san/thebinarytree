@@ -34,19 +34,21 @@ export type { LayoutOptions, LinkLengthFn, WeightFn, WeightMode } from './layout
 
 // Rendering
 export { ERAS, ERA_BY_ID, darkTheme, lightTheme, themes } from './render/theme'
-export type { EraStyle, Theme, ThemeName } from './render/theme'
+export type { EraStyle, GlowMode, Theme, ThemeName } from './render/theme'
 export { Stage, defaultStageOptions } from './render/stage'
 export type { StageOptions } from './render/stage'
 export { NodesLayer, defaultNodesOptions } from './render/nodes-layer'
 export type { NodeColorFn, NodeRadiusFn, NodesOptions } from './render/nodes-layer'
-export { VesselsLayer, defaultVesselsOptions } from './render/vessels-layer'
-export type { VesselsOptions } from './render/vessels-layer'
+export { NeuritesLayer, defaultNeuritesOptions } from './render/neurites-layer'
+export type { NeuritesOptions } from './render/neurites-layer'
 export { LabelsLayer, defaultLabelsOptions } from './render/labels-layer'
 export type { LabelsOptions, LabelTier } from './render/labels-layer'
 export { GlowLayer, defaultGlowOptions } from './render/glow-layer'
 export type { GlowOptions } from './render/glow-layer'
 export { Starfield, defaultStarfieldOptions } from './render/starfield'
 export type { StarfieldOptions } from './render/starfield'
+export { SpikeField, defaultSpikeOptions, potential } from './render/spikes'
+export type { SpikeOptions } from './render/spikes'
 
 // Navigation
 export { Navigator, defaultFlightOptions } from './interaction/navigator'

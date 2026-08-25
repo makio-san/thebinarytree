@@ -11,7 +11,7 @@ const build = (datum: TreeDatum = computerHistory) => {
   return tree
 }
 
-describe("vessel calibre, by Murray's law", () => {
+describe("filament calibre, by Murray's law", () => {
   it('gives every leaf a calibre of 1', () => {
     const tree = build()
     for (const node of tree.nodes) {
@@ -19,7 +19,7 @@ describe("vessel calibre, by Murray's law", () => {
     }
   })
 
-  it("satisfies r_parent^3 = sum of r_child^3 at every branch", () => {
+  it('satisfies r_parent^3 = sum of r_child^3 at every branch', () => {
     const tree = build()
     for (const node of tree.nodes) {
       if (!node.children.length) continue
@@ -58,7 +58,7 @@ describe("vessel calibre, by Murray's law", () => {
   })
 })
 
-describe('path length, which drives the heartbeat', () => {
+describe('path length, which the signal travels along', () => {
   it('is zero at the root', () => {
     expect(build().root.pathLength).toBe(0)
   })
@@ -82,7 +82,7 @@ describe('path length, which drives the heartbeat', () => {
   })
 
   it('measures along the tree, not straight through the ball', () => {
-    // The distinction is the whole point: a wavefront keyed on the straight
+    // The distinction is the whole point: a signal keyed on the straight
     // hyperbolic distance would expand as a sphere and ignore the branches.
     const tree = build()
     const bent = tree.nodes.filter(

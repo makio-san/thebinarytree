@@ -1,0 +1,293 @@
+import type { ComputerDatum } from '../types'
+
+/**
+ * Cryptography and security. The one branch where the adversary is part of the
+ * design, which is why almost everything here is defined by what it survives
+ * rather than by what it does.
+ */
+export const security: ComputerDatum = {
+  id: 'security',
+  name: 'Cryptography and Security',
+  era: 'network',
+  kind: 'group',
+  summary:
+    'The one branch designed against an adversary, so everything here is defined by what it survives rather than by what it does.',
+  children: [
+    {
+      id: 'classical-crypto',
+      name: 'Before Computers',
+      era: 'mechanical',
+      kind: 'group',
+      summary: 'Ciphers done by hand, and then by machine.',
+      children: [
+        {
+          id: 'caesar-cipher',
+          name: 'Substitution Ciphers',
+          year: -50,
+          era: 'mechanical',
+          kind: 'concept',
+          summary:
+            'Shift or shuffle the alphabet. Broken by letter frequency, which is the first cryptanalysis anyone works out.',
+        },
+        {
+          id: 'vigenere',
+          name: 'Vigenère Cipher',
+          year: 1553,
+          era: 'mechanical',
+          kind: 'concept',
+          origin: 'Italy',
+          summary:
+            'A repeating key shifts each letter differently. Held its reputation as unbreakable for three centuries before the key length proved findable.',
+        },
+        {
+          id: 'one-time-pad',
+          name: 'One-Time Pad',
+          year: 1917,
+          era: 'mechanical',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'A truly random key as long as the message, used once. The only cipher proven unbreakable, and almost unusable for exactly the reason that makes it so.',
+        },
+        {
+          id: 'enigma',
+          name: 'Enigma',
+          year: 1918,
+          era: 'mechanical',
+          kind: 'machine',
+          origin: 'Germany',
+          summary:
+            'Rotor machine giving a different substitution for every letter. Broken through operator habit and the fact that no letter ever encoded to itself.',
+          facts: ['No letter ever mapped to itself, which narrowed the search enormously'],
+        },
+        {
+          id: 'lorenz',
+          name: 'Lorenz Cipher',
+          year: 1941,
+          era: 'mechanical',
+          kind: 'machine',
+          origin: 'Germany',
+          summary:
+            'High command traffic, far stronger than Enigma. Breaking it needed Colossus, so cryptanalysis is what built the first electronic computers.',
+        },
+      ],
+    },
+    {
+      id: 'symmetric',
+      name: 'Symmetric Cryptography',
+      era: 'network',
+      kind: 'group',
+      summary: 'Both sides hold the same key. Fast, and the key has to get there somehow.',
+      children: [
+        {
+          id: 'des',
+          name: 'DES',
+          year: 1977,
+          era: 'micro',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'The first public standard cipher, and the first to be studied openly by everyone. Its 56 bit key was arguably too short on the day it shipped and was brute forced in 1998.',
+        },
+        {
+          id: 'aes',
+          name: 'AES',
+          year: 2001,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'Belgium',
+          summary:
+            'Chosen by open competition over five years, which is now how ciphers get standardised. Implemented in hardware on essentially every processor.',
+          facts: ['Selected from fifteen public candidates', 'Instructions for it are built into modern CPUs'],
+        },
+        {
+          id: 'chacha20',
+          name: 'ChaCha20',
+          year: 2008,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A stream cipher that is fast in software without special instructions, which is why phones and embedded devices use it.',
+        },
+      ],
+    },
+    {
+      id: 'public-key',
+      name: 'Public Key Cryptography',
+      era: 'network',
+      kind: 'group',
+      summary:
+        'Two different keys, one publishable. It solved the problem of talking privately to someone you have never met, which is the problem the internet has.',
+      children: [
+        {
+          id: 'diffie-hellman',
+          name: 'Diffie-Hellman Key Exchange',
+          year: 1976,
+          era: 'micro',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Two parties agree a shared secret over a channel anyone can read. Published openly, which was itself a break with how cryptography had always been done.',
+        },
+        {
+          id: 'rsa',
+          name: 'RSA',
+          year: 1977,
+          era: 'micro',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Encryption and signatures from the difficulty of factoring large numbers. It made the certificate, and therefore the padlock in the browser, possible.',
+        },
+        {
+          id: 'ecc',
+          name: 'Elliptic Curve Cryptography',
+          year: 1985,
+          era: 'micro',
+          kind: 'concept',
+          summary:
+            'The same guarantees with far smaller keys, which matters when the device is a phone or a smartcard.',
+        },
+        {
+          id: 'pgp',
+          name: 'PGP',
+          year: 1991,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Strong encryption as a program anyone could download, which led to a criminal investigation of its author for arms export. Publishing the source as a book made the point.',
+        },
+        {
+          id: 'post-quantum',
+          name: 'Post-Quantum Cryptography',
+          year: 2024,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Algorithms chosen to survive Shor’s. Being standardised now because traffic recorded today can be decrypted later.',
+        },
+      ],
+    },
+    {
+      id: 'integrity',
+      name: 'Hashing and Signatures',
+      era: 'network',
+      kind: 'group',
+      summary: 'Proving something has not changed, without hiding it.',
+      children: [
+        {
+          id: 'md5',
+          name: 'MD5',
+          year: 1992,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A hash that was everywhere, then shown to allow collisions. Still used for checksums where nobody is attacking, which is a narrower set than people assume.',
+        },
+        {
+          id: 'sha-2',
+          name: 'SHA-2',
+          year: 2001,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'The hash family holding up the current internet: certificates, package managers, Git object names, Bitcoin.',
+        },
+        {
+          id: 'merkle-tree',
+          name: 'Merkle Tree',
+          year: 1979,
+          era: 'micro',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Hash the leaves, then hash the hashes. Verifies one item out of millions without reading the rest, which is why Git, BitTorrent and every blockchain use it.',
+        },
+        {
+          id: 'password-hashing',
+          name: 'Password Hashing',
+          year: 1976,
+          era: 'network',
+          kind: 'concept',
+          summary:
+            'Store a slow, salted hash rather than the password. Unix crypt introduced the salt; bcrypt and its successors added deliberate slowness.',
+        },
+      ],
+    },
+    {
+      id: 'systems-security',
+      name: 'Systems Security',
+      era: 'network',
+      kind: 'group',
+      summary: 'The failures that keep recurring, and the defences that answer them.',
+      children: [
+        {
+          id: 'morris-worm',
+          name: 'Morris Worm',
+          year: 1988,
+          era: 'micro',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'The first worm to disrupt the internet at large, exploiting a buffer overflow and weak passwords. It created the first coordinated response team.',
+        },
+        {
+          id: 'buffer-overflow',
+          name: 'Buffer Overflow',
+          year: 1972,
+          era: 'network',
+          kind: 'concept',
+          summary:
+            'Write past the end of an array and you can overwrite the return address. Described in 1972, exploited ever since, and the reason memory safe languages are now a security argument.',
+        },
+        {
+          id: 'firewall',
+          name: 'Firewall',
+          year: 1988,
+          era: 'micro',
+          kind: 'concept',
+          summary:
+            'Filter traffic at the boundary. The first assumption of a hard perimeter, which later turned out to be the wrong shape.',
+        },
+        {
+          id: 'sandbox',
+          name: 'Sandboxing',
+          year: 1993,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Run untrusted code with almost no authority. What makes it safe to open a web page or install an app at all.',
+        },
+        {
+          id: 'two-factor',
+          name: 'Two-Factor Authentication',
+          year: 1986,
+          era: 'micro',
+          kind: 'concept',
+          summary:
+            'Something you know plus something you hold. The single most effective defence against stolen passwords.',
+        },
+        {
+          id: 'zero-trust',
+          name: 'Zero Trust',
+          year: 2010,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Stop treating the internal network as safe and authenticate every request. An admission that the perimeter model had failed.',
+        },
+        {
+          id: 'spectre',
+          name: 'Spectre and Meltdown',
+          year: 2018,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Speculative execution leaks data through timing. A bug in the performance idea itself rather than in any one chip, and it cost every processor real speed to mitigate.',
+        },
+      ],
+    },
+  ],
+}

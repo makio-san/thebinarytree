@@ -16,7 +16,7 @@ width at every level.
 
 The Poincaré ball fits that inside a unit sphere. The model is conformal, so
 angles look right and only distance is distorted: near the boundary a fixed
-hyperbolic step gets visually shorter. The result is that 467 nodes sit on
+hyperbolic step gets visually shorter. The result is that 609 nodes sit on
 screen at once, whatever you bring to the centre is large and readable, and the
 rest tapers into a fringe instead of disappearing.
 
@@ -95,9 +95,9 @@ new BinaryTree(
 
     geometry: {
       nodes:  { baseRadius: 0.082, radius, color, minRadius, cullRadius },
-      vessels: {
-        segments: 12, width: 0.021, edgeShade: 0.28,
-        pulseRate: 0.34, pulseLength: 3.4, pulseSwell: 0.26, color,
+      neurites: {
+        segments: 14, width: 0.0115, edgeShade: 0.14, wander: 1.5,
+        spikeGain: 1.15, spikeTint: 0.62, spikeSwell: 0.16, color,
       },
       labels: { maxLabels: 44, maxCards: 3, fontScale: 1, text, detail, meta, body },
       glow:   { scale: 4.2, intensity: 0.55 },   // or false to switch it off
@@ -111,9 +111,12 @@ new BinaryTree(
     },
 
     motion: {
-      ambient: true,   // keep painting so the flow and stars stay alive
+      ambient: true,   // keep painting so the signal and stars stay alive
       growth: 2.4,     // seconds for the tree to grow out on first load
-      pulseRate: 0.5,
+      spikes: {        // the action potential; see src/render/spikes.ts
+        period: 2.6, speed: 7, rise: 0.045, decay: 0.19,
+        refractory: 0.22, jitter: 0.09,
+      },
     },
 
     interaction: {
@@ -383,10 +386,15 @@ offline browser all end the same way: the panel shows the dataset's own text.
 
 ## Dataset
 
-`computerHistory` is ten lineages and 467 nodes: mechanical calculation and
+`computerHistory` is fourteen lineages and 609 nodes: mechanical calculation and
 theory, early computers, components and processors, peripherals, personal
-computers, operating systems, programming languages, networks, mobile, and
-supercomputing with AI.
+computers, operating systems, programming languages, tools and standards, data
+and databases, networks, cryptography and security, games and consoles, mobile,
+and supercomputing with AI.
+
+Games are a branch rather than a footnote. They drove consumer 3D hardware, which
+became the GPU, which is what machine learning runs on; the line from Spacewar to
+a datacentre full of accelerators is short and direct.
 
 Nesting follows descent rather than category. MINIX sits under Unix and Linux
 under MINIX. The chain from ALGOL 60 through CPL, BCPL, B, and C is a real

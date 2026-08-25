@@ -26,8 +26,9 @@ import {
 } from './interaction/controls'
 import { GlowLayer, type GlowOptions } from './render/glow-layer'
 import { LabelsLayer, type LabelsOptions } from './render/labels-layer'
-import { VesselsLayer, type VesselsOptions } from './render/vessels-layer'
+import { NeuritesLayer, type NeuritesOptions } from './render/neurites-layer'
 import { NodesLayer, type NodesOptions } from './render/nodes-layer'
+import { SpikeField, type SpikeOptions } from './render/spikes'
 import { Stage, type StageOptions } from './render/stage'
 import { type Theme, type ThemeName, themes } from './render/theme'
 import './render/the-binary-tree.css'
@@ -63,14 +64,14 @@ export interface MotionConfig {
   ambient: boolean
   /** Seconds for the tree to grow out from the root on first load. 0 skips it. */
   growth: number
-  /** Beats per second of the shared pulse driving glow and selection. */
-  pulseRate: number
+  /** The signal: action potential timing and conduction. See `spikes.ts`. */
+  spikes: Partial<SpikeOptions>
 }
 
 export const defaultMotionConfig: MotionConfig = {
   ambient: true,
   growth: 2.4,
-  pulseRate: 0.5,
+  spikes: {},
 }
 
 export interface TreeConfig {
@@ -78,8 +79,8 @@ export interface TreeConfig {
   layout?: Partial<LayoutOptions>
   geometry?: {
     nodes?: Partial<NodesOptions>
-    /** The connections. Tapering vessels, not lines; see `vessels-layer`. */
-    vessels?: Partial<VesselsOptions>
+    /** The connections. Neurites, not lines; see `neurites-layer`. */
+    neurites?: Partial<NeuritesOptions>
     labels?: Partial<LabelsOptions>
     glow?: Partial<GlowOptions> | false
   }
@@ -142,9 +143,10 @@ export class BinaryTree {
 
   private stage!: Stage
   private nodesLayer!: NodesLayer
-  private vesselsLayer!: VesselsLayer
+  private neuritesLayer!: NeuritesLayer
   private labelsLayer!: LabelsLayer
   private glowLayer: GlowLayer | null = null
+  private spikes!: SpikeField
   private navigator!: Navigator
   private controls!: Controls
   private resizeObserver?: ResizeObserver
@@ -210,13 +212,18 @@ export class BinaryTree {
 
     this.stage = new Stage(this.element, this.theme, this.config.stage)
     this.nodesLayer = new NodesLayer(this.tree.nodes, this.theme, this.config.geometry?.nodes)
-    this.vesselsLayer = new VesselsLayer(this.tree, this.theme, this.config.geometry?.vessels)
+    this.neuritesLayer = new NeuritesLayer(this.tree, this.theme, this.config.geometry?.neurites)
     this.labelsLayer = new LabelsLayer(this.element, this.config.geometry?.labels)
     if (this.config.geometry?.glow !== false) {
-      this.glowLayer = new GlowLayer(this.tree.nodes, this.config.geometry?.glow ?? {})
+      this.glowLayer = new GlowLayer(
+        this.tree.nodes,
+        this.theme,
+        this.config.geometry?.glow ?? {},
+      )
     }
+    this.spikes = new SpikeField(this.tree, this.motion.spikes)
 
-    this.stage.world.add(this.vesselsLayer.mesh)
+    this.stage.world.add(this.neuritesLayer.mesh)
     if (this.glowLayer) this.stage.world.add(this.glowLayer.mesh)
     this.stage.world.add(this.nodesLayer.mesh)
     this.stage.world.add(this.nodesLayer.selectionHalo)
@@ -351,16 +358,24 @@ export class BinaryTree {
 
   private draw(): void {
     if (!this.tree) return
-    // One clock and one pulse shared by every layer, so the glow, the selection
-    // ring and the link flow breathe together instead of drifting apart.
-    const pulse = 0.5 + 0.5 * Math.sin(this.clock * Math.PI * 2 * this.motion.pulseRate)
     const quaternion = this.stage.camera.quaternion
 
-    this.nodesLayer.update(this.theme, quaternion, pulse, this.reveal)
-    this.glowLayer?.update(this.theme, this.nodesLayer.radii, quaternion, pulse)
-    // Vessels billboard about their own axis, so they need the eye position
+    // The signal is computed once and read by every layer, which is what makes a
+    // spike arriving at a soma light the soma, its halo and the filament feeding
+    // it at the same instant instead of three effects running side by side.
+    this.spikes.update(this.clock)
+
+    this.nodesLayer.update(this.theme, quaternion, this.reveal)
+    this.glowLayer?.update(this.theme, this.nodesLayer.radii, quaternion)
+    // Filaments billboard about their own axis, so they need the eye position
     // rather than just its orientation.
-    this.vesselsLayer.update(this.theme, this.clock, this.stage.camera.position, this.reveal)
+    this.neuritesLayer.update(
+      this.theme,
+      this.clock,
+      this.spikes,
+      this.stage.camera.position,
+      this.reveal,
+    )
     this.labelsLayer.update(this.tree.nodes, this.stage, this.nodesLayer.radii)
     this.stage.starfield?.update(this.clock)
     this.stage.render()
@@ -517,7 +532,8 @@ export class BinaryTree {
         this.element.dataset.theme = this.themeName
         this.stage?.applyTheme(this.theme)
         this.nodesLayer?.setTheme(this.theme)
-        this.vesselsLayer?.setTheme(this.theme)
+        this.neuritesLayer?.setTheme(this.theme)
+        this.glowLayer?.setTheme(this.theme)
         this.dirty = true
       },
       render: () => {
@@ -586,7 +602,7 @@ export class BinaryTree {
     this.labelsLayer?.dispose()
     this.glowLayer?.dispose()
     this.nodesLayer?.dispose()
-    this.vesselsLayer?.dispose()
+    this.neuritesLayer?.dispose()
     this.stage?.dispose()
     this.element.remove()
     this.tree = null

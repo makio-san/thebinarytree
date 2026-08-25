@@ -260,7 +260,9 @@ function renderLegend(): void {
     item.title = era.span
     legendList.append(item)
   }
-  taglineEl.textContent = `${tree.api.nodes().length} nodes · 3D hyperbolic tree`
+  const count = tree.api.nodes().length
+  taglineEl.textContent = `${count} nodes · 14 lineages`
+  searchInput.placeholder = `Search ${count} nodes`
 }
 
 // --- year filter ---------------------------------------------------------

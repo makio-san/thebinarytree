@@ -1,30 +1,30 @@
 /**
- * The connections, drawn as tapering vessels rather than as lines.
+ * The connections, drawn as neurites: dendrites and axons rather than pipes.
  *
- * This is the layer that decides what the whole picture is. Three readings are
- * meant to hold at once, and each one comes from a specific decision here:
+ * Three readings are meant to hold at once, and each comes from a decision here.
  *
- * - **Tree.** Thickness follows Murray's law, `r_parent^3 = sum r_child^3`. That
- *   is the rule real branching systems obey - limbs, arteries, bronchi - because
- *   it minimises the cost of moving something through a network. A trunk that
- *   splits into thinner limbs is not a stylistic flourish, it is the geometry
- *   the law produces.
- * - **Vein.** A single heartbeat leaves the root and travels outward. Its phase
- *   is a function of `pathLength`, distance *along the tree*, so the wavefront
- *   follows the branches instead of expanding as a sphere. Each vessel also
- *   swells slightly as the wave passes, which is peristalsis, and that is what
- *   separates a pulse in a vessel from a light running along a wire.
- * - **Space.** Vessels also taper by the conformal factor, so they thin into the
- *   boundary and the far tree becomes a dust of capillaries under the starfield.
+ * - **Neural.** Filaments, not tubes. Thin, with a lit core and near-dark walls,
+ *   so what you see is the signal path rather than a surface. Each one wanders
+ *   slightly off its geodesic: real neurites are grown, not extruded, and perfect
+ *   arcs of even width are the single thing that most makes a graph look
+ *   engineered. Signals are action potentials from `SpikeField`, so they arrive
+ *   as events with a rise and a decay instead of sliding past as a swell.
+ * - **Tree.** Thickness still follows Murray's law, `r_parent^3 = sum r_child^3`.
+ *   It is the rule branching transport systems obey, dendrites included, and it
+ *   is why a trunk splitting into finer and finer threads looks right rather than
+ *   merely tidy.
+ * - **Space.** Filaments also taper by the conformal factor, so they thin into
+ *   the boundary and the far tree becomes a haze of threads.
  *
- * Geometry is one merged, camera-facing ribbon strip with three vertices across:
- * edge, core, edge. Shading the core brighter than the edges is what makes a
- * flat ribbon read as a round tube, and it is what lets the pulse travel *inside*
- * the vessel rather than over it. Indices are built once, since visible links
- * are packed into fixed slots; only positions and colours are rewritten.
+ * Geometry is one merged, camera-facing ribbon with three vertices across: edge,
+ * core, edge. Brightening the core is what makes a flat ribbon read as round and
+ * what lets a spike travel inside the filament rather than over it. Indices are
+ * built once, since visible filaments pack into fixed slots; only positions and
+ * colours are rewritten.
  */
 
 import {
+  AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   Color,
@@ -32,67 +32,73 @@ import {
   DynamicDrawUsage,
   MeshBasicMaterial,
   Mesh,
+  NormalBlending,
   Vector3,
 } from 'three'
 import { geodesicPoint, lengthSq } from '../math'
 import type { Tree, TreeNode } from '../model/types'
+import type { SpikeField } from './spikes'
 import type { Theme } from './theme'
 
-export interface VesselsOptions {
-  /** Samples along each vessel. Cost is linear in this; 12 already looks round. */
+export interface NeuritesOptions {
+  /** Samples along each filament. Wander needs enough of them to read as a curve. */
   segments: number
-  /** Half width of the thickest vessel at the centre of the ball, in ball units. */
+  /** Half width of the thickest filament at the centre of the ball, in ball units. */
   width: number
   /**
-   * Width floor, so distant capillaries stay a visible thread. Same reasoning as
-   * the node radius floor: without it the outer tree stops existing rather than
-   * receding.
+   * Width floor, so distant threads stay visible. Same reasoning as the node
+   * radius floor: without it the outer tree stops existing rather than receding.
    */
   minWidth: number
-  /** Skip a vessel whose on-screen extent is below this. */
+  /** Skip a filament whose on-screen extent is below this. */
   minExtent: number
   opacity: number
-  /** How dark the vessel edge is relative to its core. Lower is rounder. */
+  /**
+   * Brightness of the filament wall relative to its core. Low on purpose: a
+   * bright wall reads as a pipe, a dark one as a thread carrying light.
+   */
   edgeShade: number
-  /** Heartbeats per second. 0 stops the pulse. */
-  pulseRate: number
-  /** Length of one heartbeat in path-length units. Larger is a longer wave. */
-  pulseLength: number
-  /** How much brighter the wave crest is. */
-  pulseStrength: number
-  /** How far the crest colour moves toward the highlight. 1 is white. */
-  pulseTint: number
-  /** How much the vessel swells at the crest. 0 is a light with no peristalsis. */
-  pulseSwell: number
+  /**
+   * Sideways wander, as a multiple of the filament's own width. Zero gives a
+   * perfect geodesic, which is the most engineered looking thing on screen.
+   */
+  wander: number
+  /** How much brighter a spike makes the filament. */
+  spikeGain: number
+  /** How far a spike pushes the colour toward the highlight. 1 is white. */
+  spikeTint: number
+  /** How much the filament swells at the spike. Small; axons barely move. */
+  spikeSwell: number
   color: (node: TreeNode, theme: Theme) => number
 }
 
-export const defaultVesselsOptions: VesselsOptions = {
-  segments: 12,
-  width: 0.021,
-  minWidth: 0.00085,
+export const defaultNeuritesOptions: NeuritesOptions = {
+  segments: 14,
+  width: 0.0115,
+  minWidth: 0.0007,
   minExtent: 0.0012,
   opacity: 0.95,
-  edgeShade: 0.28,
-  pulseRate: 0.34,
-  pulseLength: 3.4,
-  // Deliberately short of white. The crest should read as the vessel's own
-  // colour running hot, the way a lit vein does; pushed further it turns into a
-  // white streak and the era colouring stops meaning anything at the centre,
-  // which is exactly where it matters most.
-  pulseStrength: 0.55,
-  pulseTint: 0.5,
-  pulseSwell: 0.26,
+  edgeShade: 0.14,
+  wander: 1.5,
+  spikeGain: 1.15,
+  spikeTint: 0.62,
+  spikeSwell: 0.16,
   color: (n, theme) => theme.eraColor(n.data.era as string | undefined),
 }
 
 /** Vertices across the ribbon: left edge, core, right edge. */
 const ACROSS = 3
 
-export class VesselsLayer {
+/** Deterministic per-filament wander phase. */
+const phaseOf = (i: number): number => {
+  const x = Math.sin(i * 53.1287) * 43758.5453
+  return (x - Math.floor(x)) * Math.PI * 2
+}
+
+export class NeuritesLayer {
   readonly mesh: Mesh
 
-  private readonly options: VesselsOptions
+  private readonly options: NeuritesOptions
   private readonly positionAttribute: BufferAttribute
   private readonly colorAttribute: BufferAttribute
   private readonly positions: Float32Array
@@ -102,9 +108,10 @@ export class VesselsLayer {
 
   private readonly a = new Color()
   private readonly b = new Color()
-  private readonly background = new Color()
+  private readonly recede = new Color()
   private readonly highlight = new Color()
   private readonly tint = new Color()
+  private maxFade = 0.94
 
   private readonly samples: { x: number; y: number; z: number }[]
   private readonly side = new Vector3()
@@ -118,9 +125,9 @@ export class VesselsLayer {
   constructor(
     private readonly tree: Tree,
     theme: Theme,
-    options: Partial<VesselsOptions> = {},
+    options: Partial<NeuritesOptions> = {},
   ) {
-    this.options = { ...defaultVesselsOptions, ...options }
+    this.options = { ...defaultNeuritesOptions, ...options }
     const { segments } = this.options
     this.trunk = Math.max(1e-6, tree.root.caliber)
     this.samples = Array.from({ length: segments + 1 }, () => ({ x: 0, y: 0, z: 0 }))
@@ -135,8 +142,8 @@ export class VesselsLayer {
     this.positions = this.positionAttribute.array as Float32Array
     this.colors = this.colorAttribute.array as Float32Array
 
-    // Indices never change: a vessel always occupies the same slot layout, and
-    // visible vessels are packed into slots from the front.
+    // Indices never change: a filament always occupies the same slot layout, and
+    // visible filaments are packed into slots from the front.
     const indices = new Uint32Array(tree.links.length * segments * 12)
     let w = 0
     for (let link = 0; link < tree.links.length; link++) {
@@ -180,18 +187,26 @@ export class VesselsLayer {
   }
 
   setTheme(theme: Theme): void {
-    this.background.setHex(theme.background)
+    this.recede.setHex(theme.recede)
     this.highlight.setHex(theme.highlight)
+    this.maxFade = theme.maxFade
+    // On a dark ground overlapping filaments should sum into a brighter web. On
+    // a light one adding can only reach white, so they blend normally and stack
+    // as ink instead.
+    this.material.blending = theme.glow === 'additive' ? AdditiveBlending : NormalBlending
+    this.material.needsUpdate = true
   }
 
   /**
-   * @param seconds monotonic clock driving the heartbeat
+   * @param seconds monotonic clock
+   * @param spikes  shared signal field; filaments read it along their length
    * @param eye     camera position, for billboarding the ribbons
    * @param reveal  growth front in depth units; Infinity means fully grown
    */
   update(
     theme: Theme,
     seconds: number,
+    spikes: SpikeField,
     eye: Vector3,
     reveal = Number.POSITIVE_INFINITY,
   ): void {
@@ -201,21 +216,18 @@ export class VesselsLayer {
       minWidth,
       minExtent,
       edgeShade,
-      pulseRate,
-      pulseLength,
-      pulseStrength,
-      pulseTint,
-      pulseSwell,
+      wander,
+      spikeGain,
+      spikeTint,
+      spikeSwell,
       color,
     } = this.options
 
     const perLink = (segments + 1) * ACROSS
-    const beating = pulseRate > 0
-    // The wave crest, in path-length units, expanding from the root and wrapping.
-    const crest = beating ? (seconds * pulseRate * pulseLength) % pulseLength : -1e9
     let slot = 0
 
-    for (const link of this.tree.links) {
+    for (let li = 0; li < this.tree.links.length; li++) {
+      const link = this.tree.links[li]
       const source = link.source
       const target = link.target
       if (!source.visible && !target.visible) continue
@@ -234,7 +246,6 @@ export class VesselsLayer {
       const dz = to.z - from.z
       if (dx * dx + dy * dy + dz * dz < minExtent * minExtent) continue
 
-      // Sample the geodesic once; the ribbon is built from these points.
       for (let i = 0; i <= segments; i++) {
         const p = i === 0 ? from : i === segments ? to : geodesicPoint(from, to, i / segments)
         const s = this.samples[i]
@@ -251,70 +262,86 @@ export class VesselsLayer {
       const litTo = Math.min(1, Math.pow(1 - lengthSq(to), 0.25) * 1.16) * grow
       this.a.setHex(color(source, theme))
       this.b.setHex(color(target, theme))
-      this.a.lerp(this.background, 1 - litFrom)
-      this.b.lerp(this.background, 1 - litTo)
+      this.a.lerp(this.recede, Math.min(this.maxFade, 1 - litFrom))
+      this.b.lerp(this.recede, Math.min(this.maxFade, 1 - litTo))
 
       const dimmed = target.state.dimmed
       const lit = target.state.onPath || target.state.selected
       if (dimmed) {
-        this.a.lerp(this.background, 0.82)
-        this.b.lerp(this.background, 0.82)
+        this.a.lerp(this.recede, 0.8)
+        this.b.lerp(this.recede, 0.8)
       } else if (lit) {
-        this.a.lerp(this.highlight, 0.4)
-        this.b.lerp(this.highlight, 0.4)
+        this.a.lerp(this.highlight, 0.36)
+        this.b.lerp(this.highlight, 0.36)
       }
 
-      // A vessel carries its *own* calibre for its whole length, not a ramp from
-      // the parent's. The parent's calibre is the sum of its children's cubes,
-      // and that sum is realised by the bundle of them, not by each one
-      // separately. Ramping every child up to the parent width at the junction
-      // stacks ten full-width trunks on a single point and the centre saturates
-      // to white. A small flare at the parent end is the fillet where limbs
-      // meet, and it is the only licence taken with the law.
+      // A filament carries its own calibre for its whole length, not a ramp from
+      // the parent's. The parent's calibre is the sum of its children's cubes and
+      // that sum is realised by the bundle, not by each branch separately;
+      // ramping every child up to the parent width stacks full-width trunks on a
+      // single point and the centre saturates. The flare is the swelling where a
+      // neurite leaves the soma.
       const caliber = target.caliber / this.trunk
-      const flare = 1.28
+      const flare = 1.3
 
+      const wanderPhase = phaseOf(li)
+      const sourceOffset = spikes.offsetOf(source)
+      const targetOffset = spikes.offsetOf(target)
       const base = slot * perLink
+
       for (let i = 0; i <= segments; i++) {
         const t = i / segments
         const p = this.samples[i]
 
-        // Tangent from the neighbouring samples, so the ribbon follows the arc.
         const prev = this.samples[Math.max(0, i - 1)]
         const next = this.samples[Math.min(segments, i + 1)]
         this.tangent.set(next.x - prev.x, next.y - prev.y, next.z - prev.z)
 
-        // Billboard about the vessel's own axis: the ribbon turns to face the
-        // eye but keeps its direction, which is what a tube looks like.
+        // Billboard about the filament's own axis: the ribbon turns to face the
+        // eye but keeps its direction, which is what a thread looks like.
         this.toEye.set(eye.x - p.x, eye.y - p.y, eye.z - p.z)
         this.side.crossVectors(this.tangent, this.toEye)
         if (this.side.lengthSq() < 1e-18) {
-          // Looking straight down the vessel. Any perpendicular will do.
           this.fallback.set(this.tangent.y, -this.tangent.x, 0)
           if (this.fallback.lengthSq() < 1e-18) this.fallback.set(1, 0, 0)
           this.side.copy(this.fallback)
         }
         this.side.normalize()
 
-        const wave = beating ? this.waveAt(source, target, t, crest, pulseLength) : 0
+        // Membrane potential at this point, interpolating the endpoints' jitter
+        // so the filament agrees with the somata it connects.
+        const here =
+          source.pathLength + (target.pathLength - source.pathLength) * t
+        const offset = sourceOffset + (targetOffset - sourceOffset) * t
+        const fire = spikes.at(here, seconds, offset)
+        const spike = Math.max(0, fire)
 
         const shape = caliber * (flare + (1 - flare) * t)
         const conformal = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
         let half = width * shape * conformal * grow
-        half *= 1 + pulseSwell * wave
+        half *= 1 + spikeSwell * spike
         if (half < minWidth) half = minWidth
+
+        // Grown, not extruded. The wander is anchored at both ends so filaments
+        // still meet their somata exactly, and it scales with the local width so
+        // a capillary wobbles by a capillary's worth.
+        const anchor = Math.sin(t * Math.PI)
+        const offsetAcross =
+          wander * half * anchor * Math.sin(wanderPhase + t * 5.4 + wanderPhase * 0.31)
 
         const r = this.a.r + (this.b.r - this.a.r) * t
         const g = this.a.g + (this.b.g - this.a.g) * t
         const bl = this.a.b + (this.b.b - this.a.b) * t
 
-        const boost = dimmed ? 0 : wave * pulseStrength
-        this.tint.setRGB(r, g, bl).lerp(this.highlight, pulseTint)
+        // The refractory dip is drawn as well as the spike: a filament that has
+        // just fired goes quiet, which is what makes the arrival read as an event.
+        const boost = dimmed ? 0 : fire * spikeGain
+        this.tint.setRGB(r, g, bl).lerp(this.highlight, spikeTint)
 
         const core = base + i * ACROSS
-        this.writeVertex(core, p, this.side, -half, r, g, bl, edgeShade, boost)
-        this.writeVertex(core + 1, p, this.side, 0, r, g, bl, 1, boost)
-        this.writeVertex(core + 2, p, this.side, half, r, g, bl, edgeShade, boost)
+        this.writeVertex(core, p, offsetAcross - half, r, g, bl, edgeShade, boost)
+        this.writeVertex(core + 1, p, offsetAcross, r, g, bl, 1, boost)
+        this.writeVertex(core + 2, p, offsetAcross + half, r, g, bl, edgeShade, boost)
       }
 
       slot++
@@ -325,32 +352,9 @@ export class VesselsLayer {
     this.colorAttribute.needsUpdate = true
   }
 
-  /**
-   * Crest height at parameter `t` along a vessel, from the wave's distance
-   * along the tree. Wrapping is handled on both sides so the beat is continuous
-   * as the crest recycles past the far tips.
-   */
-  private waveAt(
-    source: TreeNode,
-    target: TreeNode,
-    t: number,
-    crest: number,
-    pulseLength: number,
-  ): number {
-    const here = source.pathLength + (target.pathLength - source.pathLength) * t
-    let d = ((here - crest) % pulseLength + pulseLength) % pulseLength
-    if (d > pulseLength / 2) d -= pulseLength
-    const x = Math.abs(d) / (pulseLength * 0.28)
-    if (x >= 1) return 0
-    // Smooth crest, steeper on the leading edge, so the beat has a direction.
-    const k = 1 - x
-    return d >= 0 ? k * k : k * k * k
-  }
-
   private writeVertex(
     index: number,
     p: { x: number; y: number; z: number },
-    side: Vector3,
     offset: number,
     r: number,
     g: number,
@@ -361,24 +365,24 @@ export class VesselsLayer {
     const pos = this.positions
     const col = this.colors
     const at = index * 3
-    pos[at] = p.x + side.x * offset
-    pos[at + 1] = p.y + side.y * offset
-    pos[at + 2] = p.z + side.z * offset
+    pos[at] = p.x + this.side.x * offset
+    pos[at + 1] = p.y + this.side.y * offset
+    pos[at + 2] = p.z + this.side.z * offset
 
     let cr = r * shade
     let cg = g * shade
     let cb = b * shade
-    if (boost > 0) {
-      // The pulse rides in the core and barely touches the walls, which is what
-      // reads as fluid inside a vessel rather than a glowing outline.
+    if (boost !== 0) {
+      // The signal rides in the core and barely touches the walls, which is what
+      // reads as charge inside a filament rather than a glowing outline.
       const amount = boost * shade
       cr += (this.tint.r - cr) * amount
       cg += (this.tint.g - cg) * amount
       cb += (this.tint.b - cb) * amount
     }
-    col[at] = cr
-    col[at + 1] = cg
-    col[at + 2] = cb
+    col[at] = Math.max(0, cr)
+    col[at + 1] = Math.max(0, cg)
+    col[at + 2] = Math.max(0, cb)
   }
 
   dispose(): void {

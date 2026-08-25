@@ -69,8 +69,8 @@ export const defaultStageOptions: StageOptions = {
   // most of the viewport on empty space.
   distance: 2.6,
   bloom: !coarsePointer(),
-  // Tuned against the vessels: they cover real area now, and a low threshold
-  // blooms their whole surface into a white mass instead of just their crests.
+  // Tuned against the filaments: a low threshold blooms their whole surface
+  // into a white mass instead of just the spikes travelling through them.
   bloomStrength: 0.44,
   bloomRadius: 0.55,
   bloomThreshold: 0.52,
@@ -196,9 +196,12 @@ export class Stage {
     this.scene.fog = new FogExp2(theme.background, 0.24)
     ;(this.shell.material as MeshBasicMaterial).color = new Color(theme.boundary)
     ;(this.rim.material as LineBasicMaterial).color = new Color(theme.boundary)
+    ;(this.shell.material as MeshBasicMaterial).opacity = theme.allowStars ? 0.05 : 0.12
     this.renderer.setClearColor(bg, 1)
-    // Stars only make sense against a dark ground.
-    this.starfield?.setVisible(bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114 < 0.22)
+    // Stars are a dark-ground device, and bloom on a light ground can only push
+    // already-bright pixels to white. Both are theme facts, not options.
+    this.starfield?.setVisible(theme.allowStars)
+    if (this.bloomPass) this.bloomPass.enabled = theme.allowBloom
     this.updateCamera()
   }
 

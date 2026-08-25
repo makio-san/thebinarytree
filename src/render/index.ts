@@ -1,5 +1,5 @@
 export * from './theme'
 export * from './stage'
 export * from './nodes-layer'
-export * from './vessels-layer'
+export * from './neurites-layer'
 export * from './labels-layer'

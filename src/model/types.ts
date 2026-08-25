@@ -76,6 +76,13 @@ export interface TreeNode {
   /** Half angle of the cone this subtree is allowed to occupy, in radians. */
   cone: number
 
+  /**
+   * Membrane potential, roughly -0.25..1, written every frame by the spike
+   * field. Every layer reads it, which is what keeps the filaments, the somata
+   * and their halos firing on one signal instead of animating separately.
+   */
+  fire: number
+
   /** Set by the filter each frame. */
   visible: boolean
   /** Euclidean screen-ish size, used to decide label priority. */

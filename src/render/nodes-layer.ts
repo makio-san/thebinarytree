@@ -112,13 +112,11 @@ export class NodesLayer {
    * Recompute every instance transform and colour from the current `view`.
    *
    * @param faceCamera keeps the selection and hover rings square to the eye
-   * @param pulse      0..1 breathing value, shared with the glow and link flow
    * @param reveal     growth front in depth units; Infinity means fully grown
    */
   update(
     theme: Theme,
     faceCamera?: Quaternion,
-    pulse = 0,
     reveal = Number.POSITIVE_INFINITY,
   ): void {
     const { baseRadius, radius, color, minRadius, cullRadius } = this.options
@@ -152,8 +150,12 @@ export class NodesLayer {
       // 1 - |p|^2 is twice the conformal factor; using it directly keeps a
       // centred node at exactly `baseRadius`.
       const conformal = 1 - r2
-      let r = baseRadius * radius(node) * conformal * grow
-      if (node.state.selected) r *= 1.3 + pulse * 0.06
+      // A soma swells a little as it fires. Small on purpose: the flare in the
+      // glow layer carries the event, and a node that visibly inflates reads as
+      // a bouncing ball rather than as a cell.
+      const fire = Math.max(0, node.fire)
+      let r = baseRadius * radius(node) * conformal * grow * (1 + fire * 0.14)
+      if (node.state.selected) r *= 1.3
       else if (node.state.hovered) r *= 1.16
 
       const dropped = r2 > cull2
@@ -174,6 +176,9 @@ export class NodesLayer {
       if (node.state.selected) this.color.lerp(this.highlight, 0.35)
       else if (node.state.onPath) this.color.offsetHSL(0, 0.05, 0.12)
       else if (node.state.hovered) this.color.offsetHSL(0, 0, 0.16)
+      // Firing brightens the soma itself, so the event is legible even with the
+      // glow layer switched off.
+      if (fire > 0 && !node.state.dimmed) this.color.lerp(this.highlight, fire * 0.42)
       this.mesh.setColorAt(i, this.color)
 
       if (node.state.selected) selected = node

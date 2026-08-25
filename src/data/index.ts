@@ -1,17 +1,19 @@
 /**
  * The bundled dataset: the history of computing as one tree.
  *
- * Ten top level branches, chosen so that each one is a real lineage rather than
- * a bucket. Where something genuinely descends from something else it is nested
- * under it, even when that crosses branch boundaries in spirit: MINIX sits under
- * Unix and Linux sits under MINIX, because that is what happened.
+ * Fourteen top level branches, chosen so that each one is a real lineage rather
+ * than a bucket. Where something genuinely descends from something else it is
+ * nested under it, even when that crosses branch boundaries in spirit: MINIX
+ * sits under Unix and Linux sits under MINIX, because that is what happened.
  *
  * Dates are the year a thing first worked or first shipped, whichever the
  * sources agree on more clearly. Where the two differ the summary says so.
  */
 
+import { dataStores } from './branches/data-stores'
 import { foundations } from './branches/foundations'
 import { frontier } from './branches/frontier'
+import { games } from './branches/games'
 import { languages } from './branches/languages'
 import { machines } from './branches/machines'
 import { mobile } from './branches/mobile'
@@ -20,6 +22,8 @@ import { operatingSystems } from './branches/operating-systems'
 import { peripherals } from './branches/peripherals'
 import { personal } from './branches/personal'
 import { processors } from './branches/processors'
+import { security } from './branches/security'
+import { tools } from './branches/tools'
 import type { ComputerDatum } from './types'
 
 export type { ComputerDatum, ComputerKind } from './types'
@@ -31,7 +35,7 @@ export const computerHistory: ComputerDatum = {
   kind: 'group',
   summary:
     'The family tree of computing, from the abacus to the quantum processor. Click a branch to bring it to the centre.',
-  facts: ['Ten main lineages', 'Around 5000 years'],
+  facts: ['Fourteen main lineages', 'Around 5000 years'],
   children: [
     foundations,
     machines,
@@ -40,7 +44,11 @@ export const computerHistory: ComputerDatum = {
     personal,
     operatingSystems,
     languages,
+    tools,
+    dataStores,
     networks,
+    security,
+    games,
     mobile,
     frontier,
   ],
