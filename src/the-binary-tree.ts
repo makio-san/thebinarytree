@@ -24,6 +24,7 @@ import {
   Controls,
   defaultControlsOptions,
 } from './interaction/controls'
+import { GlowLayer, type GlowOptions } from './render/glow-layer'
 import { LabelsLayer, type LabelsOptions } from './render/labels-layer'
 import { LinksLayer, type LinksOptions } from './render/links-layer'
 import { NodesLayer, type NodesOptions } from './render/nodes-layer'
@@ -53,6 +54,25 @@ export interface InteractionConfig {
   flight?: Partial<FlightOptions>
 }
 
+export interface MotionConfig {
+  /**
+   * Keep painting when nothing has changed, so the link flow and the stars stay
+   * alive. Off means frames are produced only on interaction, which is cheaper
+   * but loses the pulse. Automatically off under `prefers-reduced-motion`.
+   */
+  ambient: boolean
+  /** Seconds for the tree to grow out from the root on first load. 0 skips it. */
+  growth: number
+  /** Beats per second of the shared pulse driving glow and selection. */
+  pulseRate: number
+}
+
+export const defaultMotionConfig: MotionConfig = {
+  ambient: true,
+  growth: 2.4,
+  pulseRate: 0.5,
+}
+
 export interface TreeConfig {
   dataloader: DataLoader
   layout?: Partial<LayoutOptions>
@@ -60,9 +80,11 @@ export interface TreeConfig {
     nodes?: Partial<NodesOptions>
     links?: Partial<LinksOptions>
     labels?: Partial<LabelsOptions>
+    glow?: Partial<GlowOptions> | false
   }
   stage?: Partial<StageOptions>
   interaction?: InteractionConfig
+  motion?: Partial<MotionConfig>
   theme?: ThemeName | Theme
   /**
    * Return false to dim a node. Dimmed nodes stay in place - the layout is not
@@ -93,6 +115,10 @@ export interface BinaryTreeApi {
   /** Force one frame. Rendering is otherwise on demand. */
   render(): void
   resize(): void
+  /** Replay the growth animation from the root. */
+  regrow(seconds?: number): void
+  /** Camera closeness, 0 far out and 1 pressed against the centre. */
+  zoom(): number
   destroy(): void
 }
 
@@ -111,6 +137,7 @@ export class BinaryTree {
   private nodesLayer!: NodesLayer
   private linksLayer!: LinksLayer
   private labelsLayer!: LabelsLayer
+  private glowLayer: GlowLayer | null = null
   private navigator!: Navigator
   private controls!: Controls
   private resizeObserver?: ResizeObserver
@@ -120,9 +147,15 @@ export class BinaryTree {
   private hovered: TreeNode | null = null
   private center: TreeNode | null = null
 
+  private motion!: MotionConfig
   private dirty = true
   private frame = 0
   private destroyed = false
+  /** Monotonic seconds since the first frame; drives every ambient effect. */
+  private clock = 0
+  private lastFrame = 0
+  private growthStart = Number.NaN
+  private reveal = Number.POSITIVE_INFINITY
 
   constructor(component: ComponentConfig, config: TreeConfig) {
     this.config = config
@@ -154,15 +187,30 @@ export class BinaryTree {
     this.tree = hierarchy(datum)
     coneLayout(this.tree, this.config.layout)
 
+    const reduced =
+      typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
+    this.motion = { ...defaultMotionConfig, ...this.config.motion }
+    if (reduced) {
+      this.motion.ambient = false
+      this.motion.growth = 0
+    }
+
     this.stage = new Stage(this.element, this.theme, this.config.stage)
     this.nodesLayer = new NodesLayer(this.tree.nodes, this.theme, this.config.geometry?.nodes)
     this.linksLayer = new LinksLayer(this.tree, this.theme, this.config.geometry?.links)
     this.labelsLayer = new LabelsLayer(this.element, this.config.geometry?.labels)
+    if (this.config.geometry?.glow !== false) {
+      this.glowLayer = new GlowLayer(this.tree.nodes, this.config.geometry?.glow ?? {})
+    }
 
     this.stage.world.add(this.linksLayer.lines)
+    if (this.glowLayer) this.stage.world.add(this.glowLayer.mesh)
     this.stage.world.add(this.nodesLayer.mesh)
     this.stage.world.add(this.nodesLayer.selectionHalo)
     this.stage.world.add(this.nodesLayer.hoverHalo)
+
+    this.labelsLayer.setActivateHandler((node) => this.handleSelect(node))
+    if (this.motion.growth > 0) this.reveal = 0
 
     this.navigator = new Navigator(this.tree, {
       duration: 620,
@@ -219,18 +267,60 @@ export class BinaryTree {
   private loop = (): void => {
     if (this.destroyed) return
     this.frame = requestAnimationFrame(this.loop)
+
     const now = performance.now()
-    const animating = this.navigator.tick(now)
-    if (!animating && !this.dirty) return
+    if (this.lastFrame === 0) this.lastFrame = now
+    // Clamp the step: a backgrounded tab resumes with a huge gap, and letting
+    // that through would teleport the flow and skip the whole growth animation.
+    this.clock += Math.min(0.1, (now - this.lastFrame) / 1000)
+    this.lastFrame = now
+
+    const flying = this.navigator.tick(now)
+    const growing = this.advanceGrowth(now)
+
+    if (!flying && !growing && !this.dirty && !this.motion.ambient) return
     this.dirty = false
     this.draw()
   }
 
+  /**
+   * Move the growth front outward. Returns true while it is still travelling.
+   *
+   * Driven by the wall clock, not by `this.clock`. The accumulated clock is
+   * deliberately clamped per frame so the link flow cannot teleport after a
+   * stall, but growth is a one-shot intro: if the tab was hidden through it, the
+   * right thing is to come back to a grown tree, not to a frozen half-grown one.
+   */
+  private advanceGrowth(now: number): boolean {
+    if (this.reveal === Number.POSITIVE_INFINITY) return false
+    const tree = this.tree
+    if (!tree) return false
+
+    if (Number.isNaN(this.growthStart)) this.growthStart = now
+    const t = Math.min(1, (now - this.growthStart) / (this.motion.growth * 1000))
+    // Ease out, so the trunk appears briskly and the outer levels settle.
+    const eased = 1 - Math.pow(1 - t, 2.2)
+    this.reveal = eased * (tree.maxDepth + 1.6)
+
+    if (t >= 1) {
+      this.reveal = Number.POSITIVE_INFINITY
+      return false
+    }
+    return true
+  }
+
   private draw(): void {
     if (!this.tree) return
-    this.nodesLayer.update(this.theme, this.stage.camera.quaternion)
-    this.linksLayer.update(this.theme)
+    // One clock and one pulse shared by every layer, so the glow, the selection
+    // ring and the link flow breathe together instead of drifting apart.
+    const pulse = 0.5 + 0.5 * Math.sin(this.clock * Math.PI * 2 * this.motion.pulseRate)
+    const quaternion = this.stage.camera.quaternion
+
+    this.nodesLayer.update(this.theme, quaternion, pulse, this.reveal)
+    this.glowLayer?.update(this.theme, this.nodesLayer.radii, quaternion, pulse)
+    this.linksLayer.update(this.theme, this.clock, this.reveal)
     this.labelsLayer.update(this.tree.nodes, this.stage, this.nodesLayer.radii)
+    this.stage.starfield?.update(this.clock)
     this.stage.render()
     this.updateCenterNode()
   }
@@ -396,6 +486,15 @@ export class BinaryTree {
         this.stage?.resize(rect.width, rect.height)
         this.dirty = true
       },
+      regrow: (seconds) => {
+        if (!this.tree) return
+        if (seconds !== undefined) this.motion.growth = seconds
+        if (this.motion.growth <= 0) return
+        this.reveal = 0
+        this.growthStart = Number.NaN
+        this.dirty = true
+      },
+      zoom: () => this.stage?.zoom ?? 0,
       destroy: () => this.destroy(),
     }
   }
@@ -439,6 +538,7 @@ export class BinaryTree {
     this.resizeObserver?.disconnect()
     this.controls?.dispose()
     this.labelsLayer?.dispose()
+    this.glowLayer?.dispose()
     this.nodesLayer?.dispose()
     this.linksLayer?.dispose()
     this.stage?.dispose()

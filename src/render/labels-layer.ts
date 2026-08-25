@@ -2,10 +2,15 @@
  * Labels, as pooled HTML elements projected over the canvas.
  *
  * HTML rather than sprites, for three reasons: text stays crisp at any DPI,
- * styling is plain CSS, and hiding a label costs one class toggle. With a few
+ * styling is plain CSS, and hiding a label costs one attribute write. With a few
  * hundred nodes only a few dozen labels can ever be legible at once, so the
  * layer sorts candidates by on-screen size, greedily places the biggest ones and
  * rejects anything that would collide with a label already placed.
+ *
+ * Detail is progressive. Far out a label is a name. Closer in it gains a year,
+ * then an origin line, then a sentence of summary. The card that appears when
+ * you are right on top of a node is the same element, just allowed to say more,
+ * so nothing pops in or out as you fly.
  */
 
 import type { PerspectiveCamera } from 'three'
@@ -13,18 +18,43 @@ import { Vector3 } from 'three'
 import type { TreeNode } from '../model/types'
 import type { Stage } from './stage'
 
+export type LabelTier = 'name' | 'meta' | 'card'
+
 export interface LabelsOptions {
   /** Hard cap on labels drawn at once. */
   maxLabels: number
-  /** Nodes smaller than this (in ball units) never get a label. */
+  /** Nodes with a smaller conformal radius than this never get a label. */
   minRadius: number
   /** Always label the root, the selection and the path to it. */
   alwaysShowPath: boolean
   /** Extra padding used by the collision test, in CSS pixels. */
   padding: number
   text: (node: TreeNode) => string
-  /** Secondary text, rendered smaller. Return '' to omit. */
+  /** Secondary text, rendered smaller next to the name. Return '' to omit. */
   detail: (node: TreeNode) => string
+  /** Third line, shown from the `meta` tier up. Return '' to omit. */
+  meta: (node: TreeNode) => string
+  /** Body text, shown only at the `card` tier. Return '' to omit. */
+  body: (node: TreeNode) => string
+  /**
+   * Conformal radius above which a label is promoted to the next tier. The
+   * defaults are tuned so a node you have flown to gets a card and its
+   * immediate neighbours get meta lines.
+   */
+  metaThreshold: number
+  cardThreshold: number
+  /**
+   * Hard cap on full cards. Without it, sitting back far enough that ten
+   * top-level branches all clear the card threshold fills the screen with
+   * paragraphs and the tree disappears behind its own annotations.
+   */
+  maxCards: number
+  /**
+   * Multiplier on every computed font size. Label size is driven by the node's
+   * conformal radius, which is viewport independent, so on a 375pt screen the
+   * same label eats three times the proportional width it does on a desktop.
+   */
+  fontScale: number
 }
 
 export const defaultLabelsOptions: LabelsOptions = {
@@ -34,6 +64,12 @@ export const defaultLabelsOptions: LabelsOptions = {
   padding: 3,
   text: (n) => n.data.name,
   detail: (n) => (typeof n.data.year === 'number' ? String(n.data.year) : ''),
+  meta: () => '',
+  body: () => '',
+  metaThreshold: 0.026,
+  cardThreshold: 0.062,
+  maxCards: 3,
+  fontScale: 1,
 }
 
 interface Rect {
@@ -50,6 +86,8 @@ export class LabelsLayer {
   private readonly world = new Vector3()
   private readonly placed: Rect[] = []
   private readonly projection = { x: 0, y: 0, depth: 0 }
+  private onActivate: ((node: TreeNode) => void) | null = null
+  private readonly bound = new Map<HTMLDivElement, TreeNode>()
 
   constructor(container: HTMLElement, options: Partial<LabelsOptions> = {}) {
     this.options = { ...defaultLabelsOptions, ...options }
@@ -58,12 +96,34 @@ export class LabelsLayer {
     container.appendChild(this.element)
   }
 
+  /**
+   * Make labels clickable. Cards carry real text, and on a touch screen a word
+   * is a much easier target than a sphere a few pixels across.
+   */
+  setActivateHandler(handler: (node: TreeNode) => void): void {
+    this.onActivate = handler
+    this.element.classList.add('bt-labels--interactive')
+  }
+
   private acquire(index: number): HTMLDivElement {
     let el = this.pool[index]
     if (!el) {
       el = document.createElement('div')
       el.className = 'bt-label'
-      el.innerHTML = '<span class="bt-label__name"></span><span class="bt-label__detail"></span>'
+      el.innerHTML =
+        '<span class="bt-label__line">' +
+        '<span class="bt-label__name"></span>' +
+        '<span class="bt-label__detail"></span>' +
+        '</span>' +
+        '<span class="bt-label__meta"></span>' +
+        '<span class="bt-label__body"></span>'
+      el.addEventListener('pointerdown', (event) => {
+        const node = this.bound.get(el!)
+        if (!node || !this.onActivate) return
+        event.stopPropagation()
+        event.preventDefault()
+        this.onActivate(node)
+      })
       this.element.appendChild(el)
       this.pool[index] = el
     }
@@ -71,9 +131,29 @@ export class LabelsLayer {
   }
 
   update(nodes: TreeNode[], stage: Stage, radii: Float32Array): void {
-    const { maxLabels, minRadius, alwaysShowPath, padding, text, detail } = this.options
+    const {
+      maxLabels,
+      minRadius,
+      alwaysShowPath,
+      padding,
+      text,
+      detail,
+      meta,
+      body,
+      metaThreshold,
+      cardThreshold,
+      maxCards,
+      fontScale,
+    } = this.options
     const { width, height } = stage.size
     const camera = stage.camera as PerspectiveCamera
+
+    // Zoom loosens the thresholds: pressing in should reveal more, not just
+    // magnify what was already there. Cards are loosened far less than meta
+    // lines, because a card is a paragraph and ten of them is a wall of text.
+    const zoom = stage.zoom
+    const metaCut = metaThreshold * (1 - zoom * 0.55)
+    const cardCut = cardThreshold * (1 - zoom * 0.15)
 
     // Rank by apparent size, with the current path forced to the front so the
     // thing you just clicked never loses its label to a bigger neighbour.
@@ -96,7 +176,9 @@ export class LabelsLayer {
     })
 
     this.placed.length = 0
+    this.bound.clear()
     let used = 0
+    let cards = 0
 
     for (const node of candidates) {
       if (used >= maxLabels) break
@@ -107,19 +189,39 @@ export class LabelsLayer {
       const { x, y, depth } = this.projection
 
       if (depth < -1 || depth > 1) continue
-      if (x < -80 || y < -30 || x > width + 80 || y > height + 30) continue
+      // Allowance for a label whose anchor is just off screen. Scaled to the
+      // viewport, or on a phone every edge label is a clipped fragment.
+      const slackX = Math.min(140, width * 0.1)
+      const slackY = Math.min(60, height * 0.06)
+      if (x < -slackX || y < -slackY || x > width + slackX || y > height + slackY) continue
 
       const r = radii[node.index]
-      const fontSize = Math.max(10, Math.min(19, 9 + node.screenSize * 92))
+      const size = node.screenSize
+      // Candidates are sorted largest first, so the cap always spends its cards
+      // on the nodes that dominate the view.
+      const wantsCard = size >= cardCut || node.state.selected
+      const tier: LabelTier =
+        wantsCard && cards < maxCards ? 'card' : size >= metaCut || wantsCard ? 'meta' : 'name'
+
+      const fontSize =
+        Math.max(10, Math.min(tier === 'card' ? 21 : 18, 9 + size * 92 + zoom * 3)) * fontScale
       const label = text(node)
       const sub = detail(node)
+      const metaText = tier === 'name' ? '' : meta(node)
+      const bodyText = tier === 'card' ? body(node) : ''
 
-      // Rough metrics are enough for collision: the labels are one short line.
-      const w = label.length * fontSize * 0.53 + (sub ? sub.length * fontSize * 0.4 + 6 : 0)
-      const h = fontSize * 1.35
-      const offset = r * 0.5 * (height / (2 * Math.tan((camera.fov * Math.PI) / 360) * cameraDistance))
+      // Rough metrics are enough for collision: labels are one to four short
+      // lines and the cost of being slightly wrong is a hidden neighbour.
+      const nameWidth = label.length * fontSize * 0.53 + (sub ? sub.length * fontSize * 0.4 + 6 : 0)
+      const bodyWidth = bodyText ? Math.min(320, fontSize * 17) : 0
+      const w = Math.max(nameWidth, metaText ? metaText.length * fontSize * 0.4 : 0, bodyWidth)
+      const bodyLines = bodyText ? Math.ceil((bodyText.length * fontSize * 0.46) / (bodyWidth || 1)) : 0
+      const h = fontSize * (1.35 + (metaText ? 0.95 : 0) + bodyLines * 1.35)
+
+      const projectedRadius =
+        r * 0.5 * (height / (2 * Math.tan((camera.fov * Math.PI) / 360) * cameraDistance))
       const cx = x
-      const cy = y - offset - h * 0.62
+      const cy = y - projectedRadius - h * 0.5 - 6
 
       const rect: Rect = {
         x0: cx - w / 2 - padding,
@@ -131,18 +233,30 @@ export class LabelsLayer {
       const forced = node.state.selected || node.depth === 0
       if (!forced && this.collides(rect)) continue
       this.placed.push(rect)
+      // Counted only once placed: a card rejected for collision must not use up
+      // the budget of one that would have fitted.
+      if (tier === 'card') cards++
 
       const el = this.acquire(used++)
-      const nameEl = el.firstElementChild as HTMLElement
-      const detailEl = el.lastElementChild as HTMLElement
+      this.bound.set(el, node)
+      const line = el.firstElementChild as HTMLElement
+      const nameEl = line.firstElementChild as HTMLElement
+      const detailEl = line.lastElementChild as HTMLElement
+      const metaEl = line.nextElementSibling as HTMLElement
+      const bodyEl = el.lastElementChild as HTMLElement
+
       if (nameEl.textContent !== label) nameEl.textContent = label
       if (detailEl.textContent !== sub) detailEl.textContent = sub
+      if (metaEl.textContent !== metaText) metaEl.textContent = metaText
+      if (bodyEl.textContent !== bodyText) bodyEl.textContent = bodyText
 
       // Behind the ball's centre reads as further away.
       const behind = Math.max(0, Math.min(1, (cameraDistance - stage.distance) / 1.1))
       el.style.transform = `translate(-50%,-50%) translate(${cx.toFixed(1)}px,${cy.toFixed(1)}px)`
       el.style.fontSize = `${fontSize.toFixed(2)}px`
       el.style.opacity = (1 - behind * 0.72).toFixed(3)
+      if (bodyWidth) el.style.setProperty('--bt-label-width', `${Math.round(bodyWidth)}px`)
+      el.dataset.tier = tier
       el.dataset.state = node.state.selected
         ? 'selected'
         : node.state.hovered
@@ -153,7 +267,9 @@ export class LabelsLayer {
       el.hidden = false
     }
 
-    for (let i = used; i < this.pool.length; i++) this.pool[i].hidden = true
+    for (let i = used; i < this.pool.length; i++) {
+      this.pool[i].hidden = true
+    }
   }
 
   private collides(rect: Rect): boolean {
@@ -168,5 +284,6 @@ export class LabelsLayer {
   dispose(): void {
     this.element.remove()
     this.pool.length = 0
+    this.bound.clear()
   }
 }

@@ -13,11 +13,12 @@
  *   )
  */
 
-export { BinaryTree, fold } from './the-binary-tree'
+export { BinaryTree, fold, defaultMotionConfig } from './the-binary-tree'
 export type {
   ComponentConfig,
   BinaryTreeApi,
   InteractionConfig,
+  MotionConfig,
   TreeConfig,
 } from './the-binary-tree'
 
@@ -41,7 +42,11 @@ export type { NodeColorFn, NodeRadiusFn, NodesOptions } from './render/nodes-lay
 export { LinksLayer, defaultLinksOptions } from './render/links-layer'
 export type { LinksOptions } from './render/links-layer'
 export { LabelsLayer, defaultLabelsOptions } from './render/labels-layer'
-export type { LabelsOptions } from './render/labels-layer'
+export type { LabelsOptions, LabelTier } from './render/labels-layer'
+export { GlowLayer, defaultGlowOptions } from './render/glow-layer'
+export type { GlowOptions } from './render/glow-layer'
+export { Starfield, defaultStarfieldOptions } from './render/starfield'
+export type { StarfieldOptions } from './render/starfield'
 
 // Navigation
 export { Navigator, defaultFlightOptions } from './interaction/navigator'
@@ -56,3 +61,4 @@ export type { Frame, Vec3 } from './math'
 // The bundled dataset
 export { computerHistory, eraOf, flatten, formatYear, yearRange } from './data'
 export type { ComputerDatum, ComputerKind } from './data'
+export { WIKI_TITLES, wikiTitle, wikiUrl } from './data/wiki'

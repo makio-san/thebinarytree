@@ -95,11 +95,23 @@ new BinaryTree(
 
     geometry: {
       nodes:  { baseRadius: 0.082, radius, color, minRadius, cullRadius },
-      links:  { segments: 14, opacity: 0.92, color },
-      labels: { maxLabels: 44, text, detail },
+      links:  { segments: 14, opacity: 0.92, flowSpeed: 0.22, color },
+      labels: { maxLabels: 44, maxCards: 3, fontScale: 1, text, detail, meta, body },
+      glow:   { scale: 4.2, intensity: 0.55 },   // or false to switch it off
     },
 
-    stage: { distance: 2.6, minDistance: 1.45, maxDistance: 7 },
+    stage: {
+      distance: 2.6, minDistance: 0.38, maxDistance: 7,
+      bloom: true,        // defaults off for coarse pointers
+      stars: true,        // or a Partial<StarfieldOptions>
+      maxPixelRatio: 2,
+    },
+
+    motion: {
+      ambient: true,   // keep painting so the flow and stars stay alive
+      growth: 2.4,     // seconds for the tree to grow out on first load
+      pulseRate: 0.5,
+    },
 
     interaction: {
       onNodeClick, onNodeHover, onSelectionChange, onCenterNodeChange, onInit,
@@ -110,6 +122,8 @@ new BinaryTree(
   },
 )
 ```
+
+`prefers-reduced-motion: reduce` turns off `ambient` and `growth` automatically.
 
 ### API
 
@@ -126,7 +140,9 @@ On `tree.api`:
 | `refilter(filter?)` | Reapplies the dimming filter |
 | `relayout(options?)` | Rebuilds the layout with new settings |
 | `setTheme(theme)` | Dark, light, or your own |
-| `render()` | Requests a frame; drawing is on demand |
+| `render()` | Requests a frame |
+| `regrow(seconds?)` | Replays the growth animation from the root |
+| `zoom()` | Camera closeness, 0 far out to 1 pressed against the centre |
 | `resize()`, `destroy()` | Sizing and teardown |
 
 ### Your own data
@@ -155,6 +171,25 @@ folded.
 | Arrows | Parent, child, previous and next sibling |
 | Enter, Home, Esc | Focus, return to root, clear selection |
 
+Labels are clickable too. On a touch screen a word is a far easier target than a
+sphere a few pixels across.
+
+## The demo on a phone
+
+Below 860px the explorer becomes an app rather than a shrunken desktop tool:
+
+- The detail card becomes a **bottom sheet** with a drag handle and three snap
+  points. It sits at full height and is translated down, so expanding it never
+  reflows its own content. Dragging is confined to the handle and header, because
+  a whole-sheet drag surface fights the scroll of the content inside it.
+- Search becomes a **full screen overlay**. A phone keyboard covers about half
+  the viewport, so an inline field at the top would put the results behind it.
+  The input is 16px, below which iOS zooms the page on focus.
+- A **tab bar** carries the actions, and the year filter and legend become a
+  drawer above it.
+- Bloom defaults off for coarse pointers, and labels get fewer slots, smaller
+  type and one card at a time. Safe area insets are respected throughout.
+
 ## Architecture
 
 ```
@@ -164,10 +199,15 @@ src/
 │   └── hyperbolic.ts Möbius addition, geodesics, isometries
 ├── model/           tree building and data loaders
 ├── layout/          cone based placement
-├── render/          three.js layers (stage, nodes, links, labels)
+├── render/          three.js layers: stage, nodes, glow, links, labels, stars
 ├── interaction/     navigation and input
-├── data/            the computing history dataset
+├── data/            the computing history dataset and its Wikipedia titles
 └── the-binary-tree.ts the class that ties it together
+
+demo/
+├── main.ts          wiring
+├── wiki.ts          Wikipedia lookup, cached and failure tolerant
+└── ui/              panel, search, bottom sheet
 ```
 
 `math` deliberately knows nothing about three.js. The correctness of the
@@ -226,8 +266,52 @@ significant digits. That mattered in two places:
   its woven look.
 - Labels are pooled HTML over the canvas, ranked by apparent size each frame,
   largest placed first, colliding ones skipped.
-- Drawing is on demand: a frame is produced only when something changed or an
-  animation is running.
+
+### Motion
+
+Three effects, all driven from one clock so they beat together rather than
+drifting apart:
+
+- **Flow.** A pulse runs along every link from parent to child. Direction is the
+  point: every pulse travels from ancestor to descendant, so inheritance is
+  visible rather than implied. Computed in JS into the colour buffer, which is
+  rewritten each frame anyway, so a custom shader would buy nothing.
+- **Growth.** On first load a reveal front sweeps outward by depth and the tree
+  grows from the root. Driven by the wall clock rather than the accumulated
+  frame clock: the frame clock is deliberately clamped per frame so the flow
+  cannot teleport after a stall, but if the tab was hidden through the intro the
+  right thing is to come back to a grown tree.
+- **Glow and stars.** An additive halo per node, scaled by its own conformal
+  radius, plus a bloom pass where the device can afford one. Two shells of stars
+  behind everything give a fixed frame of reference, without which a camera orbit
+  reads as the tree spinning rather than as you moving around it. The stars opt
+  out of scene fog: at a radius of 26 any usable fog density erases them.
+
+Fog density tracks the inverse of the viewing distance, so the front/back cue
+holds at every zoom, and it stays gentle because the links already carry a
+hyperbolic depth fade of their own. Two fades at full strength erase the web.
+
+### Zoom and progressive detail
+
+`minDistance` is 0.38, well inside the unit ball, so you can fly through the
+tree rather than only look at it from outside. The rim and shell hide once the
+camera is inside them.
+
+Labels gain detail as they grow: a name, then a year, then an origin line, then a
+sentence of summary. It is the same element throughout, just allowed to say
+more, so nothing pops in or out as you fly. Full cards are capped, because ten
+top-level branches all clearing the card threshold is a wall of text with a tree
+somewhere behind it.
+
+### Images and long form text
+
+The dataset stores Wikipedia article *titles* in `src/data/wiki.ts`, keyed by
+node id, and no image URLs at all. Wikimedia thumbnail paths are content hashed:
+they cannot be derived from a title, and rewriting the `/330px-` segment of one
+to ask for a larger size returns HTTP 400. The demo resolves the lead image and
+an extract at runtime from the REST summary endpoint, which follows redirects and
+sends permissive CORS headers, then caches per session. No title, a 404 or an
+offline browser all end the same way: the panel shows the dataset's own text.
 
 ## Dataset
 

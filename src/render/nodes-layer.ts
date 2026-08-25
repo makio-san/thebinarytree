@@ -108,9 +108,17 @@ export class NodesLayer {
 
   /**
    * Recompute every instance transform and colour from the current `view`.
-   * `faceCamera` keeps the selection and hover rings square to the eye.
+   *
+   * @param faceCamera keeps the selection and hover rings square to the eye
+   * @param pulse      0..1 breathing value, shared with the glow and link flow
+   * @param reveal     growth front in depth units; Infinity means fully grown
    */
-  update(theme: Theme, faceCamera?: Quaternion): void {
+  update(
+    theme: Theme,
+    faceCamera?: Quaternion,
+    pulse = 0,
+    reveal = Number.POSITIVE_INFINITY,
+  ): void {
     const { baseRadius, radius, color, minRadius, cullRadius } = this.options
     const cull2 = cullRadius * cullRadius
     let selected: TreeNode | null = null
@@ -121,11 +129,29 @@ export class NodesLayer {
       const p = node.view
       const r2 = lengthSq(p)
 
+      // Growth: nodes swell into place as the front passes their depth, with an
+      // overshoot so they arrive with a little weight instead of just fading in.
+      let grow = 1
+      if (reveal !== Number.POSITIVE_INFINITY) {
+        const t = reveal - node.depth
+        if (t <= 0) {
+          node.visible = false
+          node.screenSize = 0
+          this.radii[i] = 0
+          this.dummy.position.set(p.x, p.y, p.z)
+          this.dummy.scale.setScalar(HIDDEN_SCALE)
+          this.dummy.updateMatrix()
+          this.mesh.setMatrixAt(i, this.dummy.matrix)
+          continue
+        }
+        grow = t >= 1 ? 1 : 1 - Math.pow(1 - t, 3) * (1 - Math.sin(t * Math.PI) * 0.22)
+      }
+
       // 1 - |p|^2 is twice the conformal factor; using it directly keeps a
       // centred node at exactly `baseRadius`.
       const conformal = 1 - r2
-      let r = baseRadius * radius(node) * conformal
-      if (node.state.selected) r *= 1.3
+      let r = baseRadius * radius(node) * conformal * grow
+      if (node.state.selected) r *= 1.3 + pulse * 0.06
       else if (node.state.hovered) r *= 1.16
 
       const dropped = r2 > cull2

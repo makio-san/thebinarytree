@@ -2,71 +2,122 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#080a11" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta
       name="description"
       content="A 3D hyperbolic tree browser for the history of computing."
     />
     <title>The Binary Tree - the family tree of computing</title>
     <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://en.wikipedia.org" crossorigin />
+    <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
   </head>
   <body>
     <div id="stage" class="stage"></div>
 
-    <header class="hud hud--top">
+    <!-- Top bar. Collapses to an app bar under 860px. -->
+    <header class="bar bar--top">
+      <button id="menu" type="button" class="icon-btn bar__menu" aria-label="Show controls">
+        <span class="icon-bars"></span>
+      </button>
+
       <div class="brand">
         <span class="brand__mark" aria-hidden="true"></span>
         <span class="brand__text">
           <strong>The Binary Tree</strong>
-          <span>the family tree of computing</span>
+          <span id="tagline">the family tree of computing</span>
         </span>
       </div>
 
-      <div class="search" role="search">
-        <input
-          id="search"
-          type="search"
-          placeholder="Search: ENIAC, 6502, Unix, Amiga..."
-          autocomplete="off"
-          spellcheck="false"
-          aria-label="Search the tree"
-          aria-controls="results"
-        />
-        <ul id="results" class="search__results" role="listbox" hidden></ul>
+      <div id="search" class="search" data-active="false" role="search">
+        <div class="search__field">
+          <span class="icon-search" aria-hidden="true"></span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search 467 nodes"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="search"
+            aria-label="Search the tree"
+            aria-controls="search-results"
+          />
+          <button id="search-close" type="button" class="icon-btn search__close" aria-label="Close search">
+            <span class="icon-x"></span>
+          </button>
+        </div>
+        <ul id="search-results" class="search__results" role="listbox"></ul>
       </div>
 
       <div class="tools">
+        <button id="search-open" type="button" class="icon-btn tools__search" aria-label="Search">
+          <span class="icon-search"></span>
+        </button>
         <button id="home" type="button" class="btn" title="Bring the root to the centre (Home)">
           Recentre
         </button>
         <button id="tour" type="button" class="btn" aria-pressed="false" title="Guided tour">
           Tour
         </button>
-        <button id="theme" type="button" class="btn btn--icon" title="Light and dark theme">◐</button>
+        <button id="theme" type="button" class="icon-btn" aria-label="Light and dark theme">
+          <span class="icon-contrast"></span>
+        </button>
       </div>
     </header>
 
-    <aside id="panel" class="panel" aria-live="polite">
-      <p class="panel__hint">
-        Click a node. It flies to the centre of hyperbolic space and its branch opens up.
-      </p>
+    <!-- Detail view: a card on desktop, a drag-to-expand sheet on a phone. -->
+    <aside id="panel" class="panel" data-empty="true" data-sheet="half" aria-live="polite">
+      <div id="panel-grab" class="panel__grab">
+        <span class="panel__handle" aria-hidden="true"></span>
+        <div id="panel-peek" class="peek"></div>
+      </div>
+      <div id="panel-body" class="panel__body"></div>
     </aside>
 
-    <footer class="hud hud--bottom">
+    <!-- Bottom controls. Becomes a tab bar plus a collapsible drawer on mobile. -->
+    <footer id="bottom" class="bar bar--bottom">
       <div class="timeline">
-        <label for="year">
-          Up to year <output id="year-out">all</output>
-        </label>
+        <label for="year">Up to <output id="year-out">all</output></label>
         <input id="year" type="range" min="1600" max="2026" value="2026" step="1" />
       </div>
       <ul id="legend" class="legend" aria-label="Eras"></ul>
       <p class="help">
         <kbd>drag</kbd> pull a node <span>·</span>
         <kbd>drag empty space</kbd> orbit <span>·</span>
-        <kbd>wheel</kbd> zoom <span>·</span>
+        <kbd>wheel</kbd> fly in <span>·</span>
         <kbd>arrows</kbd> walk
       </p>
     </footer>
+
+    <nav id="tabbar" class="tabbar" aria-label="Actions">
+      <button id="tab-home" type="button">
+        <span class="icon-target"></span>
+        <span>Centre</span>
+      </button>
+      <button id="tab-search" type="button">
+        <span class="icon-search"></span>
+        <span>Search</span>
+      </button>
+      <button id="tab-tour" type="button" aria-pressed="false">
+        <span class="icon-play"></span>
+        <span>Tour</span>
+      </button>
+      <button id="tab-filter" type="button" aria-pressed="false">
+        <span class="icon-slider"></span>
+        <span>Filter</span>
+      </button>
+      <button id="tab-theme" type="button">
+        <span class="icon-contrast"></span>
+        <span>Theme</span>
+      </button>
+    </nav>
 
     <script type="module" src="/demo/main.ts"></script>
   </body>

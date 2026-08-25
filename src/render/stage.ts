@@ -1,9 +1,10 @@
 /**
- * Renderer, camera, lights and the boundary sphere of the ball.
+ * Renderer, camera, lights, backdrop, and the boundary of the ball.
  *
  * The ball itself never moves or rotates: navigation happens by transforming the
  * node positions with a hyperbolic isometry, not by turning the object. The
- * camera orbits purely so you can look at the 3D structure from another side.
+ * camera orbits purely so you can look at the 3D structure from another side,
+ * and dollies all the way inside the ball so you can fly through the tree.
  */
 
 import {
@@ -12,7 +13,7 @@ import {
   Color,
   DirectionalLight,
   Float32BufferAttribute,
-  Fog,
+  FogExp2,
   Group,
   LineBasicMaterial,
   LineLoop,
@@ -21,26 +22,58 @@ import {
   PerspectiveCamera,
   Scene,
   SphereGeometry,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three'
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { Starfield, type StarfieldOptions } from './starfield'
 import type { Theme } from './theme'
 
 const RIM_SEGMENTS = 128
 
 export interface StageOptions {
+  /**
+   * Closest the camera may get to the centre. Below 1 the camera is inside the
+   * ball, which is the point: at 0.4 a centred node fills a third of the screen
+   * and its neighbours are still in frame.
+   */
   minDistance: number
   maxDistance: number
   distance: number
+  /**
+   * Bloom pass. Expensive on weak GPUs, so it defaults off for coarse pointers
+   * and small viewports; the additive glow layer carries the look without it.
+   */
+  bloom: boolean
+  bloomStrength: number
+  bloomRadius: number
+  bloomThreshold: number
+  /** Star backdrop. Disabled automatically on the light theme. */
+  stars: boolean | Partial<StarfieldOptions>
+  /** Cap on device pixel ratio. Lower is faster on dense phone screens. */
+  maxPixelRatio: number
 }
 
+const coarsePointer = (): boolean =>
+  typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+
 export const defaultStageOptions: StageOptions = {
-  minDistance: 1.45,
+  minDistance: 0.38,
   maxDistance: 7,
   // Close enough that the populated part of the ball fills the frame. The
   // outermost levels crowd the rim, so framing the whole unit sphere wastes
   // most of the viewport on empty space.
   distance: 2.6,
+  bloom: !coarsePointer(),
+  bloomStrength: 0.62,
+  bloomRadius: 0.5,
+  bloomThreshold: 0.34,
+  stars: true,
+  maxPixelRatio: 2,
 }
 
 export class Stage {
@@ -49,6 +82,7 @@ export class Stage {
   readonly camera: PerspectiveCamera
   readonly world = new Group()
   readonly canvas: HTMLCanvasElement
+  readonly starfield: Starfield | null
 
   /** Camera orbit, spherical around the origin. */
   yaw = 0.35
@@ -61,6 +95,8 @@ export class Stage {
   private readonly key: DirectionalLight
   private readonly fill: DirectionalLight
   private readonly options: StageOptions
+  private composer: EffectComposer | null = null
+  private bloomPass: UnrealBloomPass | null = null
   private theme: Theme
   private width = 1
   private height = 1
@@ -70,14 +106,30 @@ export class Stage {
     this.theme = theme
     this.distance = this.options.distance
 
-    this.renderer = new WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' })
-    this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio ?? 1, 2))
+    this.renderer = new WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance',
+    })
+    this.renderer.setPixelRatio(
+      Math.min(globalThis.devicePixelRatio ?? 1, this.options.maxPixelRatio),
+    )
     this.canvas = this.renderer.domElement
     this.canvas.className = 'bt-canvas'
     container.appendChild(this.canvas)
 
-    this.camera = new PerspectiveCamera(42, 1, 0.01, 100)
+    // A near plane this close is what lets the camera sit inside the ball
+    // without clipping the node it is looking at.
+    this.camera = new PerspectiveCamera(42, 1, 0.004, 200)
     this.scene.add(this.world)
+
+    if (this.options.stars) {
+      const starOptions = typeof this.options.stars === 'object' ? this.options.stars : {}
+      this.starfield = new Starfield(starOptions)
+      this.scene.add(this.starfield.group)
+    } else {
+      this.starfield = null
+    }
 
     // A faint inward facing shell reads as glass and gives the eye a horizon.
     this.shell = new Mesh(
@@ -109,22 +161,49 @@ export class Stage {
     this.fill.position.set(-3, -1.5, -2)
     this.scene.add(this.ambient, this.key, this.fill)
 
+    if (this.options.bloom) this.setupComposer()
+
     this.applyTheme(theme)
     this.updateCamera()
+  }
+
+  private setupComposer(): void {
+    const composer = new EffectComposer(this.renderer)
+    composer.addPass(new RenderPass(this.scene, this.camera))
+    const bloom = new UnrealBloomPass(
+      new Vector2(this.width, this.height),
+      this.options.bloomStrength,
+      this.options.bloomRadius,
+      this.options.bloomThreshold,
+    )
+    composer.addPass(bloom)
+    composer.addPass(new OutputPass())
+    this.composer = composer
+    this.bloomPass = bloom
   }
 
   applyTheme(theme: Theme): void {
     this.theme = theme
     const bg = new Color(theme.background)
     this.scene.background = bg
-    this.scene.fog = new Fog(theme.background, this.options.minDistance, this.options.maxDistance + 2.5)
+    // Exponential fog rather than linear: with the camera able to sit inside the
+    // ball, a linear near/far pair either clips the foreground or flattens the
+    // distance. Density is retuned per zoom in updateCamera.
+    this.scene.fog = new FogExp2(theme.background, 0.24)
     ;(this.shell.material as MeshBasicMaterial).color = new Color(theme.boundary)
     ;(this.rim.material as LineBasicMaterial).color = new Color(theme.boundary)
     this.renderer.setClearColor(bg, 1)
+    // Stars only make sense against a dark ground.
+    this.starfield?.setVisible(bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114 < 0.22)
+    this.updateCamera()
   }
 
   get currentTheme(): Theme {
     return this.theme
+  }
+
+  get bloomEnabled(): boolean {
+    return this.composer !== null
   }
 
   resize(width: number, height: number): void {
@@ -133,8 +212,10 @@ export class Stage {
     this.renderer.setSize(this.width, this.height, false)
     this.camera.aspect = this.width / this.height
     // Pull back on narrow viewports so the ball still fits.
-    this.camera.fov = this.camera.aspect < 0.85 ? 54 : 42
+    this.camera.fov = this.camera.aspect < 0.85 ? 56 : 42
     this.camera.updateProjectionMatrix()
+    this.composer?.setSize(this.width, this.height)
+    this.bloomPass?.setSize(this.width, this.height)
   }
 
   get size(): { width: number; height: number } {
@@ -155,6 +236,13 @@ export class Stage {
     this.updateCamera()
   }
 
+  /** 0 far out, 1 pressed right up against the centre. Drives label detail. */
+  get zoom(): number {
+    const { minDistance, maxDistance } = this.options
+    const t = (maxDistance - this.distance) / (maxDistance - minDistance)
+    return Math.max(0, Math.min(1, t))
+  }
+
   updateCamera(): void {
     const cp = Math.cos(this.pitch)
     this.camera.position.set(
@@ -166,13 +254,20 @@ export class Stage {
     this.camera.updateMatrixWorld()
     // Keep the silhouette circle square to the eye.
     this.rim.quaternion.copy(this.camera.quaternion)
-    // Track the fog to the current zoom so the front/back cue stays readable at
-    // every distance instead of washing out when you pull away.
-    const fog = this.scene.fog as Fog | null
-    if (fog) {
-      fog.near = Math.max(0.05, this.distance - 1.05)
-      fog.far = this.distance + 1.75
-    }
+    // Fog density tracks the inverse of the viewing distance, so the depth cue
+    // stays the same strength relative to what is on screen. A fixed density
+    // either fogs out the whole ball when you pull back or does nothing once you
+    // are inside it. The starfield opts out of fog entirely; at a radius of 26
+    // any usable density would erase it.
+    // Kept deliberately gentle. The links already fade by their own hyperbolic
+    // law (the 1 - |p|^2 term), so fog is only here to separate front from back;
+    // stacking a strong camera-depth fade on top of that erases the web.
+    const fog = this.scene.fog as FogExp2 | null
+    if (fog) fog.density = 0.3 / Math.max(0.45, this.distance)
+    // The rim is a useful frame from outside and clutter from inside.
+    const inside = this.distance < 1.05
+    this.rim.visible = !inside
+    this.shell.visible = !inside
   }
 
   /** Project a ball point to CSS pixel coordinates inside the container. */
@@ -185,7 +280,8 @@ export class Stage {
   }
 
   render(): void {
-    this.renderer.render(this.scene, this.camera)
+    if (this.composer) this.composer.render()
+    else this.renderer.render(this.scene, this.camera)
   }
 
   dispose(): void {
@@ -193,6 +289,8 @@ export class Stage {
     ;(this.shell.material as MeshBasicMaterial).dispose()
     this.rim.geometry.dispose()
     ;(this.rim.material as LineBasicMaterial).dispose()
+    this.starfield?.dispose()
+    this.composer?.dispose()
     this.renderer.dispose()
     this.canvas.remove()
   }

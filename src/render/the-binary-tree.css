@@ -1,4 +1,4 @@
-/* the-binary-tree: minimal chrome for the canvas and its label overlay. */
+/* the-binary-tree: chrome for the canvas and its label overlay. */
 
 .bt-root {
   position: relative;
@@ -10,22 +10,27 @@
   user-select: none;
 
   --bt-label-fg: #eef2f8;
-  --bt-label-bg: rgb(8 10 17 / 62%);
+  --bt-label-bg: rgb(8 10 17 / 58%);
   --bt-label-detail: #93a1b8;
+  --bt-label-body: #b9c5d8;
   --bt-label-selected-fg: #ffffff;
-  --bt-label-selected-bg: rgb(70 106 168 / 82%);
-  --bt-label-ring: rgb(255 255 255 / 14%);
+  --bt-label-selected-bg: rgb(24 46 86 / 88%);
+  --bt-label-ring: rgb(255 255 255 / 13%);
+  --bt-label-selected-ring: rgb(150 190 255 / 42%);
+  --bt-label-width: 260px;
   --bt-font:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
 }
 
 .bt-root[data-theme='light'] {
   --bt-label-fg: #131720;
-  --bt-label-bg: rgb(255 255 255 / 74%);
+  --bt-label-bg: rgb(255 255 255 / 76%);
   --bt-label-detail: #5b6678;
+  --bt-label-body: #3d4757;
   --bt-label-selected-fg: #ffffff;
-  --bt-label-selected-bg: rgb(38 78 148 / 88%);
+  --bt-label-selected-bg: rgb(30 66 130 / 92%);
   --bt-label-ring: rgb(16 22 34 / 12%);
+  --bt-label-selected-ring: rgb(30 66 130 / 30%);
 }
 
 .bt-canvas {
@@ -56,22 +61,43 @@
   top: 0;
   left: 0;
   display: flex;
-  align-items: baseline;
-  gap: 0.4em;
-  padding: 0.14em 0.45em;
-  border-radius: 0.45em;
+  flex-direction: column;
+  gap: 0.1em;
+  padding: 0.2em 0.5em;
+  border-radius: 0.5em;
   color: var(--bt-label-fg);
   background: var(--bt-label-bg);
   box-shadow: inset 0 0 0 1px var(--bt-label-ring);
   font-weight: 500;
   line-height: 1.25;
-  white-space: nowrap;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   will-change: transform, opacity;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* Cards carry real text, and on a touch screen a word is a far easier target
+   than a sphere a few pixels wide. */
+.bt-labels--interactive .bt-label {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .bt-label[hidden] {
   display: none;
+}
+
+.bt-label__line {
+  display: flex;
+  gap: 0.4em;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.bt-label__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bt-label__detail {
@@ -80,21 +106,53 @@
   font-variant-numeric: tabular-nums;
 }
 
-.bt-label__detail:empty {
+.bt-label__meta,
+.bt-label__body {
+  color: var(--bt-label-detail);
+  font-weight: 450;
+}
+
+.bt-label__meta {
+  font-size: 0.72em;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.bt-label__body {
+  max-width: var(--bt-label-width);
+  color: var(--bt-label-body);
+  font-size: 0.7em;
+  font-weight: 400;
+  line-height: 1.42;
+  text-wrap: pretty;
+}
+
+.bt-label__detail:empty,
+.bt-label__meta:empty,
+.bt-label__body:empty {
   display: none;
+}
+
+.bt-label[data-tier='card'] {
+  gap: 0.22em;
+  padding: 0.42em 0.62em 0.5em;
+  border-radius: 0.65em;
 }
 
 .bt-label[data-state='selected'] {
   z-index: 3;
   color: var(--bt-label-selected-fg);
   background: var(--bt-label-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--bt-label-selected-ring);
   font-weight: 650;
 }
 
 .bt-label[data-state='selected'] .bt-label__detail,
+.bt-label[data-state='selected'] .bt-label__meta,
+.bt-label[data-state='selected'] .bt-label__body,
 .bt-label[data-state='hovered'] .bt-label__detail {
   color: inherit;
-  opacity: 0.78;
+  opacity: 0.82;
 }
 
 .bt-label[data-state='hovered'] {
@@ -108,6 +166,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bt-label {
+    transition: none;
     will-change: auto;
   }
 }

@@ -1,34 +1,25 @@
 /**
- * The The Binary Tree explorer.
+ * The Binary Tree explorer.
  *
- * Everything here is application code: the library owns the ball, the layout and
- * the navigation, and this file wires it to a search box, a year filter, an info
- * panel and a legend.
+ * The library owns the ball, the layout and the navigation. This file wires it
+ * to a search field, a year filter, a detail panel, a legend, and on a phone to
+ * a tab bar and a drag-to-expand sheet.
  */
 
 import {
   BinaryTree,
   ERAS,
-  ERA_BY_ID,
   computerHistory,
   formatYear,
   loaders,
-  pathToRoot,
+  wikiTitle,
   type TreeNode,
 } from 'the-binary-tree'
+import { Panel } from './ui/panel'
+import { Search } from './ui/search'
+import { Sheet } from './ui/sheet'
+import { prefetch } from './wiki'
 import './style.css'
-
-const KIND_LABELS: Record<string, string> = {
-  machine: 'machine',
-  processor: 'processor',
-  os: 'operating system',
-  language: 'language',
-  network: 'network',
-  device: 'device',
-  component: 'component',
-  concept: 'concept',
-  group: 'lineage',
-}
 
 const TOUR = [
   'root',
@@ -59,16 +50,23 @@ const TOUR = [
   'frontier-machine',
 ]
 
-const stage = document.getElementById('stage') as HTMLDivElement
-const panel = document.getElementById('panel') as HTMLElement
-const searchInput = document.getElementById('search') as HTMLInputElement
-const resultsList = document.getElementById('results') as HTMLUListElement
-const yearInput = document.getElementById('year') as HTMLInputElement
-const yearOutput = document.getElementById('year-out') as HTMLOutputElement
-const legendList = document.getElementById('legend') as HTMLUListElement
-const homeButton = document.getElementById('home') as HTMLButtonElement
-const tourButton = document.getElementById('tour') as HTMLButtonElement
-const themeButton = document.getElementById('theme') as HTMLButtonElement
+const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
+
+const stageEl = $<HTMLDivElement>('stage')
+const panelEl = $<HTMLElement>('panel')
+const panelGrab = $<HTMLElement>('panel-grab')
+const panelPeek = $<HTMLElement>('panel-peek')
+const panelBody = $<HTMLElement>('panel-body')
+const searchEl = $<HTMLElement>('search')
+const searchInput = $<HTMLInputElement>('search-input')
+const searchResults = $<HTMLUListElement>('search-results')
+const yearInput = $<HTMLInputElement>('year')
+const yearOutput = $<HTMLOutputElement>('year-out')
+const legendList = $<HTMLUListElement>('legend')
+const bottomEl = $<HTMLElement>('bottom')
+const taglineEl = $<HTMLElement>('tagline')
+
+const isPhone = (): boolean => matchMedia('(max-width: 860px)').matches
 
 let yearLimit = Number(yearInput.max)
 let tourTimer: number | null = null
@@ -81,8 +79,10 @@ const yearFilter = (node: TreeNode): boolean => {
   return typeof year !== 'number' || year <= yearLimit
 }
 
+// --- the tree --------------------------------------------------------------
+
 const tree = new BinaryTree(
-  { parent: stage },
+  { parent: stageEl },
   {
     dataloader: loaders.fromObject(computerHistory),
     theme: 'dark',
@@ -98,13 +98,34 @@ const tree = new BinaryTree(
     },
     geometry: {
       labels: {
-        maxLabels: 40,
+        // A phone has a third of the width and a sheet covering the bottom half,
+        // so it gets fewer labels, smaller type, and one card at a time.
+        maxLabels: isPhone() ? 16 : 42,
+        fontScale: isPhone() ? 0.74 : 1,
+        maxCards: isPhone() ? 1 : 3,
         detail: (n) => formatYear(n.data.year as number | undefined),
+        meta: (n) =>
+          [(n.data.origin as string) ?? '', (n.data.kind as string) ?? '']
+            .filter(Boolean)
+            .join(' · '),
+        // One sentence, so a card stays a card and not an essay.
+        body: (n) => {
+          const summary = n.data.summary as string | undefined
+          if (!summary) return ''
+          const stop = summary.indexOf('. ')
+          return stop > 0 ? summary.slice(0, stop + 1) : summary
+        },
       },
     },
     interaction: {
       onNodeClick: () => stopTour(),
-      onSelectionChange: (node) => renderPanel(node),
+      onNodeHover: (node) => {
+        if (node) prefetch(wikiTitle(node.id))
+      },
+      onSelectionChange: (node) => {
+        panel.show(node)
+        if (sheetEnabled() && node && sheet.current === 'peek') sheet.setState('half')
+      },
       onInit: () => {
         renderLegend()
         void tree.api.select('root', false)
@@ -113,175 +134,65 @@ const tree = new BinaryTree(
   },
 )
 
-// --- info panel ------------------------------------------------------------
+// --- panel and sheet -------------------------------------------------------
 
-function el<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className?: string,
-  text?: string,
-): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag)
-  if (className) node.className = className
-  if (text != null) node.textContent = text
-  return node
+const panel = new Panel(panelEl, panelBody, panelPeek, {
+  onNavigate: (node) => {
+    stopTour()
+    void tree.api.select(node)
+  },
+})
+
+const sheet = new Sheet(panelEl, panelGrab, {
+  peek: 118,
+  half: 0.46,
+  onStateChange: (state) => {
+    // A full sheet would cover the thing it describes; give the canvas back.
+    document.body.dataset.sheet = state
+  },
+})
+
+const sheetEnabled = (): boolean => isPhone()
+
+function syncLayout(): void {
+  const phone = isPhone()
+  document.body.dataset.mode = phone ? 'phone' : 'desktop'
+  sheet.setEnabled(phone)
+  if (phone && sheet.current === 'hidden') sheet.setState('peek')
+  if (!phone) bottomEl.dataset.open = 'true'
+  tree.api.resize()
 }
 
-function eraSwatch(era: string | undefined): HTMLElement {
-  const dot = el('i')
-  dot.style.background = `#${(ERA_BY_ID[era ?? '']?.color ?? 0x7c8798).toString(16).padStart(6, '0')}`
-  return dot
-}
+// --- search ----------------------------------------------------------------
 
-function renderPanel(node: TreeNode | null): void {
-  panel.replaceChildren()
+const search = new Search(searchEl, searchInput, searchResults, {
+  search: (query, limit) => tree.api.search(query, limit),
+  onPick: (node) => {
+    stopTour()
+    void tree.api.select(node)
+    if (sheetEnabled()) sheet.setState('half')
+  },
+})
 
-  if (!node) {
-    panel.append(el('p', 'panel__hint', 'Click a node to bring it to the centre.'))
-    return
-  }
+$('search-open').addEventListener('click', () => search.open())
+$('search-close').addEventListener('click', () => search.close())
 
-  const data = node.data
-  const era = ERA_BY_ID[(data.era as string) ?? '']
-
-  if (era) {
-    const badge = el('div', 'panel__era')
-    badge.append(eraSwatch(data.era as string), document.createTextNode(era.label))
-    panel.append(badge)
-  }
-
-  panel.append(el('h2', undefined, data.name))
-
-  const meta = [
-    formatYear(data.year as number | undefined),
-    (data.origin as string) ?? '',
-    KIND_LABELS[(data.kind as string) ?? ''] ?? '',
-  ].filter(Boolean)
-  if (meta.length) panel.append(el('p', 'panel__meta', meta.join(' · ')))
-
-  if (data.summary) panel.append(el('p', 'panel__summary', data.summary as string))
-
-  const facts = data.facts as string[] | undefined
-  if (facts?.length) {
-    const list = el('ul', 'panel__facts')
-    for (const fact of facts) list.append(el('li', undefined, fact))
-    panel.append(list)
-  }
-
-  const ancestors = pathToRoot(node).slice(0, -1)
-  if (ancestors.length) {
-    const path = el('ul', 'panel__path')
-    for (const ancestor of ancestors) {
-      const item = el('li')
-      const button = el('button', undefined, ancestor.data.name)
-      button.type = 'button'
-      button.addEventListener('click', () => {
-        stopTour()
-        void tree.api.select(ancestor)
-      })
-      item.append(button)
-      path.append(item)
-    }
-    panel.append(path)
-  }
-
-  if (node.children.length) {
-    const wrap = el('ul', 'panel__children')
-    wrap.append(el('li', 'panel__children-title', `Branches (${node.children.length})`))
-    for (const child of node.children) {
-      const item = el('li')
-      const button = el('button')
-      button.type = 'button'
-      button.append(
-        eraSwatch(child.data.era as string | undefined),
-        el('span', 'result__name', child.data.name),
-        el('span', 'result__year', formatYear(child.data.year as number | undefined)),
-      )
-      button.addEventListener('click', () => {
-        stopTour()
-        void tree.api.select(child)
-      })
-      item.append(button)
-      wrap.append(item)
-    }
-    panel.append(wrap)
-  }
-}
-
-// --- legend ----------------------------------------------------------------
+// --- legend ---------------------------------------------------------------
 
 function renderLegend(): void {
   legendList.replaceChildren()
   for (const era of ERAS) {
-    const item = el('li')
-    const swatch = el('i')
+    const item = document.createElement('li')
+    const swatch = document.createElement('i')
     swatch.style.background = `#${era.color.toString(16).padStart(6, '0')}`
     item.append(swatch, document.createTextNode(era.label))
     item.title = era.span
     legendList.append(item)
   }
+  taglineEl.textContent = `${tree.api.nodes().length} nodes · 3D hyperbolic tree`
 }
 
-// --- search ----------------------------------------------------------------
-
-let searchTimer: number | null = null
-
-function showResults(nodes: TreeNode[]): void {
-  resultsList.replaceChildren()
-  if (!nodes.length) {
-    resultsList.hidden = true
-    return
-  }
-
-  for (const node of nodes) {
-    const item = el('li')
-    item.setAttribute('role', 'option')
-    const button = el('button')
-    button.type = 'button'
-    button.append(
-      eraSwatch(node.data.era as string | undefined),
-      el('span', 'result__name', node.data.name),
-      el('span', 'result__year', formatYear(node.data.year as number | undefined)),
-    )
-    button.addEventListener('click', () => {
-      stopTour()
-      resultsList.hidden = true
-      searchInput.value = ''
-      void tree.api.select(node)
-    })
-    item.append(button)
-    resultsList.append(item)
-  }
-  resultsList.hidden = false
-}
-
-searchInput.addEventListener('input', () => {
-  if (searchTimer) clearTimeout(searchTimer)
-  searchTimer = window.setTimeout(() => {
-    const query = searchInput.value.trim()
-    showResults(query.length < 2 ? [] : tree.api.search(query, 10))
-  }, 90)
-})
-
-searchInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    searchInput.value = ''
-    resultsList.hidden = true
-    searchInput.blur()
-    return
-  }
-  if (event.key === 'Enter') {
-    const first = resultsList.querySelector('button')
-    first?.click()
-  }
-})
-
-document.addEventListener('pointerdown', (event) => {
-  if (resultsList.hidden) return
-  const target = event.target as Node
-  if (!resultsList.contains(target) && target !== searchInput) resultsList.hidden = true
-})
-
-// --- year filter -----------------------------------------------------------
+// --- year filter ---------------------------------------------------------
 
 yearInput.addEventListener('input', () => {
   yearLimit = Number(yearInput.value)
@@ -290,46 +201,82 @@ yearInput.addEventListener('input', () => {
   tree.api.refilter(atMax ? () => true : yearFilter)
 })
 
-// --- buttons ---------------------------------------------------------------
+// --- actions --------------------------------------------------------------
 
-homeButton.addEventListener('click', () => {
+function recentre(): void {
   stopTour()
   void tree.api.select('root')
-})
+}
 
-themeButton.addEventListener('click', () => {
+function toggleTheme(): void {
   dark = !dark
   document.body.classList.toggle('theme-light', !dark)
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#080a11' : '#f3f5f9')
   tree.api.setTheme(dark ? 'dark' : 'light')
-})
+}
 
 function stopTour(): void {
   if (tourTimer == null) return
   clearInterval(tourTimer)
   tourTimer = null
-  tourButton.setAttribute('aria-pressed', 'false')
+  setTourPressed(false)
+}
+
+function setTourPressed(on: boolean): void {
+  for (const id of ['tour', 'tab-tour']) {
+    document.getElementById(id)?.setAttribute('aria-pressed', String(on))
+  }
 }
 
 function startTour(): void {
-  tourButton.setAttribute('aria-pressed', 'true')
+  setTourPressed(true)
   const step = () => {
-    void tree.api.select(TOUR[tourIndex % TOUR.length], true)
+    const id = TOUR[tourIndex % TOUR.length]
+    void tree.api.select(id, true)
+    // Warm the next stop while this one is being read.
+    prefetch(wikiTitle(TOUR[(tourIndex + 1) % TOUR.length]))
     tourIndex++
   }
   step()
-  tourTimer = window.setInterval(step, 4200)
+  tourTimer = window.setInterval(step, 5200)
 }
 
-tourButton.addEventListener('click', () => {
+function toggleTour(): void {
   if (tourTimer == null) startTour()
   else stopTour()
+}
+
+$('home').addEventListener('click', recentre)
+$('tour').addEventListener('click', toggleTour)
+$('theme').addEventListener('click', toggleTheme)
+$('tab-home').addEventListener('click', recentre)
+$('tab-search').addEventListener('click', () => search.open())
+$('tab-tour').addEventListener('click', toggleTour)
+$('tab-theme').addEventListener('click', toggleTheme)
+
+const filterTab = $('tab-filter')
+filterTab.addEventListener('click', () => {
+  const open = bottomEl.dataset.open !== 'true'
+  bottomEl.dataset.open = String(open)
+  filterTab.setAttribute('aria-pressed', String(open))
 })
+
+$('menu').addEventListener('click', () => {
+  const open = bottomEl.dataset.open !== 'true'
+  bottomEl.dataset.open = String(open)
+})
+
+// --- layout sync ----------------------------------------------------------
+
+matchMedia('(max-width: 860px)').addEventListener('change', syncLayout)
+globalThis.addEventListener('resize', () => {
+  if (sheetEnabled()) sheet.measure()
+})
+// Stop the page itself from bouncing on a phone; the canvas handles gestures.
+document.addEventListener('gesturestart', (event) => event.preventDefault())
+
+syncLayout()
+panel.show(null)
 
 // Handy from the console: `binaryTree.api.gotoNode('unix')`.
 Object.assign(globalThis, { binaryTree: tree })
-
-void tree.initPromise.then(() => {
-  const count = tree.api.nodes().length
-  const brand = document.querySelector('.brand__text span')
-  if (brand) brand.textContent = `${count} nodes · 3D hyperbolic tree`
-})
