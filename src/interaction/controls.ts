@@ -3,23 +3,43 @@
  *
  * The gesture vocabulary is deliberately small:
  *
- *   drag a node        pull it through hyperbolic space, the rest of the tree
- *                      follows rigidly
- *   drag the backdrop  orbit the camera around the ball
- *   shift + drag       pull the centre of the ball, i.e. pan without grabbing
- *   wheel / pinch      move the camera in and out
- *   click a node       select it and fly it to the centre
- *   arrows / Enter     walk the tree without a mouse
+ *   drag inside the ball  pull that point through hyperbolic space; the rest of
+ *                         the tree follows rigidly, and a release with speed
+ *                         keeps gliding
+ *   drag outside it       orbit the camera around the ball
+ *   shift or right drag   orbit from anywhere
+ *   wheel / pinch         move the camera in and out
+ *   click a node          select it and fly it to the centre
+ *   double tap            closer on a node, back out on the backdrop
+ *   arrows / Enter        walk the tree without a mouse
+ *
+ * Grabbing is the default and orbiting is the deliberate gesture, not the other
+ * way round. Requiring an exact hit on a node before a drag would move anything
+ * made most of the surface feel dead: you aimed at a branch, missed by three
+ * pixels, and the camera swung instead.
  */
 
-import { Plane, Vector2, Vector3 } from 'three'
+import { Vector2 } from 'three'
 import type { Vec3 } from '../math'
 import { ZERO, clone } from '../math'
 import type { TreeNode } from '../model/types'
 import type { Stage } from '../render/stage'
 import { Navigator } from './navigator'
+import { insideBall, pointerOnPlane } from './pointer-ray'
 
 export type KeyCommand = 'parent' | 'child' | 'prev' | 'next' | 'home' | 'focus' | 'clear'
+
+/** State of a drag at the moment it was released, enough to continue it. */
+export interface DragThrow {
+  /** The point that was grabbed, in ball coordinates. */
+  from: Vec3
+  /** Where it had reached. */
+  to: Vec3
+  /** Where it was one sample earlier, which gives the direction and the speed. */
+  previous: Vec3
+  /** Seconds between those two samples. */
+  seconds: number
+}
 
 export interface ControlsHandlers {
   /** `tolerance` is a hit slop in CSS pixels; 0 means an exact ray test. */
@@ -30,7 +50,8 @@ export interface ControlsHandlers {
   onDoubleTap?: (node: TreeNode | null) => void
   onDragStart: () => void
   onDrag: (from: Vec3, to: Vec3) => void
-  onDragEnd: () => void
+  /** `throw` is present when the pointer was still moving at release. */
+  onDragEnd: (thrown?: DragThrow) => void
   onKey: (command: KeyCommand) => void
   requestRender: () => void
 }
@@ -78,13 +99,13 @@ export class Controls {
   private lastTapTime = 0
   private lastTapX = 0
   private lastTapY = 0
+  /** Recent motion of the grab point, for the throw on release. */
+  private velocityFrom: Vec3 = clone(ZERO)
+  private velocityTo: Vec3 | null = null
+  private velocityAt = 0
+  private velocityDt = 16
 
   private readonly ndc = new Vector2()
-  private readonly plane = new Plane()
-  private readonly hit = new Vector3()
-  private readonly reference = new Vector3()
-  private readonly rayDirection = new Vector3()
-  private readonly cameraDirection = new Vector3()
   private readonly detach: (() => void)[] = []
 
   constructor(
@@ -127,28 +148,9 @@ export class Controls {
     return this.ndc
   }
 
-  /**
-   * Where the pointer sits in the ball, measured on the plane through
-   * `reference` that faces the camera. Dragging therefore moves a node in the
-   * plane it already occupies, which is what the hand expects.
-   */
+  /** Delegates to the pure helper; see `pointer-ray.ts`. */
   private pointerInBall(event: PointerEvent, reference: Vec3): Vec3 | null {
-    const camera = this.stage.camera
-    camera.getWorldDirection(this.cameraDirection)
-    this.reference.set(reference.x, reference.y, reference.z)
-    this.plane.setFromNormalAndCoplanarPoint(this.cameraDirection, this.reference)
-
-    const ndc = this.toNdc(event)
-    const origin = camera.position
-    this.rayDirection.set(ndc.x, ndc.y, 0.5).unproject(camera).sub(origin).normalize()
-
-    const denominator = this.plane.normal.dot(this.rayDirection)
-    if (Math.abs(denominator) < 1e-6) return null
-    const t = -(this.plane.normal.dot(origin) + this.plane.constant) / denominator
-    if (t <= 0) return null
-
-    this.hit.copy(origin).addScaledVector(this.rayDirection, t)
-    return Navigator.clampGrab({ x: this.hit.x, y: this.hit.y, z: this.hit.z })
+    return pointerOnPlane(this.toNdc(event), this.stage.camera, reference)
   }
 
   private onPointerDown = (event: PointerEvent): void => {
@@ -167,19 +169,34 @@ export class Controls {
     this.startY = this.lastY = event.clientY
     this.travelled = 0
 
-    const node = event.shiftKey ? null : this.handlers.pick(this.toNdc(event), this.slopFor(event))
+    // Orbit is the deliberate gesture, not the default. Grabbing the tree and
+    // pulling it is the whole point of a hyperbolic browser, and requiring an
+    // exact hit on a node first made most of the surface feel dead: you aimed at
+    // a branch, missed by three pixels, and the camera swung instead.
+    const orbitRequested = event.shiftKey || event.button === 2
+    const node = orbitRequested ? null : this.handlers.pick(this.toNdc(event), this.slopFor(event))
 
-    if (node || event.shiftKey) {
+    let anchor: Vec3 | null = node ? clone(node.view) : null
+    if (!anchor && !orbitRequested) {
+      // No node under the pointer: grab whatever point of the ball is there, on
+      // the plane through the origin. Outside the silhouette there is nothing to
+      // hold, so that falls through to orbit.
+      const raw = this.pointerInBall(event, ZERO)
+      if (insideBall(raw)) anchor = Navigator.clampGrab(raw!)
+    }
+
+    if (anchor) {
       this.mode = 'pull'
       this.grabbedNode = node
-      this.grabbedFrom = node ? clone(node.view) : clone(ZERO)
+      this.grabbedFrom = anchor
+      this.velocityFrom = clone(anchor)
+      this.velocityAt = event.timeStamp
       this.handlers.onDragStart()
-      this.root.dataset.cursor = 'grabbing'
     } else {
       this.mode = 'orbit'
       this.grabbedNode = null
-      this.root.dataset.cursor = 'grabbing'
     }
+    this.root.dataset.cursor = 'grabbing'
   }
 
   private onPointerMove = (event: PointerEvent): void => {
@@ -225,8 +242,18 @@ export class Controls {
 
     if (this.mode === 'pull') {
       if (this.travelled < this.options.clickSlop) return
-      const to = this.pointerInBall(event, this.grabbedFrom)
-      if (!to) return
+      const raw = this.pointerInBall(event, this.grabbedFrom)
+      if (!raw) return
+      const to = Navigator.clampGrab(raw)
+      // Remember where the grab point was a moment ago, so releasing can carry
+      // the motion on. Sampled over a short window rather than frame to frame:
+      // one frame of pointer noise would otherwise decide the whole throw.
+      if (event.timeStamp - this.velocityAt > 40) {
+        this.velocityFrom = clone(this.velocityTo ?? this.grabbedFrom)
+        this.velocityAt = event.timeStamp
+      }
+      this.velocityTo = to
+      this.velocityDt = Math.max(1, event.timeStamp - this.velocityAt)
       this.handlers.onDrag(this.grabbedFrom, to)
       this.handlers.requestRender()
     }
@@ -245,7 +272,21 @@ export class Controls {
       Math.abs(event.clientX - this.startX) + Math.abs(event.clientY - this.startY) >=
       this.options.clickSlop
 
-    if (this.mode === 'pull') this.handlers.onDragEnd()
+    if (this.mode === 'pull') {
+      // Hand the throw over before clearing state, so a release with speed keeps
+      // gliding instead of stopping dead under the finger.
+      this.handlers.onDragEnd(
+        moved && this.velocityTo
+          ? {
+              from: this.grabbedFrom,
+              to: this.velocityTo,
+              previous: this.velocityFrom,
+              seconds: this.velocityDt / 1000,
+            }
+          : undefined,
+      )
+    }
+    this.velocityTo = null
 
     if (!moved) {
       const tapped = this.mode === 'pull' ? this.grabbedNode : null
@@ -317,6 +358,7 @@ export class Controls {
     if (this.mode === 'pull') this.handlers.onDragEnd()
     this.mode = 'idle'
     this.grabbedNode = null
+    this.velocityTo = null
   }
 
   dispose(): void {

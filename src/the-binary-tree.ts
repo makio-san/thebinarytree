@@ -264,7 +264,10 @@ export class BinaryTree {
           this.navigator.applyMove(from, to)
           this.dirty = true
         },
-        onDragEnd: () => {
+        onDragEnd: (thrown) => {
+          if (thrown) {
+            this.navigator.startGlide(thrown.from, thrown.previous, thrown.to, thrown.seconds)
+          }
           this.dirty = true
         },
         onKey: (command) => void this.handleKey(command),

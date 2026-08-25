@@ -96,6 +96,7 @@ export class Stage {
   private readonly ambient: AmbientLight
   private readonly key: DirectionalLight
   private readonly fill: DirectionalLight
+  private readonly rimLight: DirectionalLight
   private readonly options: StageOptions
   private composer: EffectComposer | null = null
   private bloomPass: UnrealBloomPass | null = null
@@ -158,12 +159,19 @@ export class Stage {
     this.rim.renderOrder = -1
     this.world.add(this.rim)
 
-    this.ambient = new AmbientLight(0xffffff, 1.15)
-    this.key = new DirectionalLight(0xffffff, 1.5)
+    // Three lights, and the ambient is deliberately low. A high ambient term
+    // lights every sphere evenly, which removes the terminator - the boundary
+    // between the lit and unlit side - and a sphere without a terminator reads
+    // as a flat disc of colour. The rim light behind picks out the silhouette so
+    // a dark node still separates from a dark background.
+    this.ambient = new AmbientLight(0xffffff, 0.5)
+    this.key = new DirectionalLight(0xffffff, 2.1)
     this.key.position.set(2, 3, 4)
-    this.fill = new DirectionalLight(0x88a4ff, 0.55)
+    this.fill = new DirectionalLight(0x93b0ff, 0.62)
     this.fill.position.set(-3, -1.5, -2)
-    this.scene.add(this.ambient, this.key, this.fill)
+    this.rimLight = new DirectionalLight(0xdce8ff, 1.25)
+    this.rimLight.position.set(-1.2, 1.6, -3.4)
+    this.scene.add(this.ambient, this.key, this.fill, this.rimLight)
 
     if (this.options.bloom) this.setupComposer()
 

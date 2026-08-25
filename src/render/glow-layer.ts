@@ -131,7 +131,7 @@ export class GlowLayer {
 
       // The flare is the visible part of the spike arriving at the soma, so it
       // is driven by the potential rather than by a decorative oscillation.
-      let size = Math.max(radii[i] * scale, minScale) * (1 + fire * 0.55)
+      let size = Math.max(radii[i] * scale, minScale) * (1 + fire * 0.26)
       if (node.state.selected) size *= 1.75
       else if (node.state.hovered) size *= 1.3
       else if (node.state.onPath) size *= 1.16
@@ -146,8 +146,8 @@ export class GlowLayer {
       // Nodes near the centre are the ones being read; let them burn brighter
       // and keep the rim quiet so it stays a backdrop.
       const focus = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
-      let strength = 0.35 + focus * 0.65 + fire * 0.8
-      if (node.state.selected) strength = 1.1 + fire * 0.5
+      let strength = 0.35 + focus * 0.65 + fire * 0.42
+      if (node.state.selected) strength = 1.1 + fire * 0.28
       else if (node.state.hovered || node.state.onPath) strength *= 1.35
       // In ink mode the alpha does the work and a scaled-up colour just washes
       // out, so the colour stays saturated and only the opacity varies.

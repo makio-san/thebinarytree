@@ -18,11 +18,13 @@ describe('the action potential shape', () => {
     expect(potential(0, opts)).toBe(0)
   })
 
-  it('rises almost vertically to a peak of 1', () => {
+  it('rises to a peak of 1, far faster than it falls', () => {
     expect(potential(opts.rise, opts)).toBeCloseTo(1, 6)
-    // Half way up the rising edge, which is a few tens of milliseconds wide.
     expect(potential(opts.rise / 2, opts)).toBeCloseTo(0.5, 6)
-    expect(opts.rise).toBeLessThan(0.06)
+    // The asymmetry is the point, not the absolute duration. A real action
+    // potential rises in about a millisecond, which at any watchable speed is a
+    // single frame and reads as a display fault rather than as a cell firing.
+    expect(opts.rise).toBeLessThan(opts.decay / 2)
   })
 
   it('decays after the peak', () => {
@@ -62,10 +64,11 @@ describe('spike propagation', () => {
   it('reaches the root first and the tips last', () => {
     const tree = build()
     const field = new SpikeField(tree, { jitter: 0 })
-    // Sample just after emission: only the innermost nodes should be excited.
-    field.update(0.03)
+    // Sampled at the root's own peak: the signal has had no time to travel, so
+    // nothing far out should be excited yet.
+    field.update(defaultSpikeOptions.rise)
     const deepest = tree.nodes.reduce((a, b) => (a.pathLength > b.pathLength ? a : b))
-    expect(tree.root.fire).toBeGreaterThan(0.2)
+    expect(tree.root.fire).toBeCloseTo(1, 3)
     expect(deepest.fire).toBeLessThan(0.2)
   })
 

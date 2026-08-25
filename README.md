@@ -174,14 +174,24 @@ folded.
 
 | Gesture | Result |
 |---|---|
-| Drag a node | Pulls it through hyperbolic space, the tree follows rigidly |
-| Drag empty space | Orbits the camera around the ball |
-| Shift + drag | Pulls the centre of the ball |
-| Wheel / pinch | Moves the camera in and out |
+| Drag inside the ball | Pulls that point through hyperbolic space; the tree follows rigidly and keeps gliding on release |
+| Drag outside the ball | Orbits the camera |
+| Shift or right drag | Orbits from anywhere |
+| Wheel / pinch | Moves the camera in and out, all the way inside |
 | Click a node | Selects it and flies it to the centre |
 | Double tap | Closer on a node, back out on the backdrop |
 | Arrows | Parent, child, previous and next sibling |
 | Enter, Home, Esc | Focus, return to root, clear selection |
+
+Grabbing is the default and orbiting is the deliberate gesture, not the other way
+round. Requiring an exact hit on a node before a drag would move anything made
+most of the surface feel dead: you aimed at a branch, missed by three pixels, and
+the camera swung instead. Now any point inside the silhouette is a handle.
+
+A release with speed keeps gliding and decays. The speed is capped low, because
+speed here is *hyperbolic*: a point grabbed near the rim covers enormous
+hyperbolic distance for a few pixels of pointer travel, and an honest reading of
+the release velocity throws the tree out of the frame.
 
 Labels are clickable too. On a touch screen a word is a far easier target than a
 sphere a few pixels across.

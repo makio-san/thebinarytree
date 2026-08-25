@@ -80,9 +80,12 @@ export const defaultNeuritesOptions: NeuritesOptions = {
   opacity: 0.95,
   edgeShade: 0.14,
   wander: 1.5,
-  spikeGain: 1.15,
-  spikeTint: 0.62,
-  spikeSwell: 0.16,
+  // Kept short of a flash. Pushed harder the crest goes white, and a white
+  // streak travelling down a thread reads as a spark or a short circuit rather
+  // than as charge moving through tissue.
+  spikeGain: 0.62,
+  spikeTint: 0.34,
+  spikeSwell: 0.1,
   color: (n, theme) => theme.eraColor(n.data.era as string | undefined),
 }
 

@@ -82,8 +82,18 @@ export class NodesLayer {
     this.options = { ...defaultNodesOptions, ...options }
     this.radii = new Float32Array(nodes.length)
 
-    const geometry = new SphereGeometry(1, 24, 16)
-    const material = new MeshStandardMaterial({ roughness: 0.42, metalness: 0.08 })
+    // Higher latitude count than looks necessary: the silhouette is what sells a
+    // sphere, and at 16 the outline visibly faceted on the centred node, which is
+    // the one being looked at.
+    const geometry = new SphereGeometry(1, 32, 24)
+    // Not metallic. A somewhat rough dielectric with a little sheen reads as
+    // something wet and organic; metalness gives a hard specular highlight that
+    // reads as a bead or a ball bearing.
+    const material = new MeshStandardMaterial({
+      roughness: 0.58,
+      metalness: 0,
+      flatShading: false,
+    })
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
     this.mesh.frustumCulled = false
 
@@ -154,7 +164,7 @@ export class NodesLayer {
       // glow layer carries the event, and a node that visibly inflates reads as
       // a bouncing ball rather than as a cell.
       const fire = Math.max(0, node.fire)
-      let r = baseRadius * radius(node) * conformal * grow * (1 + fire * 0.14)
+      let r = baseRadius * radius(node) * conformal * grow * (1 + fire * 0.07)
       if (node.state.selected) r *= 1.3
       else if (node.state.hovered) r *= 1.16
 
@@ -178,7 +188,7 @@ export class NodesLayer {
       else if (node.state.hovered) this.color.offsetHSL(0, 0, 0.16)
       // Firing brightens the soma itself, so the event is legible even with the
       // glow layer switched off.
-      if (fire > 0 && !node.state.dimmed) this.color.lerp(this.highlight, fire * 0.42)
+      if (fire > 0 && !node.state.dimmed) this.color.lerp(this.highlight, fire * 0.22)
       this.mesh.setColorAt(i, this.color)
 
       if (node.state.selected) selected = node

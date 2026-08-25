@@ -41,12 +41,17 @@ export interface SpikeOptions {
 }
 
 export const defaultSpikeOptions: SpikeOptions = {
-  period: 2.6,
-  speed: 7,
-  rise: 0.045,
-  decay: 0.19,
-  refractory: 0.22,
-  jitter: 0.09,
+  period: 3.2,
+  speed: 5.5,
+  // A real action potential rises in about a millisecond. Drawn faithfully at
+  // any watchable playback speed that is a single-frame flash, and a
+  // single-frame flash does not read as a cell firing, it reads as a fault in
+  // the display. Six or seven frames is slow enough to see as an arrival and
+  // still far steeper than its own decay, which is the part that matters.
+  rise: 0.11,
+  decay: 0.34,
+  refractory: 0.3,
+  jitter: 0.12,
 }
 
 /** Deterministic per-node offset, so the pattern is stable across reloads. */
@@ -62,11 +67,19 @@ const jitterOf = (index: number): number => {
 export function potential(elapsed: number, options: SpikeOptions): number {
   if (elapsed < 0) return 0
   const { rise, decay, refractory } = options
-  if (elapsed < rise) return elapsed / rise
+  if (elapsed < rise) {
+    // Eased rather than linear. A straight ramp to full brightness has a corner
+    // at the peak, and a corner in brightness is what the eye reads as a spark.
+    const t = elapsed / rise
+    return t * t * (3 - 2 * t)
+  }
   const after = elapsed - rise
   const fall = Math.exp(-after / decay)
-  // Undershoot: the decay overshoots rest and creeps back up.
-  const dip = -refractory * Math.exp(-after / (decay * 2.4)) * (1 - Math.exp(-after / decay))
+  // Undershoot. Its own decay is deliberately slower than the main fall, so once
+  // the spike has passed the dip is what is left and the point sits just below
+  // rest for a while before recovering. That is what makes an arrival read as an
+  // event: without it the trailing edge is a fade, and a fade has no moment.
+  const dip = -refractory * (1 - fall) * Math.exp(-after / (decay * 3))
   return fall + dip
 }
 

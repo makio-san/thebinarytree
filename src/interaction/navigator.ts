@@ -19,11 +19,13 @@ import {
   ZERO,
   type Vec3,
   clone,
+  expOrigin,
   geodesicPoint,
   hyperbolicDistance,
   length,
   mobiusAdd,
   negate,
+  outwardDirection,
   scale,
 } from '../math'
 import type { Tree, TreeNode } from '../model/types'
@@ -45,6 +47,25 @@ export const defaultFlightOptions: FlightOptions = {
   easing: easeInOutCubic,
 }
 
+export interface GlideOptions {
+  /** Speed halves roughly every `1/decay` seconds. Higher stops sooner. */
+  decay: number
+  /** Below this hyperbolic speed the glide ends. */
+  minSpeed: number
+  /** Cap, so a jittery pointer sample cannot launch the tree out of sight. */
+  maxSpeed: number
+}
+
+export const defaultGlideOptions: GlideOptions = {
+  decay: 4.6,
+  minSpeed: 0.05,
+  // Deliberately low. Speed here is *hyperbolic*, and a point grabbed near the
+  // rim covers enormous hyperbolic distance for a few pixels of pointer travel,
+  // so an honest reading of the release velocity launches the tree out of the
+  // frame. The glide is meant to be a flourish that lets go, not a throw.
+  maxSpeed: 3.2,
+}
+
 export class Navigator {
   private flight: {
     from: Vec3
@@ -55,13 +76,59 @@ export class Navigator {
     resolve: () => void
   } | null = null
 
+  /**
+   * A released drag continuing under its own momentum.
+   *
+   * `from` and the snapshot stay fixed, so every frame is still one exact
+   * isometry; only the target point moves on. Without this a drag stops dead
+   * the instant the finger lifts, which is the single thing that makes a
+   * direct manipulation surface feel like it is not really being held.
+   */
+  private glide: {
+    from: Vec3
+    at: Vec3
+    direction: Vec3
+    speed: number
+    last: number
+  } | null = null
+  private glideOptions: GlideOptions = defaultGlideOptions
+
   constructor(
     private readonly tree: Tree,
     private readonly options: FlightOptions = defaultFlightOptions,
   ) {}
 
   get animating(): boolean {
-    return this.flight !== null
+    return this.flight !== null || this.glide !== null
+  }
+
+  setGlideOptions(options: Partial<GlideOptions>): void {
+    this.glideOptions = { ...this.glideOptions, ...options }
+  }
+
+  /**
+   * Carry a released drag on. `previous` and `to` are two samples of the grab
+   * point and `seconds` the time between them, which together give a direction
+   * and a hyperbolic speed.
+   */
+  startGlide(from: Vec3, previous: Vec3, to: Vec3, seconds: number): void {
+    this.cancelGlide()
+    if (seconds <= 0) return
+    const travelled = hyperbolicDistance(previous, to)
+    const speed = Math.min(travelled / seconds, this.glideOptions.maxSpeed)
+    if (speed < this.glideOptions.minSpeed) return
+
+    this.glide = {
+      from: clone(from),
+      at: clone(to),
+      direction: outwardDirection(previous, to),
+      speed,
+      last: Number.NaN,
+    }
+  }
+
+  cancelGlide(): void {
+    this.glide = null
   }
 
   /**
@@ -74,6 +141,7 @@ export class Navigator {
    */
   snapshot(): void {
     this.cancel()
+    this.cancelGlide()
     for (const node of this.tree.nodes) node.viewStart = clone(node.view)
   }
 
@@ -147,6 +215,8 @@ export class Navigator {
    * `now` comes from the render loop so the whole library reads one clock.
    */
   tick(now: number): boolean {
+    if (this.glide) return this.tickGlide(now)
+
     const flight = this.flight
     if (!flight) return false
 
@@ -160,6 +230,33 @@ export class Navigator {
     if (t >= 1) {
       this.flight = null
       flight.resolve()
+      return false
+    }
+    return true
+  }
+
+  private tickGlide(now: number): boolean {
+    const glide = this.glide!
+    if (Number.isNaN(glide.last)) glide.last = now
+    // Clamped: a stall must not teleport the tree across the ball in one frame.
+    const dt = Math.min(0.05, (now - glide.last) / 1000)
+    glide.last = now
+    if (dt <= 0) return true
+
+    const { decay, minSpeed } = this.glideOptions
+    const step = glide.speed * dt
+    const next = mobiusAdd(glide.at, expOrigin(glide.direction, step))
+    // Parallel transport the heading: in curved space, continuing "the same way"
+    // means following the geodesic, and its direction at the new point is not
+    // the direction it had at the old one.
+    glide.direction = outwardDirection(glide.at, next)
+    glide.at = Navigator.clampGrab(next)
+    glide.speed *= Math.exp(-decay * dt)
+
+    this.applyMove(glide.from, glide.at)
+
+    if (glide.speed < minSpeed) {
+      this.glide = null
       return false
     }
     return true
