@@ -118,6 +118,7 @@ export function coneLayout(tree: Tree, options: Partial<LayoutOptions> = {}): vo
   root.position = clone(ZERO)
   root.frame = identityFrame()
   root.cone = clamp(opts.rootCone, 1e-3, Math.PI)
+  root.pathLength = 0
 
   // `tree.nodes` is breadth first, so a single forward sweep guarantees each
   // parent is already positioned when we reach it.
@@ -159,8 +160,12 @@ export function coneLayout(tree: Tree, options: Partial<LayoutOptions> = {}): vo
 
       // One hyperbolic step, taken in the chart centred on the parent, then
       // translated back: parent (+) exp_0(direction, len).
-      const step = expOrigin(direction, Math.max(linkLengthOf(child), 1e-3))
+      const length = Math.max(linkLengthOf(child), 1e-3)
+      const step = expOrigin(direction, length)
       child.position = mobiusAdd(node.position, step)
+      // Distance along the tree, not through the ball. The pulse wavefront is a
+      // function of this, so it has to follow the branches.
+      child.pathLength = node.pathLength + length
 
       // Transport the frame: first tilt the parent's axis onto the direction we
       // actually travelled, then correct for the rotation the curvature applied

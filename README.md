@@ -95,7 +95,10 @@ new BinaryTree(
 
     geometry: {
       nodes:  { baseRadius: 0.082, radius, color, minRadius, cullRadius },
-      links:  { segments: 14, opacity: 0.92, flowSpeed: 0.22, color },
+      vessels: {
+        segments: 12, width: 0.021, edgeShade: 0.28,
+        pulseRate: 0.34, pulseLength: 3.4, pulseSwell: 0.26, color,
+      },
       labels: { maxLabels: 44, maxCards: 3, fontScale: 1, text, detail, meta, body },
       glow:   { scale: 4.2, intensity: 0.55 },   // or false to switch it off
     },
@@ -199,7 +202,7 @@ src/
 │   └── hyperbolic.ts Möbius addition, geodesics, isometries
 ├── model/           tree building and data loaders
 ├── layout/          cone based placement
-├── render/          three.js layers: stage, nodes, glow, links, labels, stars
+├── render/          three.js layers: stage, nodes, glow, vessels, labels, stars
 ├── interaction/     navigation and input
 ├── data/            the computing history dataset and its Wikipedia titles
 └── the-binary-tree.ts the class that ties it together
@@ -261,24 +264,54 @@ significant digits. That mattered in two places:
   centre pins the rest against the boundary, where the conformal factor takes it
   to a millionth of a pixel; clamping rather than dropping turns the boundary
   into a readable fringe.
-- Links are geodesic arcs. A straight Euclidean line between two ball points is
-  wrong; geodesics bow away from the boundary, and that is what gives the picture
-  its woven look.
+- Vessels follow geodesic arcs. A straight Euclidean line between two ball points
+  is wrong; geodesics bow away from the boundary, and that is what gives the
+  picture its woven look. See **Vessels** below for the thickness.
 - Labels are pooled HTML over the canvas, ranked by apparent size each frame,
   largest placed first, colliding ones skipped.
 
+### Vessels
+
+The connections are not lines. They are tapering vessels, and that single
+decision is what makes three readings hold at once: a tree, a vascular system,
+and something in deep space.
+
+Thickness follows **Murray's law**, `r_parent³ = Σ r_child³`. That is the rule
+real branching systems obey - limbs, arteries, bronchi - because it minimises the
+cost of moving something through a network. A trunk splitting into thinner limbs
+is not a stylistic flourish, it is what the law produces. It also means the root
+calibre is exactly the cube root of the leaf count, which the tests assert.
+
+A vessel carries its **own** calibre for its whole length, not a ramp from its
+parent's. The parent's calibre is the sum of its children's cubes, and that sum
+is realised by the *bundle*, not by each branch separately. Ramping every child
+up to the parent width at the junction stacks ten full-width trunks on a single
+point and the centre saturates to white; the only licence taken with the law is a
+small flare at the parent end, which is the fillet where limbs meet.
+
+Vessels also taper by the conformal factor, so they thin into the boundary and
+the far tree becomes a dust of capillaries.
+
+Geometry is one merged, camera-facing ribbon with three vertices across: edge,
+core, edge. Shading the core brighter than the edges is what makes a flat ribbon
+read as a round tube, and it is what lets the pulse travel *inside* the vessel
+rather than over it. Indices are built once, since visible vessels are packed
+into fixed slots; only positions and colours are rewritten.
+
 ### Motion
 
-Three effects, all driven from one clock so they beat together rather than
-drifting apart:
+Everything runs off one clock so it beats together rather than drifting apart:
 
-- **Flow.** A pulse runs along every link from parent to child. Direction is the
-  point: every pulse travels from ancestor to descendant, so inheritance is
-  visible rather than implied. Computed in JS into the colour buffer, which is
-  rewritten each frame anyway, so a custom shader would buy nothing.
+- **Heartbeat.** A single wave leaves the root and travels outward. Its phase is
+  a function of `pathLength`, distance *along the tree*, so the wavefront
+  follows the branches instead of expanding as a sphere. Each vessel swells
+  slightly as the crest passes, which is peristalsis, and that is what separates
+  a pulse in a vessel from a light running along a wire. The crest stops short of
+  white on purpose: at the centre the era colouring is doing the most work and a
+  white streak erases it.
 - **Growth.** On first load a reveal front sweeps outward by depth and the tree
-  grows from the root. Driven by the wall clock rather than the accumulated
-  frame clock: the frame clock is deliberately clamped per frame so the flow
+  grows from the root. Driven by the wall clock rather than the accumulated frame
+  clock: the frame clock is deliberately clamped per frame so the heartbeat
   cannot teleport after a stall, but if the tab was hidden through the intro the
   right thing is to come back to a grown tree.
 - **Glow and stars.** An additive halo per node, scaled by its own conformal

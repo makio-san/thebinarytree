@@ -43,6 +43,8 @@ export function hierarchy(datum: TreeDatum): Tree {
       index: nodes.length,
       weight: 1,
       maxDepth: 0,
+      caliber: 1,
+      pathLength: 0,
       position: clone(ZERO),
       view: clone(ZERO),
       viewStart: clone(ZERO),
@@ -74,22 +76,28 @@ export function hierarchy(datum: TreeDatum): Tree {
     }
   }
 
-  // Leaf counts and subtree depths, computed bottom up (children always sit
-  // later in the array than their parent, so a reverse sweep is enough).
+  // Leaf counts, subtree depths and vessel calibres, computed bottom up
+  // (children always sit later in the array than their parent, so a reverse
+  // sweep is enough).
   for (let i = nodes.length - 1; i >= 0; i--) {
     const n = nodes[i]
     if (n.children.length === 0) {
       n.weight = 1
       n.maxDepth = n.depth
+      n.caliber = 1
     } else {
       let w = 0
       let d = n.depth
+      let cubes = 0
       for (const c of n.children) {
         w += c.weight
         if (c.maxDepth > d) d = c.maxDepth
+        cubes += c.caliber * c.caliber * c.caliber
       }
       n.weight = w
       n.maxDepth = d
+      // Murray's law, r_parent^3 = sum of r_child^3.
+      n.caliber = Math.cbrt(cubes)
     }
   }
 

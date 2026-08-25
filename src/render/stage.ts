@@ -69,9 +69,11 @@ export const defaultStageOptions: StageOptions = {
   // most of the viewport on empty space.
   distance: 2.6,
   bloom: !coarsePointer(),
-  bloomStrength: 0.62,
-  bloomRadius: 0.5,
-  bloomThreshold: 0.34,
+  // Tuned against the vessels: they cover real area now, and a low threshold
+  // blooms their whole surface into a white mass instead of just their crests.
+  bloomStrength: 0.44,
+  bloomRadius: 0.55,
+  bloomThreshold: 0.52,
   stars: true,
   maxPixelRatio: 2,
 }

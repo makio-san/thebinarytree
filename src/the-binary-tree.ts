@@ -26,7 +26,7 @@ import {
 } from './interaction/controls'
 import { GlowLayer, type GlowOptions } from './render/glow-layer'
 import { LabelsLayer, type LabelsOptions } from './render/labels-layer'
-import { LinksLayer, type LinksOptions } from './render/links-layer'
+import { VesselsLayer, type VesselsOptions } from './render/vessels-layer'
 import { NodesLayer, type NodesOptions } from './render/nodes-layer'
 import { Stage, type StageOptions } from './render/stage'
 import { type Theme, type ThemeName, themes } from './render/theme'
@@ -56,7 +56,7 @@ export interface InteractionConfig {
 
 export interface MotionConfig {
   /**
-   * Keep painting when nothing has changed, so the link flow and the stars stay
+   * Keep painting when nothing has changed, so the heartbeat and the stars stay
    * alive. Off means frames are produced only on interaction, which is cheaper
    * but loses the pulse. Automatically off under `prefers-reduced-motion`.
    */
@@ -78,7 +78,8 @@ export interface TreeConfig {
   layout?: Partial<LayoutOptions>
   geometry?: {
     nodes?: Partial<NodesOptions>
-    links?: Partial<LinksOptions>
+    /** The connections. Tapering vessels, not lines; see `vessels-layer`. */
+    vessels?: Partial<VesselsOptions>
     labels?: Partial<LabelsOptions>
     glow?: Partial<GlowOptions> | false
   }
@@ -135,7 +136,7 @@ export class BinaryTree {
 
   private stage!: Stage
   private nodesLayer!: NodesLayer
-  private linksLayer!: LinksLayer
+  private vesselsLayer!: VesselsLayer
   private labelsLayer!: LabelsLayer
   private glowLayer: GlowLayer | null = null
   private navigator!: Navigator
@@ -197,13 +198,13 @@ export class BinaryTree {
 
     this.stage = new Stage(this.element, this.theme, this.config.stage)
     this.nodesLayer = new NodesLayer(this.tree.nodes, this.theme, this.config.geometry?.nodes)
-    this.linksLayer = new LinksLayer(this.tree, this.theme, this.config.geometry?.links)
+    this.vesselsLayer = new VesselsLayer(this.tree, this.theme, this.config.geometry?.vessels)
     this.labelsLayer = new LabelsLayer(this.element, this.config.geometry?.labels)
     if (this.config.geometry?.glow !== false) {
       this.glowLayer = new GlowLayer(this.tree.nodes, this.config.geometry?.glow ?? {})
     }
 
-    this.stage.world.add(this.linksLayer.lines)
+    this.stage.world.add(this.vesselsLayer.mesh)
     if (this.glowLayer) this.stage.world.add(this.glowLayer.mesh)
     this.stage.world.add(this.nodesLayer.mesh)
     this.stage.world.add(this.nodesLayer.selectionHalo)
@@ -318,7 +319,9 @@ export class BinaryTree {
 
     this.nodesLayer.update(this.theme, quaternion, pulse, this.reveal)
     this.glowLayer?.update(this.theme, this.nodesLayer.radii, quaternion, pulse)
-    this.linksLayer.update(this.theme, this.clock, this.reveal)
+    // Vessels billboard about their own axis, so they need the eye position
+    // rather than just its orientation.
+    this.vesselsLayer.update(this.theme, this.clock, this.stage.camera.position, this.reveal)
     this.labelsLayer.update(this.tree.nodes, this.stage, this.nodesLayer.radii)
     this.stage.starfield?.update(this.clock)
     this.stage.render()
@@ -475,7 +478,7 @@ export class BinaryTree {
         this.element.dataset.theme = this.themeName
         this.stage?.applyTheme(this.theme)
         this.nodesLayer?.setTheme(this.theme)
-        this.linksLayer?.setTheme(this.theme)
+        this.vesselsLayer?.setTheme(this.theme)
         this.dirty = true
       },
       render: () => {
@@ -540,7 +543,7 @@ export class BinaryTree {
     this.labelsLayer?.dispose()
     this.glowLayer?.dispose()
     this.nodesLayer?.dispose()
-    this.linksLayer?.dispose()
+    this.vesselsLayer?.dispose()
     this.stage?.dispose()
     this.element.remove()
     this.tree = null

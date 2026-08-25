@@ -52,6 +52,21 @@ export interface TreeNode {
   weight: number
   /** Deepest depth in this subtree, relative to the whole tree. */
   maxDepth: number
+  /**
+   * Vessel calibre, by Murray's law: a parent's cube equals the sum of its
+   * children's cubes. A leaf is 1. This is what a real branching system does -
+   * arteries, bronchi, tree limbs all obey it, because it minimises the work of
+   * pushing something through the network. Using it to set link thickness is why
+   * the picture reads as vasculature rather than as a wire diagram.
+   */
+  caliber: number
+  /**
+   * Hyperbolic distance from the root, measured along the tree rather than
+   * straight through the ball. Drives the heartbeat: the pulse wavefront is a
+   * function of this, so it leaves the trunk and travels outward coherently
+   * instead of every link blinking on its own.
+   */
+  pathLength: number
 
   position: Vec3
   view: Vec3
