@@ -26,7 +26,7 @@ export type { ComputerDatum, ComputerKind } from './types'
 
 export const computerHistory: ComputerDatum = {
   id: 'root',
-  name: 'Computer Tree',
+  name: 'The Binary Tree',
   era: 'theory',
   kind: 'group',
   summary:

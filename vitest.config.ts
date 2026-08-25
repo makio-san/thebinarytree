@@ -7,7 +7,7 @@ const here = import.meta.dirname
 // and data layers, so they should not pay for the declaration-bundling plugin.
 export default defineConfig({
   resolve: {
-    alias: { 'computer-tree': resolve(here, 'src/index.ts') },
+    alias: { 'the-binary-tree': resolve(here, 'src/index.ts') },
   },
   test: {
     include: ['test/**/*.test.ts'],

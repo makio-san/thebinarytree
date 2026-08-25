@@ -1,7 +1,7 @@
 /**
- * ComputerTree - a 3D hyperbolic tree browser.
+ * BinaryTree - a 3D hyperbolic tree browser.
  *
- *   const tree = new ComputerTree(
+ *   const tree = new BinaryTree(
  *     { parent: document.getElementById('app')! },
  *     { dataloader: loaders.fromObject(computerHistory) },
  *   )
@@ -29,7 +29,7 @@ import { LinksLayer, type LinksOptions } from './render/links-layer'
 import { NodesLayer, type NodesOptions } from './render/nodes-layer'
 import { Stage, type StageOptions } from './render/stage'
 import { type Theme, type ThemeName, themes } from './render/theme'
-import './render/computer-tree.css'
+import './render/the-binary-tree.css'
 
 export interface ComponentConfig {
   /** Element the component is mounted into. Sized by CSS; it is not resized. */
@@ -40,13 +40,13 @@ export interface ComponentConfig {
 }
 
 export interface InteractionConfig {
-  onNodeClick?: (node: TreeNode, tree: ComputerTree) => void
-  onNodeHover?: (node: TreeNode | null, tree: ComputerTree) => void
-  onSelectionChange?: (node: TreeNode | null, tree: ComputerTree) => void
+  onNodeClick?: (node: TreeNode, tree: BinaryTree) => void
+  onNodeHover?: (node: TreeNode | null, tree: BinaryTree) => void
+  onSelectionChange?: (node: TreeNode | null, tree: BinaryTree) => void
   /** Fires when the node nearest the centre of the ball changes. */
-  onCenterNodeChange?: (node: TreeNode, tree: ComputerTree) => void
+  onCenterNodeChange?: (node: TreeNode, tree: BinaryTree) => void
   /** Fires once, after the first layout and paint. */
-  onInit?: (tree: ComputerTree) => void
+  onInit?: (tree: BinaryTree) => void
   /** Fly to a node when it is clicked. Default true. */
   focusOnClick?: boolean
   controls?: Partial<ControlsOptions>
@@ -71,7 +71,7 @@ export interface TreeConfig {
   filter?: (node: TreeNode) => boolean
 }
 
-export interface ComputerTreeApi {
+export interface BinaryTreeApi {
   /** Fly a node to the centre. Accepts a node or an id. */
   gotoNode(target: TreeNode | string, options?: Partial<FlightOptions>): Promise<void>
   /** Fly the root back to the centre. */
@@ -98,10 +98,10 @@ export interface ComputerTreeApi {
 
 const DEFAULT_THEME: ThemeName = 'dark'
 
-export class ComputerTree {
+export class BinaryTree {
   readonly element: HTMLDivElement
   readonly initPromise: Promise<void>
-  readonly api: ComputerTreeApi
+  readonly api: BinaryTreeApi
 
   private readonly config: TreeConfig
   private theme: Theme
@@ -133,7 +133,7 @@ export class ComputerTree {
     if (typeof config.theme === 'string') this.themeName = config.theme
 
     this.element = document.createElement('div')
-    this.element.className = `ct-root${component.classes ? ` ${component.classes}` : ''}`
+    this.element.className = `bt-root${component.classes ? ` ${component.classes}` : ''}`
     if (component.id) this.element.id = component.id
     this.element.dataset.theme = this.themeName
     this.element.dataset.cursor = 'grab'
@@ -347,7 +347,7 @@ export class ComputerTree {
 
   // -- public api -----------------------------------------------------------
 
-  private buildApi(): ComputerTreeApi {
+  private buildApi(): BinaryTreeApi {
     const ready = () => this.initPromise
 
     return {
@@ -428,7 +428,7 @@ export class ComputerTree {
   }
 
   private mustTree(): Tree {
-    if (!this.tree) throw new Error('computer-tree: not initialised yet, await initPromise first')
+    if (!this.tree) throw new Error('the-binary-tree: not initialised yet, await initPromise first')
     return this.tree
   }
 

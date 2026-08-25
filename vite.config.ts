@@ -7,17 +7,17 @@ const here = import.meta.dirname
 // Library build. `npm run dev` also uses this config and serves ./index.html (the demo).
 export default defineConfig({
   resolve: {
-    alias: { 'computer-tree': resolve(here, 'src/index.ts') },
+    alias: { 'the-binary-tree': resolve(here, 'src/index.ts') },
   },
   build: {
     target: 'es2020',
     sourcemap: true,
     lib: {
       entry: resolve(here, 'src/index.ts'),
-      name: 'ComputerTree',
+      name: 'BinaryTree',
       formats: ['es', 'umd'],
-      fileName: (format) => (format === 'es' ? 'computer-tree.js' : 'computer-tree.umd.cjs'),
-      cssFileName: 'computer-tree',
+      fileName: (format) => (format === 'es' ? 'the-binary-tree.js' : 'the-binary-tree.umd.cjs'),
+      cssFileName: 'the-binary-tree',
     },
     rollupOptions: {
       external: ['three'],

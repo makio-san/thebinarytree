@@ -1,25 +1,25 @@
 /**
- * computer-tree
+ * the-binary-tree
  *
  * A 3D hyperbolic tree browser, and a dataset of the history of computing to
  * put in it. Inspired by d3-hypertree, moved from the Poincare disc to the
  * Poincare ball and from SVG to three.js.
  *
- *   import { ComputerTree, loaders, computerHistory } from 'computer-tree'
+ *   import { BinaryTree, loaders, computerHistory } from 'the-binary-tree'
  *
- *   const tree = new ComputerTree(
+ *   const tree = new BinaryTree(
  *     { parent: document.body },
  *     { dataloader: loaders.fromObject(computerHistory) },
  *   )
  */
 
-export { ComputerTree, fold } from './computer-tree'
+export { BinaryTree, fold } from './the-binary-tree'
 export type {
   ComponentConfig,
-  ComputerTreeApi,
+  BinaryTreeApi,
   InteractionConfig,
   TreeConfig,
-} from './computer-tree'
+} from './the-binary-tree'
 
 // Data model
 export { hierarchy, pathToRoot, walk, descendants } from './model/hierarchy'

@@ -22,7 +22,7 @@
     "useDefineForClassFields": true,
 
     "paths": {
-      "computer-tree": ["./src/index.ts"]
+      "the-binary-tree": ["./src/index.ts"]
     }
   },
   "include": ["src", "demo", "test", "vite.config.ts", "vite.demo.config.ts"]

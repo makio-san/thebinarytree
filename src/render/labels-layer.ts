@@ -54,7 +54,7 @@ export class LabelsLayer {
   constructor(container: HTMLElement, options: Partial<LabelsOptions> = {}) {
     this.options = { ...defaultLabelsOptions, ...options }
     this.element = document.createElement('div')
-    this.element.className = 'ct-labels'
+    this.element.className = 'bt-labels'
     container.appendChild(this.element)
   }
 
@@ -62,8 +62,8 @@ export class LabelsLayer {
     let el = this.pool[index]
     if (!el) {
       el = document.createElement('div')
-      el.className = 'ct-label'
-      el.innerHTML = '<span class="ct-label__name"></span><span class="ct-label__detail"></span>'
+      el.className = 'bt-label'
+      el.innerHTML = '<span class="bt-label__name"></span><span class="bt-label__detail"></span>'
       this.element.appendChild(el)
       this.pool[index] = el
     }

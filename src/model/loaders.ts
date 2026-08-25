@@ -12,7 +12,7 @@ export const fromObject = (datum: TreeDatum): DataLoader => () => datum
 /** Fetch nested JSON over the network. */
 export const fromUrl = (url: string, init?: RequestInit): DataLoader => async () => {
   const res = await fetch(url, init)
-  if (!res.ok) throw new Error(`computer-tree: ${res.status} ${res.statusText} for ${url}`)
+  if (!res.ok) throw new Error(`the-binary-tree: ${res.status} ${res.statusText} for ${url}`)
   return (await res.json()) as TreeDatum
 }
 
@@ -43,16 +43,16 @@ export function fromFlat<T extends Record<string, unknown>>(
       const parentId = accessors.parentId(row)
       const node = byId.get(id)!
       if (parentId == null || parentId === '') {
-        if (root) throw new Error(`computer-tree: more than one root (${root.id}, ${id})`)
+        if (root) throw new Error(`the-binary-tree: more than one root (${root.id}, ${id})`)
         root = node
         continue
       }
       const parent = byId.get(parentId)
-      if (!parent) throw new Error(`computer-tree: unknown parent "${parentId}" for "${id}"`)
+      if (!parent) throw new Error(`the-binary-tree: unknown parent "${parentId}" for "${id}"`)
       parent.children!.push(node)
     }
 
-    if (!root) throw new Error('computer-tree: no root row (one row must have a null parent)')
+    if (!root) throw new Error('the-binary-tree: no root row (one row must have a null parent)')
     return root
   }
 }

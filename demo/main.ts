@@ -1,5 +1,5 @@
 /**
- * The Computer Tree explorer.
+ * The The Binary Tree explorer.
  *
  * Everything here is application code: the library owns the ball, the layout and
  * the navigation, and this file wires it to a search box, a year filter, an info
@@ -7,7 +7,7 @@
  */
 
 import {
-  ComputerTree,
+  BinaryTree,
   ERAS,
   ERA_BY_ID,
   computerHistory,
@@ -15,7 +15,7 @@ import {
   loaders,
   pathToRoot,
   type TreeNode,
-} from 'computer-tree'
+} from 'the-binary-tree'
 import './style.css'
 
 const KIND_LABELS: Record<string, string> = {
@@ -81,7 +81,7 @@ const yearFilter = (node: TreeNode): boolean => {
   return typeof year !== 'number' || year <= yearLimit
 }
 
-const tree = new ComputerTree(
+const tree = new BinaryTree(
   { parent: stage },
   {
     dataloader: loaders.fromObject(computerHistory),
@@ -325,8 +325,8 @@ tourButton.addEventListener('click', () => {
   else stopTour()
 })
 
-// Handy from the console: `computerTree.api.gotoNode('unix')`.
-Object.assign(globalThis, { computerTree: tree })
+// Handy from the console: `binaryTree.api.gotoNode('unix')`.
+Object.assign(globalThis, { binaryTree: tree })
 
 void tree.initPromise.then(() => {
   const count = tree.api.nodes().length

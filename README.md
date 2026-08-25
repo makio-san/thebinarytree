@@ -1,4 +1,4 @@
-# computer-tree
+# the-binary-tree
 
 A 3D hyperbolic tree browser, and a dataset of the history of computing to put
 in it.
@@ -60,9 +60,9 @@ npm run build:demo
 ## Usage
 
 ```ts
-import { ComputerTree, loaders, computerHistory } from 'computer-tree'
+import { BinaryTree, loaders, computerHistory } from 'the-binary-tree'
 
-const tree = new ComputerTree(
+const tree = new BinaryTree(
   { parent: document.getElementById('app')! },
   { dataloader: loaders.fromObject(computerHistory) },
 )
@@ -78,7 +78,7 @@ container is sized by CSS; the library never resizes it.
 ### Configuration
 
 ```ts
-new ComputerTree(
+new BinaryTree(
   { parent, id, classes },
   {
     dataloader,          // () => TreeDatum | Promise<TreeDatum>
@@ -167,7 +167,7 @@ src/
 ├── render/          three.js layers (stage, nodes, links, labels)
 ├── interaction/     navigation and input
 ├── data/            the computing history dataset
-└── computer-tree.ts the class that ties it together
+└── the-binary-tree.ts the class that ties it together
 ```
 
 `math` deliberately knows nothing about three.js. The correctness of the

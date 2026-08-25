@@ -73,7 +73,7 @@ export class Stage {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' })
     this.renderer.setPixelRatio(Math.min(globalThis.devicePixelRatio ?? 1, 2))
     this.canvas = this.renderer.domElement
-    this.canvas.className = 'ct-canvas'
+    this.canvas.className = 'bt-canvas'
     container.appendChild(this.canvas)
 
     this.camera = new PerspectiveCamera(42, 1, 0.01, 100)

@@ -3,11 +3,11 @@ import { defineConfig } from 'vite'
 
 const here = import.meta.dirname
 
-// Standalone build of the demo page (the "Computer Tree" explorer).
+// Standalone build of the demo page (the Binary Tree explorer).
 export default defineConfig({
   base: './',
   resolve: {
-    alias: { 'computer-tree': resolve(here, 'src/index.ts') },
+    alias: { 'the-binary-tree': resolve(here, 'src/index.ts') },
   },
   build: {
     target: 'es2020',

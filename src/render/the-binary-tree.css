@@ -1,0 +1,113 @@
+/* the-binary-tree: minimal chrome for the canvas and its label overlay. */
+
+.bt-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  --bt-label-fg: #eef2f8;
+  --bt-label-bg: rgb(8 10 17 / 62%);
+  --bt-label-detail: #93a1b8;
+  --bt-label-selected-fg: #ffffff;
+  --bt-label-selected-bg: rgb(70 106 168 / 82%);
+  --bt-label-ring: rgb(255 255 255 / 14%);
+  --bt-font:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.bt-root[data-theme='light'] {
+  --bt-label-fg: #131720;
+  --bt-label-bg: rgb(255 255 255 / 74%);
+  --bt-label-detail: #5b6678;
+  --bt-label-selected-fg: #ffffff;
+  --bt-label-selected-bg: rgb(38 78 148 / 88%);
+  --bt-label-ring: rgb(16 22 34 / 12%);
+}
+
+.bt-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.bt-root[data-cursor='grabbing'] .bt-canvas {
+  cursor: grabbing;
+}
+
+.bt-root[data-cursor='pointer'] .bt-canvas {
+  cursor: pointer;
+}
+
+.bt-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--bt-font);
+  contain: layout style;
+}
+
+.bt-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 0.14em 0.45em;
+  border-radius: 0.45em;
+  color: var(--bt-label-fg);
+  background: var(--bt-label-bg);
+  box-shadow: inset 0 0 0 1px var(--bt-label-ring);
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+  will-change: transform, opacity;
+}
+
+.bt-label[hidden] {
+  display: none;
+}
+
+.bt-label__detail {
+  color: var(--bt-label-detail);
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bt-label__detail:empty {
+  display: none;
+}
+
+.bt-label[data-state='selected'] {
+  z-index: 3;
+  color: var(--bt-label-selected-fg);
+  background: var(--bt-label-selected-bg);
+  font-weight: 650;
+}
+
+.bt-label[data-state='selected'] .bt-label__detail,
+.bt-label[data-state='hovered'] .bt-label__detail {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.bt-label[data-state='hovered'] {
+  z-index: 2;
+  font-weight: 650;
+}
+
+.bt-label[data-state='path'] {
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-label {
+    will-change: auto;
+  }
+}

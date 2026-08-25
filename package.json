@@ -1,5 +1,5 @@
 {
-  "name": "computer-tree",
+  "name": "the-binary-tree",
   "version": "0.1.0",
   "description": "3D hyperbolic tree browser for the history of computing. A three.js take on d3-hypertree.",
   "license": "MIT",
@@ -14,16 +14,16 @@
     "webgl",
     "computer-history"
   ],
-  "main": "./dist/computer-tree.umd.cjs",
-  "module": "./dist/computer-tree.js",
+  "main": "./dist/the-binary-tree.umd.cjs",
+  "module": "./dist/the-binary-tree.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/computer-tree.js",
-      "require": "./dist/computer-tree.umd.cjs"
+      "import": "./dist/the-binary-tree.js",
+      "require": "./dist/the-binary-tree.umd.cjs"
     },
-    "./style.css": "./dist/computer-tree.css"
+    "./style.css": "./dist/the-binary-tree.css"
   },
   "files": [
     "dist",
