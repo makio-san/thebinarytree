@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="A 3D hyperbolic tree browser for the history of computing."
+    />
+    <title>Computer Tree - the family tree of computing</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <div id="stage" class="stage"></div>
+
+    <header class="hud hud--top">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span class="brand__text">
+          <strong>Computer Tree</strong>
+          <span>the family tree of computing</span>
+        </span>
+      </div>
+
+      <div class="search" role="search">
+        <input
+          id="search"
+          type="search"
+          placeholder="Search: ENIAC, 6502, Unix, Amiga..."
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Search the tree"
+          aria-controls="results"
+        />
+        <ul id="results" class="search__results" role="listbox" hidden></ul>
+      </div>
+
+      <div class="tools">
+        <button id="home" type="button" class="btn" title="Bring the root to the centre (Home)">
+          Recentre
+        </button>
+        <button id="tour" type="button" class="btn" aria-pressed="false" title="Guided tour">
+          Tour
+        </button>
+        <button id="theme" type="button" class="btn btn--icon" title="Light and dark theme">◐</button>
+      </div>
+    </header>
+
+    <aside id="panel" class="panel" aria-live="polite">
+      <p class="panel__hint">
+        Click a node. It flies to the centre of hyperbolic space and its branch opens up.
+      </p>
+    </aside>
+
+    <footer class="hud hud--bottom">
+      <div class="timeline">
+        <label for="year">
+          Up to year <output id="year-out">all</output>
+        </label>
+        <input id="year" type="range" min="1600" max="2026" value="2026" step="1" />
+      </div>
+      <ul id="legend" class="legend" aria-label="Eras"></ul>
+      <p class="help">
+        <kbd>drag</kbd> pull a node <span>·</span>
+        <kbd>drag empty space</kbd> orbit <span>·</span>
+        <kbd>wheel</kbd> zoom <span>·</span>
+        <kbd>arrows</kbd> walk
+      </p>
+    </footer>
+
+    <script type="module" src="/demo/main.ts"></script>
+  </body>
+</html>
