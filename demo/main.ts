@@ -69,6 +69,21 @@ const taglineEl = $<HTMLElement>('tagline')
 
 const isPhone = (): boolean => matchMedia('(max-width: 860px)').matches
 
+/**
+ * Reveal the chrome. Held back by the inline critical styles in index.html until
+ * the tree has laid out, so the first frame is the tree rather than a set of
+ * unstyled controls.
+ */
+let readyWatchdog = 0
+function markReady(): void {
+  clearTimeout(readyWatchdog)
+  if (document.body.dataset.ready) return
+  document.body.dataset.ready = 'true'
+}
+// If initialisation throws, the controls still have to appear: a failure should
+// look like an app with an empty canvas, not like a page that did not load.
+readyWatchdog = window.setTimeout(markReady, 2500)
+
 let yearLimit = Number(yearInput.max)
 let tourTimer: number | null = null
 let tourIndex = 0
@@ -137,6 +152,7 @@ const tree = new BinaryTree(
       onInit: () => {
         renderLegend()
         void tree.api.select('root', false)
+        markReady()
       },
     },
   },

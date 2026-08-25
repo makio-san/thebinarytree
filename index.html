@@ -18,6 +18,57 @@
     <link rel="apple-touch-icon" href="/logo.svg" />
     <link rel="preconnect" href="https://en.wikipedia.org" crossorigin />
     <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
+
+    <!--
+      Critical styles, inline and ahead of everything. The real stylesheet is
+      imported from the module graph, so on a dev server it only arrives once the
+      JS has parsed, and until then the page painted white with unstyled controls
+      stacked down the side. A first paint has to be the right colour, and the
+      chrome has to stay out of sight until it has been laid out.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #080a11;
+      }
+
+      body {
+        overflow: hidden;
+        color: #e9eef7;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+
+      /* Everything but the canvas waits. main.ts lifts this on init, with a
+         watchdog, so a build that fails to start still shows its own chrome
+         rather than an empty dark rectangle. */
+      body:not([data-ready]) .bar,
+      body:not([data-ready]) .panel,
+      body:not([data-ready]) .tabbar,
+      body:not([data-ready]) .search {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .bar,
+      .panel,
+      .tabbar {
+        transition: opacity 0.3s ease;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bar,
+        .panel,
+        .tabbar {
+          transition: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="stage" class="stage"></div>
@@ -54,7 +105,10 @@
             <span class="icon-x"></span>
           </button>
         </div>
-        <ul id="search-results" class="search__results" role="listbox"></ul>
+        <!-- Starts hidden. An empty results list still paints its border,
+             background and shadow, which put a small blank card under the field
+             before anyone had typed. -->
+        <ul id="search-results" class="search__results" role="listbox" hidden></ul>
       </div>
 
       <div class="tools">

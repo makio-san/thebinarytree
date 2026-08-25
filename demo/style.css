@@ -405,7 +405,11 @@ body.theme-light .walk button {
   overscroll-behavior: contain;
 }
 
-.search__results[hidden] {
+/* Both, deliberately. `hidden` is the state the code sets; `:empty` is the
+   invariant, so a list with nothing in it can never paint a card whatever order
+   the JS ran in. */
+.search__results[hidden],
+.search__results:empty {
   display: none;
 }
 
