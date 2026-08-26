@@ -12,6 +12,7 @@ import {
   computerHistory,
   formatYear,
   loaders,
+  walk,
   wikiTitle,
   type TreeNode,
 } from 'the-binary-tree'
@@ -20,35 +21,6 @@ import { Search } from './ui/search'
 import { Sheet } from './ui/sheet'
 import { prefetch } from './wiki'
 import './style.css'
-
-const TOUR = [
-  'root',
-  'analytical-engine',
-  'turing-machine',
-  'colossus',
-  'eniac',
-  'manchester-baby',
-  'transistor',
-  'ibm-650',
-  'turkey-first-computer',
-  'system-360',
-  'pdp-11',
-  'unix',
-  'intel-4004',
-  'mos-6502',
-  'apple-ii',
-  'ibm-pc-5150',
-  'c-language',
-  'commodore-64',
-  'arm1',
-  'macintosh',
-  'web',
-  'linux',
-  'iphone',
-  'apple-m1',
-  'transformer',
-  'frontier-machine',
-]
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T
 
@@ -66,6 +38,19 @@ const yearOutput = $<HTMLOutputElement>('year-out')
 const legendList = $<HTMLUListElement>('legend')
 const bottomEl = $<HTMLElement>('bottom')
 const taglineEl = $<HTMLElement>('tagline')
+const tourButton = $<HTMLButtonElement>('tour')
+const tourTab = $<HTMLButtonElement>('tab-tour')
+// The tab button is an icon above a word; the word is the second span.
+const tourTabLabel = tourTab.querySelector('span:last-of-type') as HTMLElement
+
+/** The walk itself, and enough state to stop it between any two steps. */
+let tourWalk: TreeNode[] = []
+let tourAt = 0
+let touring = false
+/** Bumped on every start and stop, so a suspended step knows it is stale. */
+let tourRun = 0
+let tourNap = 0
+let tourWake: (() => void) | null = null
 
 const isPhone = (): boolean => matchMedia('(max-width: 860px)').matches
 
@@ -85,8 +70,6 @@ function markReady(): void {
 readyWatchdog = window.setTimeout(markReady, 2500)
 
 let yearLimit = Number(yearInput.max)
-let tourTimer: number | null = null
-let tourIndex = 0
 let dark = true
 
 /** Dim anything that had not appeared yet at the year on the slider. */
@@ -276,9 +259,13 @@ function renderLegend(): void {
     item.title = era.span
     legendList.append(item)
   }
-  const count = tree.api.nodes().length
-  taglineEl.textContent = `${count} nodes · 14 lineages`
-  searchInput.placeholder = `Search ${count} nodes`
+  renderTagline()
+  searchInput.placeholder = `Search ${tree.api.nodes().length} nodes`
+}
+
+/** The header subtitle, which the tour borrows to show its progress. */
+function renderTagline(): void {
+  taglineEl.textContent = `${tree.api.nodes().length} nodes · 14 lineages`
 }
 
 // --- year filter ---------------------------------------------------------
@@ -288,6 +275,8 @@ yearInput.addEventListener('input', () => {
   const atMax = yearLimit >= Number(yearInput.max)
   yearOutput.textContent = atMax ? 'all' : String(yearLimit)
   tree.api.refilter(atMax ? () => true : yearFilter)
+  // A tour in progress is walking a list built under the old filter.
+  resyncTour()
 })
 
 // --- actions --------------------------------------------------------------
@@ -304,35 +293,132 @@ function toggleTheme(): void {
   tree.api.setTheme(dark ? 'dark' : 'light')
 }
 
-function stopTour(): void {
-  if (tourTimer == null) return
-  clearInterval(tourTimer)
-  tourTimer = null
-  setTourPressed(false)
+/**
+ * The tour walks the entire tree, one node at a time, and stops the moment you
+ * touch anything.
+ *
+ * Order is pre-order depth first: descend a lineage to its tip, then take the
+ * next one. Every step is then a short hop between neighbours, which reads as a
+ * walk through one family at a time rather than a series of teleports across
+ * the ball. A chronological order would be defensible but it would throw the
+ * view from Manchester to Cupertino and back on consecutive steps.
+ *
+ * Each step waits for its own flight to land before the dwell begins, so the
+ * pace never runs ahead of the animation the way a fixed interval does.
+ */
+function tourOrder(): TreeNode[] {
+  const order: TreeNode[] = []
+  walk(tree.api.root(), (node) => {
+    // Skip what the year filter has dimmed, but keep descending rather than
+    // pruning: the filter is by year, and a branch can post-date the parent
+    // that carries it.
+    if (yearFilter(node)) order.push(node)
+  })
+  return order
+}
+
+/**
+ * How long to hold once the flight lands. Long enough to read what is on the
+ * card, and no longer: six hundred nodes at five seconds each is fifty minutes.
+ */
+function tourDwell(node: TreeNode): number {
+  const summary = (node.data.summary as string | undefined) ?? ''
+  const facts = (node.data.facts as string[] | undefined)?.length ?? 0
+  return 1400 + Math.min(1900, summary.length * 4 + facts * 200)
+}
+
+/** A wait that the stop button can cut short. */
+function tourPause(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    tourWake = resolve
+    tourNap = window.setTimeout(() => {
+      tourWake = null
+      resolve()
+    }, ms)
+  })
 }
 
 function setTourPressed(on: boolean): void {
-  for (const id of ['tour', 'tab-tour']) {
-    document.getElementById(id)?.setAttribute('aria-pressed', String(on))
+  for (const element of [tourButton, tourTab]) {
+    element.setAttribute('aria-pressed', String(on))
   }
+  tourButton.textContent = on ? 'Stop' : 'Tour'
+  tourButton.title = on ? 'Stop the tour' : 'Walk the whole tree'
 }
 
-function startTour(): void {
+function showTourStep(index: number, node: TreeNode): void {
+  taglineEl.textContent = `Tour ${index + 1} / ${tourWalk.length} · ${node.data.name}`
+  // The tagline is hidden on a narrow phone, so the tab bar carries the count.
+  tourTabLabel.textContent = `${index + 1}/${tourWalk.length}`
+}
+
+function stopTour(): void {
+  if (!touring) return
+  touring = false
+  tourRun++
+  clearTimeout(tourNap)
+  // Wake the suspended step so it can see that it is stale and return, rather
+  // than leaving a promise pending for the life of the page.
+  tourWake?.()
+  tourWake = null
+  setTourPressed(false)
+  tourTabLabel.textContent = 'Tour'
+  renderTagline()
+}
+
+async function startTour(): Promise<void> {
+  const run = ++tourRun
+  touring = true
   setTourPressed(true)
-  const step = () => {
-    const id = TOUR[tourIndex % TOUR.length]
-    void tree.api.select(id, true)
-    // Warm the next stop while this one is being read.
-    prefetch(wikiTitle(TOUR[(tourIndex + 1) % TOUR.length]))
-    tourIndex++
+  tourWalk = tourOrder()
+  if (!tourWalk.length) {
+    stopTour()
+    return
   }
-  step()
-  tourTimer = window.setInterval(step, 5200)
+
+  // Carry on from wherever the reader already is, so pressing Tour on a node
+  // continues the walk from there instead of jumping back to the root.
+  const current = tree.api.selectedNode()
+  const found = current ? tourWalk.indexOf(current) : -1
+  tourAt = found >= 0 ? found : 0
+
+  while (touring && run === tourRun) {
+    const at = tourAt % tourWalk.length
+    const node = tourWalk[at]
+    showTourStep(at, node)
+    try {
+      // Resolves when the flight lands, so the pace can never run ahead of the
+      // animation. A backgrounded tab stops firing frames and the tour waits
+      // here until it comes back, which is the behaviour we want: do not swap
+      // this for a timer that walks the whole tree while nobody is looking.
+      await tree.api.select(node, true)
+    } catch {
+      // A step that cannot land would otherwise kill the loop silently and
+      // leave the button stuck reading "Stop".
+      stopTour()
+      return
+    }
+    if (!touring || run !== tourRun) return
+    // Warm the next stop's article while this one is being read.
+    prefetch(wikiTitle(tourWalk[(at + 1) % tourWalk.length].id))
+    await tourPause(tourDwell(node))
+    if (!touring || run !== tourRun) return
+    tourAt = at + 1
+  }
 }
 
 function toggleTour(): void {
-  if (tourTimer == null) startTour()
-  else stopTour()
+  if (touring) stopTour()
+  else void startTour()
+}
+
+/** Keep the walk in step with the year filter without losing our place. */
+function resyncTour(): void {
+  if (!touring) return
+  const current = tree.api.selectedNode()
+  tourWalk = tourOrder()
+  const found = current ? tourWalk.indexOf(current) : -1
+  if (found >= 0) tourAt = found + 1
 }
 
 $('home').addEventListener('click', recentre)
@@ -370,6 +456,17 @@ globalThis.addEventListener('resize', () => {
 globalThis.visualViewport?.addEventListener('resize', syncSafeArea)
 // Stop the page itself from bouncing on a phone; the canvas handles gestures.
 document.addEventListener('gesturestart', (event) => event.preventDefault())
+
+// Any hand on the canvas ends the tour. Without this it keeps pulling the view
+// away every couple of seconds while you are trying to look at something, and
+// the flight fights the drag. Escape works from anywhere, including the phone
+// keyboard.
+for (const event of ['pointerdown', 'wheel'] as const) {
+  stageEl.addEventListener(event, () => stopTour(), { passive: true })
+}
+globalThis.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') stopTour()
+})
 
 syncLayout()
 panel.show(null)

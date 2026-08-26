@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { descendants, hierarchy, pathToRoot, walk } from '../src/model/hierarchy'
 import { fromFlat, nTree } from '../src/model/loaders'
-import type { TreeDatum } from '../src/model/types'
+import type { TreeDatum, TreeNode } from '../src/model/types'
+import { computerHistory } from '../src/data'
 
 const sample: TreeDatum = {
   name: 'Root',
@@ -82,6 +83,27 @@ describe('hierarchy', () => {
       return undefined
     })
     expect(visited).toEqual(['Root', 'Left', 'Right'])
+  })
+
+  it('walks the whole dataset in pre-order, which is the tour route', () => {
+    // The demo's tour visits every node in this order, so the two properties it
+    // relies on are worth pinning against the real data: nothing is missed or
+    // repeated, and a parent always comes before its children. The second is
+    // what makes the tour read as a descent through one lineage at a time
+    // rather than a series of jumps across the ball.
+    const tree = hierarchy(computerHistory as TreeDatum)
+    const route: TreeNode[] = []
+    walk(tree.root, (n) => void route.push(n))
+
+    expect(route).toHaveLength(tree.nodes.length)
+    expect(new Set(route).size).toBe(tree.nodes.length)
+    expect(route[0]).toBe(tree.root)
+
+    const seen = new Set<TreeNode>()
+    for (const node of route) {
+      if (node.parent) expect(seen.has(node.parent), node.id).toBe(true)
+      seen.add(node)
+    }
   })
 })
 
