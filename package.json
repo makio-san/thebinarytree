@@ -41,7 +41,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "logo": "tsx scripts/make-logo.ts"
+    "logo": "tsx scripts/make-logo.ts",
+    "audit:wiki": "tsx scripts/audit-wiki.ts",
+    "wiki:candidates": "tsx scripts/wiki-candidates.ts",
+    "wiki:files": "tsx scripts/wiki-files.ts"
   },
   "peerDependencies": {
     "three": ">=0.160.0"

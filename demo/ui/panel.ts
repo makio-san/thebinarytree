@@ -7,9 +7,9 @@
  * does not jump when it arrives.
  */
 
-import { ERA_BY_ID, descendants, formatYear, wikiTitle, wikiUrl } from 'the-binary-tree'
+import { ERA_BY_ID, descendants, formatYear, wikiFile, wikiTitle, wikiUrl } from 'the-binary-tree'
 import type { TreeNode } from 'the-binary-tree'
-import { fetchSummary, type WikiSummary } from '../wiki'
+import { fetchFile, fetchSummary, type WikiImage, type WikiSummary } from '../wiki'
 
 const KIND_LABELS: Record<string, string> = {
   machine: 'machine',
@@ -43,6 +43,22 @@ function eraDot(era: string | undefined): HTMLElement {
   const hex = (ERA_BY_ID[era ?? '']?.color ?? 0x7c8798).toString(16).padStart(6, '0')
   dot.style.background = `#${hex}`
   return dot
+}
+
+/** "Image from <article>", linked to where the picture actually came from. */
+function sourceCaption(name: string, href: string): HTMLElement {
+  const caption = el('figcaption')
+  // File names run long - the Dartmouth proposal's is over a hundred characters
+  // - and a caption three lines deep pushes the text off the card. Trim the
+  // label, keep the whole thing on hover.
+  const label = name.length > 64 ? `${name.slice(0, 63).trimEnd()}…` : name
+  const link = el('a', undefined, label)
+  if (label !== name) link.title = name
+  link.href = href
+  link.target = '_blank'
+  link.rel = 'noopener noreferrer'
+  caption.append(document.createTextNode('Image from '), link)
+  return caption
 }
 
 /** A node's own row in a list: colour, name, year. */
@@ -135,8 +151,11 @@ export class Panel {
 
     // --- image slot, filled in later ---
     const title = wikiTitle(node.id)
+    // Nodes whose article has no usable lead image carry a named Commons file
+    // instead, so the slot is worth reserving for those too.
+    const file = wikiFile(node.id)
     const figure = el('figure', 'figure')
-    if (title) {
+    if (title || file) {
       figure.dataset.state = 'loading'
       figure.append(el('div', 'figure__placeholder'))
       this.body.append(figure)
@@ -221,15 +240,78 @@ export class Panel {
       this.body.append(section)
     }
 
-    if (!title) return
+    if (!title && !file) return
 
     // --- second wave ---
     const controller = new AbortController()
     this.pending = controller
+    if (!title) {
+      void this.fillFile(node, file as string, figure, controller)
+      return
+    }
     void fetchSummary(title, controller.signal).then((summary) => {
       if (controller.signal.aborted || this.node !== node) return
-      this.fillWiki(node, title, summary, figure, extract)
+      this.fillWiki(node, title, summary, figure, extract, file)
     })
+  }
+
+  /**
+   * Paint a picture into the reserved slot: linked to where it came from, eager
+   * rather than lazy, and captioned with its source.
+   */
+  private paint(
+    figure: HTMLElement,
+    image: { url: string; width: number; height: number },
+    alt: string,
+    href: string,
+    caption: HTMLElement,
+  ): void {
+    figure.dataset.state = 'ready'
+    const img = el('img')
+    img.src = image.url
+    if (image.width) img.width = image.width
+    if (image.height) img.height = image.height
+    img.alt = alt
+    // Eager, not lazy: this is the picture of the thing the reader just asked
+    // for, and a lazy image inside a panel that is already open never loads at
+    // all if the tab is not being composited.
+    img.loading = 'eager'
+    img.fetchPriority = 'high'
+    img.decoding = 'async'
+    // An image that fails leaves the frame rather than a broken icon.
+    img.addEventListener('error', () => {
+      figure.dataset.state = 'empty'
+      figure.replaceChildren()
+    })
+    const link = el('a')
+    link.href = href
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    link.append(img)
+    figure.replaceChildren(link, caption)
+  }
+
+  /** The named-file path, for articles whose lead image is not free. */
+  private async fillFile(
+    node: TreeNode,
+    file: string,
+    figure: HTMLElement,
+    controller: AbortController,
+  ): Promise<void> {
+    const image = await fetchFile(file, controller.signal)
+    if (controller.signal.aborted || this.node !== node) return
+    if (!image) {
+      figure.dataset.state = 'empty'
+      figure.replaceChildren()
+      return
+    }
+    this.paintFile(node, image, figure)
+  }
+
+  private paintFile(node: TreeNode, image: WikiImage, figure: HTMLElement): void {
+    // Name the file, not the article: this picture was chosen from further down
+    // the page than the summary looks, so the article title would misdescribe it.
+    this.paint(figure, image, node.data.name as string, image.source, sourceCaption(image.name, image.source))
   }
 
   private fillWiki(
@@ -238,6 +320,7 @@ export class Panel {
     summary: WikiSummary | null,
     figure: HTMLElement,
     extract: HTMLElement,
+    file?: string,
   ): void {
     figure.replaceChildren()
     extract.replaceChildren()
@@ -249,30 +332,22 @@ export class Panel {
     }
 
     if (summary.image) {
-      figure.dataset.state = 'ready'
-      const img = el('img')
-      img.src = summary.image.url
-      if (summary.image.width) img.width = summary.image.width
-      if (summary.image.height) img.height = summary.image.height
-      img.alt = node.data.name
-      // Eager, not lazy: this is the picture of the thing the reader just asked
-      // for, and a lazy image inside a panel that is already open never loads at
-      // all if the tab is not being composited.
-      img.loading = 'eager'
-      img.fetchPriority = 'high'
-      img.decoding = 'async'
-      // An image that fails leaves the frame rather than a broken icon.
-      img.addEventListener('error', () => {
-        figure.dataset.state = 'empty'
-        figure.replaceChildren()
-      })
-      const link = el('a')
-      link.href = summary.original ?? summary.url
-      link.target = '_blank'
-      link.rel = 'noopener noreferrer'
-      link.append(img)
-      figure.append(link)
-      figure.append(el('figcaption', undefined, 'Image: Wikimedia Commons'))
+      // Name the source article rather than the repository. Many of these
+      // pictures come from a person's or a machine's page rather than the node's
+      // own, because that is where the free image lives, so an unlabelled
+      // portrait on an algorithm's card reads as a mistake. "Image from Toru
+      // Iwatani" makes the substitution legible instead.
+      this.paint(
+        figure,
+        summary.image,
+        node.data.name as string,
+        summary.original ?? summary.url,
+        sourceCaption(summary.title, summary.url || wikiUrl(title)),
+      )
+    } else if (file && this.pending) {
+      // The article is right but its lead image is not free. Fall back to the
+      // file chosen for this node, which lives further down the same page.
+      void this.fillFile(node, file, figure, this.pending)
     } else {
       figure.dataset.state = 'empty'
     }

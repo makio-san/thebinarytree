@@ -5,3 +5,4 @@ dist-demo/
 *.log
 .vite/
 coverage/
+.wiki-audit.json

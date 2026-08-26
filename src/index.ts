@@ -63,4 +63,4 @@ export type { Frame, Vec3 } from './math'
 // The bundled dataset
 export { computerHistory, eraOf, flatten, formatYear, yearRange } from './data'
 export type { ComputerDatum, ComputerKind } from './data'
-export { WIKI_TITLES, wikiTitle, wikiUrl } from './data/wiki'
+export { WIKI_FILES, WIKI_TITLES, wikiFile, wikiTitle, wikiUrl } from './data/wiki'

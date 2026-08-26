@@ -12,8 +12,21 @@
  */
 
 const ENDPOINT = 'https://en.wikipedia.org/api/rest_v1/page/summary/'
+const COMMONS_API = 'https://commons.wikimedia.org/w/api.php'
 const CACHE_KEY = 'bt-wiki-v1'
 const CACHE_LIMIT = 400
+const THUMB_WIDTH = 640
+
+/** A picture resolved from a named Commons file rather than from an article. */
+export interface WikiImage {
+  url: string
+  width: number
+  height: number
+  /** The file's description page, which carries the author and the licence. */
+  source: string
+  /** File name without the prefix or extension, for the caption. */
+  name: string
+}
 
 export interface WikiSummary {
   title: string
@@ -34,15 +47,17 @@ export interface WikiSummary {
 
 /** In-flight and resolved lookups, so a node revisited is instant. */
 const memory = new Map<string, Promise<WikiSummary | null>>()
+const fileMemory = new Map<string, Promise<WikiImage | null>>()
 
-let persisted: Record<string, WikiSummary | null> = {}
+// One store for both kinds of lookup, keyed apart by a "file:" prefix.
+let persisted: Record<string, WikiSummary | WikiImage | null> = {}
 try {
   persisted = JSON.parse(sessionStorage.getItem(CACHE_KEY) ?? '{}')
 } catch {
   persisted = {}
 }
 
-function persist(title: string, value: WikiSummary | null): void {
+function persist(title: string, value: WikiSummary | WikiImage | null): void {
   try {
     const keys = Object.keys(persisted)
     if (keys.length > CACHE_LIMIT) for (const k of keys.slice(0, 80)) delete persisted[k]
@@ -50,6 +65,20 @@ function persist(title: string, value: WikiSummary | null): void {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify(persisted))
   } catch {
     // A full or blocked sessionStorage is not worth failing a lookup over.
+  }
+}
+
+interface FileQuery {
+  query?: {
+    pages?: {
+      title?: string
+      imageinfo?: {
+        thumburl?: string
+        thumbwidth?: number
+        thumbheight?: number
+        descriptionurl?: string
+      }[]
+    }[]
   }
 }
 
@@ -68,7 +97,7 @@ interface RestSummary {
  * if it were an explanation.
  */
 export function fetchSummary(title: string, signal?: AbortSignal): Promise<WikiSummary | null> {
-  if (title in persisted) return Promise.resolve(persisted[title])
+  if (title in persisted) return Promise.resolve(persisted[title] as WikiSummary | null)
   const existing = memory.get(title)
   if (existing) return existing
 
@@ -107,6 +136,64 @@ export function fetchSummary(title: string, signal?: AbortSignal): Promise<WikiS
     })
 
   memory.set(title, request)
+  return request
+}
+
+/**
+ * Resolve a Commons file name to a thumbnail.
+ *
+ * The fallback for articles whose only lead image is non-free: pageimages looks
+ * at the lead section alone, so a free picture further down the page never
+ * reaches the summary endpoint. Naming the file reaches it directly.
+ *
+ * The URL comes from the API's own `thumburl`, never from string surgery on a
+ * path - Wikimedia thumbnail paths are content hashed, and a hand-built one is
+ * an HTTP 400 waiting to happen.
+ */
+export function fetchFile(file: string, signal?: AbortSignal): Promise<WikiImage | null> {
+  const key = `file:${file}`
+  if (key in persisted) return Promise.resolve(persisted[key] as WikiImage | null)
+  const existing = fileMemory.get(key)
+  if (existing) return existing
+
+  const query = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    formatversion: '2',
+    origin: '*',
+    prop: 'imageinfo',
+    iiprop: 'url|size',
+    iiurlwidth: String(THUMB_WIDTH),
+    titles: file,
+  })
+
+  const request = fetch(`${COMMONS_API}?${query}`, { signal })
+    .then(async (response) => {
+      if (!response.ok) return null
+      const data = (await response.json()) as FileQuery
+      const page = data.query?.pages?.[0]
+      const info = page?.imageinfo?.[0]
+      if (!info?.thumburl) return null
+      return {
+        url: info.thumburl,
+        width: info.thumbwidth ?? 0,
+        height: info.thumbheight ?? 0,
+        // The description page, which carries the author and the licence. That
+        // is where credit belongs, so it is what the caption links to.
+        source: info.descriptionurl ?? '',
+        name: (page?.title ?? file).replace(/^File:/, '').replace(/\.[a-z0-9]+$/i, ''),
+      }
+    })
+    .then((image) => {
+      persist(key, image)
+      return image
+    })
+    .catch(() => {
+      fileMemory.delete(key)
+      return null
+    })
+
+  fileMemory.set(key, request)
   return request
 }
 

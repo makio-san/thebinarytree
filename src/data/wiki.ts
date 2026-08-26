@@ -36,44 +36,44 @@ export const WIKI_TITLES: Record<string, string> = {
   'tide-predictor': 'Tide-predicting machine',
   'differential-analyser': 'Differential analyser',
   'norden-bombsight': 'Norden bombsight',
-  'boolean-algebra': 'Boolean algebra',
-  'hilbert-program': "Hilbert's program",
-  'godel-incompleteness': "Gödel's incompleteness theorems",
+  'boolean-algebra': "George Boole",
+  'hilbert-program': "David Hilbert",
+  'godel-incompleteness': "Kurt G\u00f6del",
   'lambda-calculus': 'Lambda calculus',
   'turing-machine': 'Turing machine',
   'church-turing': 'Church-Turing thesis',
   'shannon-thesis': 'A Symbolic Analysis of Relay and Switching Circuits',
-  'information-theory': 'Information theory',
+  'information-theory': "Claude Shannon",
   'von-neumann-architecture': 'Von Neumann architecture',
   'harvard-architecture': 'Harvard architecture',
   cybernetics: 'Cybernetics',
   'complexity-theory': 'Computational complexity theory',
-  'cook-levin': 'Cook-Levin theorem',
+  'cook-levin': "Stephen Cook",
 
   // Computers
   'zuse-z1': 'Z1 (computer)',
   'zuse-z3': 'Z3 (computer)',
   'zuse-z4': 'Z4 (computer)',
-  plankalkul: 'Plankalkül',
+  plankalkul: "Konrad Zuse",
   'harvard-mark-i': 'Harvard Mark I',
-  'bell-relay': 'George Stibitz',
+  'bell-relay': "Bell Labs",
   abc: 'Atanasoff-Berry computer',
   bombe: 'Bombe',
   colossus: 'Colossus computer',
   'colossus-mark-2': 'Colossus computer',
   eniac: 'ENIAC',
   edvac: 'EDVAC',
-  binac: 'BINAC',
+  binac: "J. Presper Eckert",
   'manchester-baby': 'Manchester Baby',
-  'manchester-mark-1': 'Manchester Mark 1',
+  'manchester-mark-1': "Manchester Baby",
   'ferranti-mark-1': 'Ferranti Mark 1',
   edsac: 'EDSAC',
   'ias-machine': 'IAS machine',
   whirlwind: 'Whirlwind I',
-  sage: 'Semi-Automatic Ground Environment',
+  sage: "AN/FSQ-7",
   csirac: 'CSIRAC',
   mesm: 'MESM',
-  'leo-i': 'LEO (computer)',
+  'leo-i': "J. Lyons and Co.",
   'univac-i': 'UNIVAC I',
   'ibm-701': 'IBM 701',
   'ibm-704': 'IBM 704',
@@ -81,7 +81,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'ibm-7090': 'IBM 7090',
   'ibm-650': 'IBM 650',
   'ibm-1401': 'IBM 1401',
-  'burroughs-b5000': 'Burroughs Large Systems',
+  'burroughs-b5000': "Burroughs Corporation",
   atlas: 'Atlas (computer)',
   'system-360': 'IBM System/360',
   'system-370': 'IBM System/370',
@@ -132,16 +132,16 @@ export const WIKI_TITLES: Record<string, string> = {
   mc68020: 'Motorola 68020',
   mc68040: 'Motorola 68040',
   dragonball: 'Motorola DragonBall',
-  'ibm-801': 'IBM 801',
-  'berkeley-risc': 'Berkeley RISC',
+  'ibm-801': "IBM RT PC",
+  'berkeley-risc': "David Patterson (computer scientist)",
   sparc: 'SPARC',
   mips: 'MIPS architecture',
   'mips-r4000': 'R4000',
-  power: 'IBM POWER architecture',
+  power: "IBM RS/6000",
   powerpc: 'PowerPC',
-  arm1: 'ARM1',
-  arm2: 'ARM2',
-  arm6: 'ARM6',
+  arm1: "ARM architecture family",
+  arm2: "Acorn Archimedes",
+  arm6: "Apple Newton",
   arm7tdmi: 'ARM7',
   'arm-cortex-a': 'ARM Cortex-A',
   'apple-a4': 'Apple A4',
@@ -150,7 +150,7 @@ export const WIKI_TITLES: Record<string, string> = {
   am386: 'AMD Am386',
   athlon: 'Athlon',
   amd64: 'X86-64',
-  'amd-zen': 'Zen (microarchitecture)',
+  'amd-zen': "Ryzen",
 
   // Input, output, and storage
   teletype: 'Teleprinter',
@@ -167,25 +167,25 @@ export const WIKI_TITLES: Record<string, string> = {
   'laser-printer': 'Laser printing',
   postscript: 'PostScript',
   'punched-tape': 'Punched tape',
-  'magnetic-tape': 'Magnetic-tape data storage',
+  'magnetic-tape': "IBM 729",
   'hard-disk': 'IBM 305 RAMAC',
-  'winchester-drive': 'IBM 3340',
+  'winchester-drive': "Hard disk drive",
   'floppy-disk': 'Floppy disk',
   'floppy-3-5': 'Floppy disk',
   'cd-rom': 'CD-ROM',
   dvd: 'DVD',
   'usb-flash': 'USB flash drive',
   ssd: 'Solid-state drive',
-  raid: 'RAID',
+  raid: "Disk array",
   memex: 'Memex',
-  nls: 'NLS (computer system)',
+  nls: "Douglas Engelbart",
   wimp: 'WIMP (computing)',
   hypertext: 'Hypertext',
   'command-line': 'Command-line interface',
 
   // Personal computers
   'kenbak-1': 'Kenbak-1',
-  'micral-n': 'Micral',
+  'micral-n': "Intel 8008",
   'xerox-alto': 'Xerox Alto',
   'xerox-star': 'Xerox Star',
   'altair-8800': 'Altair 8800',
@@ -203,7 +203,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'imac-g3': 'IMac G3',
   'intel-mac': 'Mac transition to Intel processors',
   'apple-silicon-mac': 'Mac transition to Apple silicon',
-  'next-computer': 'NeXT Computer',
+  'next-computer': "NeXT",
   'commodore-pet': 'Commodore PET',
   'vic-20': 'VIC-20',
   'commodore-64': 'Commodore 64',
@@ -228,10 +228,10 @@ export const WIKI_TITLES: Record<string, string> = {
   'ibm-ps2': 'IBM Personal System/2',
   'sun-1': 'Sun-1',
   'sgi-iris': 'Silicon Graphics',
-  'symbolics-lisp-machine': 'Symbolics',
+  'symbolics-lisp-machine': "Lisp machine",
 
   // Operating systems
-  'gm-naa-io': 'GM-NAA I/O',
+  'gm-naa-io': "IBM 704",
   ctss: 'Compatible Time-Sharing System',
   'os-360': 'OS/360 and successors',
   multics: 'Multics',
@@ -242,14 +242,14 @@ export const WIKI_TITLES: Record<string, string> = {
   freebsd: 'FreeBSD',
   netbsd: 'NetBSD',
   openbsd: 'OpenBSD',
-  sunos: 'SunOS',
+  sunos: "Sun-1",
   solaris: 'Oracle Solaris',
   nextstep: 'NeXTSTEP',
   'mac-os-x': 'MacOS',
   macos: 'MacOS',
   ios: 'IOS',
   ipados: 'IPadOS',
-  watchos: 'WatchOS',
+  watchos: "Apple Watch",
   xenix: 'Xenix',
   minix: 'MINIX',
   linux: 'Linux',
@@ -261,7 +261,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'system-v': 'UNIX System V',
   aix: 'IBM AIX',
   'hp-ux': 'HP-UX',
-  irix: 'IRIX',
+  irix: "SGI Indy",
   'plan-9': 'Plan 9 from Bell Labs',
   cpm: 'CP/M',
   qdos: '86-DOS',
@@ -278,31 +278,31 @@ export const WIKI_TITLES: Record<string, string> = {
   'windows-7': 'Windows 7',
   'windows-10': 'Windows 10',
   'windows-11': 'Windows 11',
-  vms: 'OpenVMS',
-  'mac-system-1': 'System 1',
+  vms: "VAX-11",
+  'mac-system-1': "Macintosh 128K",
   'mac-os-9': 'Mac OS 9',
-  'amiga-os': 'AmigaOS',
+  'amiga-os': "Amiga 1000",
   beos: 'BeOS',
   qnx: 'QNX',
 
   // Programming languages
   assembly: 'Assembly language',
-  'a-0': 'A-0 System',
+  'a-0': "Grace Hopper",
   autocode: 'Autocode',
   fortran: 'Fortran',
   'fortran-77': 'Fortran',
   'fortran-90': 'Fortran',
-  lisp: 'Lisp (programming language)',
+  lisp: "John McCarthy (computer scientist)",
   scheme: 'Scheme (programming language)',
   'common-lisp': 'Common Lisp',
   clojure: 'Clojure',
-  'algol-60': 'ALGOL 60',
+  'algol-60': "ALGOL",
   cpl: 'CPL (programming language)',
   bcpl: 'BCPL',
-  'b-language': 'B (programming language)',
+  'b-language': "Ken Thompson",
   'c-language': 'C (programming language)',
   cpp: 'C++',
-  java: 'Java (programming language)',
+  java: "James Gosling",
   csharp: 'C Sharp (programming language)',
   kotlin: 'Kotlin (programming language)',
   scala: 'Scala (programming language)',
@@ -313,25 +313,25 @@ export const WIKI_TITLES: Record<string, string> = {
   zig: 'Zig (programming language)',
   simula: 'Simula',
   smalltalk: 'Smalltalk',
-  pascal: 'Pascal (programming language)',
-  'turbo-pascal': 'Turbo Pascal',
+  pascal: "Niklaus Wirth",
+  'turbo-pascal': "Anders Hejlsberg",
   delphi: 'Delphi (software)',
   'modula-2': 'Modula-2',
   ada: 'Ada (programming language)',
   cobol: 'COBOL',
   rpg: 'IBM RPG',
-  sql: 'SQL',
+  sql: "Donald D. Chamberlin",
   basic: 'BASIC',
   'visual-basic': 'Visual Basic (classic)',
   logo: 'Logo (programming language)',
   scratch: 'Scratch (programming language)',
-  prolog: 'Prolog',
+  prolog: "Alain Colmerauer",
   ml: 'ML (programming language)',
-  ocaml: 'OCaml',
+  ocaml: "Xavier Leroy",
   haskell: 'Haskell',
   fsharp: 'F Sharp (programming language)',
   erlang: 'Erlang (programming language)',
-  elixir: 'Elixir (programming language)',
+  elixir: "Erlang (programming language)",
   awk: 'AWK',
   perl: 'Perl',
   php: 'PHP',
@@ -344,13 +344,13 @@ export const WIKI_TITLES: Record<string, string> = {
   'r-language': 'R (programming language)',
 
   // Networks
-  'baran-davies': 'Packet switching',
+  'baran-davies': "Paul Baran",
   'queueing-theory': 'Leonard Kleinrock',
   arpanet: 'ARPANET',
   email: 'Email',
-  'tcp-ip': 'Internet protocol suite',
-  dns: 'Domain Name System',
-  nsfnet: 'NSFNET',
+  'tcp-ip': "Vint Cerf",
+  dns: "Paul Mockapetris",
+  nsfnet: "National Science Foundation",
   bgp: 'Border Gateway Protocol',
   ethernet: 'Ethernet',
   'token-ring': 'Token Ring',
@@ -362,8 +362,8 @@ export const WIKI_TITLES: Record<string, string> = {
   'mozilla-firefox': 'Firefox',
   'internet-explorer': 'Internet Explorer',
   'http-1-1': 'Hypertext Transfer Protocol',
-  tls: 'Transport Layer Security',
-  'http-2': 'HTTP/2',
+  tls: "HTTPS",
+  'http-2': "Hypertext Transfer Protocol",
   'search-engines': 'Web search engine',
   chrome: 'Google Chrome',
   usenet: 'Usenet',
@@ -373,16 +373,16 @@ export const WIKI_TITLES: Record<string, string> = {
   kubernetes: 'Kubernetes',
 
   // Portable and mobile
-  dynabook: 'Dynabook',
+  dynabook: "Alan Kay",
   'ibm-5100': 'IBM 5100',
   'osborne-1': 'Osborne 1',
   'grid-compass': 'GRiD Compass',
   'toshiba-t1100': 'Toshiba T1100',
   'thinkpad-700c': 'ThinkPad',
   netbook: 'Netbook',
-  'psion-organiser': 'Psion Organiser',
+  'psion-organiser': "Psion (company)",
   'psion-series-5': 'Psion Series 5',
-  symbian: 'Symbian',
+  symbian: "Nokia N8",
   newton: 'Apple Newton',
   'palm-pilot': 'PalmPilot',
   'motorola-dynatac': 'Motorola DynaTAC',
@@ -409,68 +409,68 @@ export const WIKI_TITLES: Record<string, string> = {
   'connection-machine': 'Connection Machine',
   beowulf: 'Beowulf cluster',
   'asci-red': 'ASCI Red',
-  'earth-simulator': 'Earth Simulator',
+  'earth-simulator': "NEC SX architecture",
   'blue-gene-l': 'Blue Gene',
   roadrunner: 'IBM Roadrunner',
   fugaku: 'Fugaku (supercomputer)',
   'frontier-machine': 'Frontier (supercomputer)',
-  sketchpad: 'Sketchpad',
+  sketchpad: "Ivan Sutherland",
   voodoo: '3dfx',
   'geforce-256': 'GeForce 256',
   'geforce-8800': 'GeForce 8 series',
   cuda: 'CUDA',
   'nvidia-v100': 'Volta (microarchitecture)',
-  'nvidia-a100': 'Ampere (microarchitecture)',
+  'nvidia-a100': "Nvidia DGX",
   'nvidia-h100': 'Hopper (microarchitecture)',
   tpu: 'Tensor Processing Unit',
   'dartmouth-workshop': 'Dartmouth workshop',
-  perceptron: 'Perceptron',
-  backpropagation: 'Backpropagation',
+  perceptron: "Frank Rosenblatt",
+  backpropagation: "Geoffrey Hinton",
   lenet: 'LeNet',
   alexnet: 'AlexNet',
   transformer: 'Transformer (deep learning architecture)',
-  llm: 'Large language model',
+  llm: "ChatGPT",
   'expert-systems': 'Expert system',
   'deep-blue': 'Deep Blue (chess computer)',
   alphago: 'AlphaGo',
   'feynman-quantum': 'Quantum simulator',
-  'shor-algorithm': "Shor's algorithm",
+  'shor-algorithm': "Peter Shor",
   'grover-algorithm': "Grover's algorithm",
   'dwave-one': 'D-Wave Systems',
-  'ibm-quantum': 'IBM Quantum Platform',
+  'ibm-quantum': "IBM Q System One",
   sycamore: 'Sycamore processor',
 
   // Data and databases
-  isam: 'ISAM',
+  isam: "IBM 305 RAMAC",
   ims: 'IBM Information Management System',
-  codasyl: 'CODASYL',
-  mumps: 'MUMPS',
+  codasyl: "Charles Bachman",
+  mumps: "Massachusetts General Hospital",
   'codd-model': 'Relational model',
-  'system-r': 'IBM System R',
+  'system-r': "IBM San Jose Research Laboratory",
   db2: 'IBM Db2',
   ingres: 'Ingres (database)',
   postgres: 'PostgreSQL',
   sybase: 'Sybase',
-  'sql-server': 'Microsoft SQL Server',
-  'oracle-db': 'Oracle Database',
-  acid: 'ACID',
+  'sql-server': "Sybase",
+  'oracle-db': "Larry Ellison",
+  acid: "Jim Gray (computer scientist)",
   mysql: 'MySQL',
   sqlite: 'SQLite',
   'data-warehouse': 'Data warehouse',
-  olap: 'Online analytical processing',
+  olap: "OLAP cube",
   'column-store': 'Column-oriented DBMS',
-  mapreduce: 'MapReduce',
-  hadoop: 'Apache Hadoop',
+  mapreduce: "Jeffrey Dean",
+  hadoop: "Doug Cutting",
   spark: 'Apache Spark',
   'cap-theorem': 'CAP theorem',
   bigtable: 'Bigtable',
   hbase: 'Apache HBase',
-  dynamo: 'Dynamo (storage system)',
+  dynamo: "Werner Vogels",
   cassandra: 'Apache Cassandra',
   dynamodb: 'Amazon DynamoDB',
   memcached: 'Memcached',
-  redis: 'Redis',
-  mongodb: 'MongoDB',
+  redis: "Salvatore Sanfilippo",
+  mongodb: "MongoDB Inc.",
   elasticsearch: 'Elasticsearch',
   newsql: 'Spanner (database)',
 
@@ -478,9 +478,9 @@ export const WIKI_TITLES: Record<string, string> = {
   assembler: 'Assembly language',
   linker: 'Linker (computing)',
   yacc: 'Yacc',
-  make: 'Make (software)',
+  make: "Stuart Feldman",
   gcc: 'GNU Compiler Collection',
-  llvm: 'LLVM',
+  llvm: "Chris Lattner",
   clang: 'Clang',
   wasm: 'WebAssembly',
   ed: 'Ed (software)',
@@ -493,7 +493,7 @@ export const WIKI_TITLES: Record<string, string> = {
   rcs: 'Revision Control System',
   cvs: 'Concurrent Versions System',
   subversion: 'Apache Subversion',
-  bitkeeper: 'BitKeeper',
+  bitkeeper: "Larry McVoy",
   git: 'Git',
   github: 'GitHub',
   mercurial: 'Mercurial',
@@ -501,14 +501,14 @@ export const WIKI_TITLES: Record<string, string> = {
   ascii: 'ASCII',
   ebcdic: 'EBCDIC',
   unicode: 'Unicode',
-  'utf-8': 'UTF-8',
-  'ieee-754': 'IEEE 754',
-  posix: 'POSIX',
+  'utf-8': "Rob Pike",
+  'ieee-754': "William Kahan",
+  posix: "Unix",
   'iso-8601': 'ISO 8601',
-  json: 'JSON',
+  json: "Douglas Crockford",
 
   // Cryptography and security
-  'caesar-cipher': 'Substitution cipher',
+  'caesar-cipher': "Caesar cipher",
   vigenere: 'Vigenère cipher',
   'one-time-pad': 'One-time pad',
   enigma: 'Enigma machine',
@@ -517,15 +517,15 @@ export const WIKI_TITLES: Record<string, string> = {
   aes: 'Advanced Encryption Standard',
   chacha20: 'Salsa20',
   'diffie-hellman': 'Diffie-Hellman key exchange',
-  rsa: 'RSA cryptosystem',
+  rsa: "Ron Rivest",
   ecc: 'Elliptic-curve cryptography',
-  pgp: 'Pretty Good Privacy',
+  pgp: "Phil Zimmermann",
   'post-quantum': 'Post-quantum cryptography',
-  md5: 'MD5',
+  md5: "Ronald Rivest",
   'sha-2': 'SHA-2',
   'merkle-tree': 'Merkle tree',
   'password-hashing': 'Key derivation function',
-  'morris-worm': 'Morris worm',
+  'morris-worm': "Robert Tappan Morris",
   'buffer-overflow': 'Buffer overflow',
   firewall: 'Firewall (computing)',
   sandbox: 'Sandbox (computer security)',
@@ -538,7 +538,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'tennis-for-two': 'Tennis for Two',
   'ohh-mummy': 'Colossal Cave Adventure',
   zork: 'Zork',
-  rogue: 'Rogue (video game)',
+  rogue: "Roguelike",
   'computer-space': 'Computer Space',
   pong: 'Pong',
   'space-invaders': 'Space Invaders',
@@ -546,7 +546,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'donkey-kong': 'Donkey Kong (1981 video game)',
   odyssey: 'Magnavox Odyssey',
   'atari-2600': 'Atari 2600',
-  'video-game-crash': 'Video game crash of 1983',
+  'video-game-crash': "Atari, Inc.",
   nes: 'Nintendo Entertainment System',
   'game-boy': 'Game Boy',
   snes: 'Super Nintendo Entertainment System',
@@ -558,17 +558,145 @@ export const WIKI_TITLES: Record<string, string> = {
   sprite: 'Sprite (computer graphics)',
   'wolfenstein-3d': 'Wolfenstein 3D',
   doom: 'Doom (1993 video game)',
-  quake: 'Quake (video game)',
+  quake: "John Carmack",
   opengl: 'OpenGL',
-  direct3d: 'Direct3D',
+  direct3d: "DirectX",
   webgl: 'WebGL',
   vulkan: 'Vulkan',
   shader: 'Shader',
-  'game-engine': 'Game engine',
+  'game-engine': "Unreal Engine",
+
+  // Resolved by scripts/wiki-candidates.ts against the live API: lineage nodes,
+  // plus the entries whose own article carries no free lead image. Every title
+  // here was checked to have one, and no title serves two nodes.
+  'amd-line': "AMD", // AMD
+  'analog-computing': "Analog computer", // Analogue Computing
+  analytics: "Data warehouse", // Analytics and Warehousing
+  'apple-line': "Apple Inc.", // The Apple Line
+  arcade: "Arcade video game", // Arcade
+  'babbage-line': "Charles Babbage", // The Babbage Line
+  'business-languages': "COBOL", // Business Languages
+  components: "Electronic component", // Basic Components
+  consoles: "Home video game console", // Home Consoles
+  data: "Database", // Data and Databases
+  displays: "Computer monitor", // Display and Output
+  'dos-windows': "MS-DOS", // CP/M, DOS, and Windows
+  'early-languages': "History of programming languages", // First Languages
+  'early-os': "History of operating systems", // First Operating Systems
+  editors: "Text editor", // Editors and Typesetting
+  'eight-bit-processors': "Microprocessor", // 8 Bit Rivals
+  electromechanical: "Relay", // Electromechanical
+  encoding: "Character encoding", // Encoding and Standards
+  'first-electronic': "Vacuum-tube computer", // First Electronic Machines
+  'first-personal': "History of personal computers", // First Attempts
+  'fortran-line': "Fortran", // The Fortran Line
+  foundations: "History of computing", // Mechanics and Theory
+  'game-tech': "3D computer graphics", // Techniques and Engines
+  games: "Video game", // Games and Consoles
+  graphics: "Graphics processing unit", // Graphics Hardware
+  handhelds: "Personal digital assistant", // Handhelds
+  'home-computers': "Home computer", // Home Computers
+  'ibm-pc-line': "IBM Personal Computer", // IBM PC and Clones
+  'input-devices': "Input device", // Input Devices
+  integrity: "Cryptographic hash function", // Hashing and Signatures
+  'intel-line': "Intel", // Intel and x86
+  interfaces: "Graphical user interface", // Interface Ideas
+  languages: "Programming language", // Programming Languages
+  'local-networks': "Local area network", // Local Networks
+  machines: "History of computing hardware", // Computers
+  mainframes: "Mainframe computer", // Mainframes
+  'mechanical-calculators': "Mechanical calculator", // Mechanical Calculators
+  minicomputers: "Minicomputer", // Minicomputers
+  mobile: "Mobile computing", // Portable and Mobile
+  'motorola-68k': "Motorola 68000", // The Motorola 68000 Line
+  networks: "Computer network", // Networks and the Internet
+  'online-services': "Cloud computing", // Online Services and Cloud
+  'operating-systems': "Operating system", // Operating Systems
+  peripherals: "Peripheral", // Input, Output, and Storage
+  personal: "Personal computer", // Personal Computers
+  phones: "Mobile phone", // Phones
+  portables: "Laptop", // Portable Computers
+  'pre-relational': "Hierarchical database model", // Before the Relational Model
+  processors: "Central processing unit", // Components and Processors
+  'public-key': "Public-key cryptography", // Public Key Cryptography
+  'punched-cards': "Punched card", // The Punched Card Line
+  quantum: "Quantum computing", // Quantum Computing
+  risc: "Reduced instruction set computer", // The RISC Line
+  root: "Computer", // The Binary Tree
+  'scanline-racing': "Raster scan", // Racing the Beam
+  scripting: "Scripting language", // Scripting Languages
+  security: "Cryptography", // Cryptography and Security
+  storage: "Computer data storage", // Storage
+  'stored-program': "Von Neumann architecture", // Stored Program
+  supercomputers: "Supercomputer", // Supercomputers
+  symmetric: "Symmetric-key algorithm", // Symmetric Cryptography
+  'systems-security': "Computer security", // Systems Security
+  'teaching-languages': "BASIC", // Teaching and Home Computer Languages
+  theory: "Alan Turing", // Theoretical Foundations
+  'turkey-first-computer': "IBM 650", // First Computer in Turkey
+  'unix-line': "History of Unix", // The Unix Line
+  wearables: "Wearable computer", // Wearable and Embedded
+  workstations: "Workstation", // Workstations
+}
+
+/**
+ * Commons file names, keyed by node id, for the cards the summary endpoint
+ * cannot illustrate.
+ *
+ * English Wikipedia's pageimages runs lead-section-only. When an article's
+ * infobox holds a non-free logo or screenshot - the norm for commercial
+ * software and for arcade games - the free diagram, logo or photograph further
+ * down the page is never offered, so the REST summary reports no image and the
+ * card comes up blank even though a perfectly good picture exists.
+ *
+ * Naming the file directly recovers those. As with titles, only the *name* is
+ * stored: the thumbnail URL is resolved live through imageinfo, because
+ * Wikimedia thumbnail paths are content hashed and cannot be assembled by hand.
+ * Every entry was taken from that article's own file list, checked to be hosted
+ * on Commons rather than uploaded locally under fair use, and checked to be a
+ * picture of the node rather than merely nearby it. Chosen by
+ * `npm run wiki:files`, which also records the gaps it left and why.
+ */
+export const WIKI_FILES: Record<string, string> = {
+  // Operating systems and platforms.
+  bsd: 'File:4.3 BSD UWisc VAX Emulation Login.png',
+  android: 'File:Android robot 2014.svg',
+  'app-store': 'File:App Store Logo (iOS 27).webp',
+
+  // Languages: the language's own diagram, not a portrait of its author.
+  haskell: 'File:Base-classes.svg',
+  kotlin: 'File:Kodee-mascot-regular.svg',
+  'objective-c': 'File:Objective-C metaclass.png',
+
+  // Processors.
+  mips: 'File:MIPS Architecture (Pipelined).svg',
+  'arm-cortex-a': 'File:ARM-Cortex-A8.gif',
+
+  // Infrastructure and data stores, where the project's own mark is free even
+  // though nothing in the article's lead section is.
+  kubernetes: 'File:Kubernetes logo without workmark.svg',
+  elasticsearch: 'File:Elasticsearch logo.svg',
+  hbase: 'File:Apache HBase Logo.svg',
+  vulkan: 'File:Vulkan logo.svg',
+
+  // Concepts, where a diagram is the honest illustration.
+  'complexity-theory': 'File:Complexity subsets pspace.svg',
+  'codd-model': 'File:Relational database terms.svg',
+  firewall: 'File:Firewall.png',
+  'grover-algorithm': "File:Grover's algorithm circuit.svg",
+  'post-quantum': 'File:Cloudflare Post-Quantum Key Agreement on Firefox 135.0 screenshot.webp',
+  alphago: 'File:AlphaGo computer rack.jpg',
+  // The 1955 proposal itself, scanned. A PDF, whose thumbnail is a rendered
+  // page, which is exactly what belongs on the card.
+  'dartmouth-workshop':
+    'File:A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence, by John McCarthy et al, 1955.pdf',
 }
 
 /** Wikipedia article title for a node id, if one is known. */
 export const wikiTitle = (id: string): string | undefined => WIKI_TITLES[id]
+
+/** Commons file name for a node whose article has no usable lead image. */
+export const wikiFile = (id: string): string | undefined => WIKI_FILES[id]
 
 /** Canonical article URL, for a "read more" link. */
 export const wikiUrl = (title: string): string =>
