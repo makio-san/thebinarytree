@@ -1,0 +1,28 @@
+# Netlify deploys the demo page, not the library.
+#
+# `npm run build` produces dist/, which is the packaged library for npm and has
+# no index.html; publishing it would serve a directory listing. The page lives
+# in dist-demo/ and is fully static: no server, no functions, no environment
+# variables. Wikipedia and Wikimedia Commons are called straight from the
+# browser and both send permissive CORS headers.
+
+[build]
+  command = "npm run build:demo"
+  publish = "dist-demo"
+
+[build.environment]
+  # Vite 8 needs 20.19 or newer. Pinned rather than left to the default so a
+  # change to Netlify's default image cannot quietly break the build.
+  NODE_VERSION = "22"
+
+# The bundle names carry a content hash, so they can be cached forever. The
+# entry document must not be, or a deploy only appears after a hard refresh.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
