@@ -1180,3 +1180,15 @@ body.theme-light .help kbd {
     animation: none;
   }
 }
+
+/*
+ * Netlify injects a script into the served HTML which appends its own badge to
+ * the end of the body as an iframe. Nothing in this repo asks for it and it
+ * sits over the canvas. The switch for it is in the hosting account's own
+ * settings, but that setting is outside this repository and a fresh deploy or a
+ * change of account would bring the badge back, so the element is pinned here
+ * as well. #nl-badge-frame is the id the injected script uses.
+ */
+#nl-badge-frame {
+  display: none !important;
+}
