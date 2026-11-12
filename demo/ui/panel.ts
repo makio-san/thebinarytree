@@ -7,7 +7,17 @@
  * does not jump when it arrives.
  */
 
-import { ERA_BY_ID, descendants, formatYear, wikiFile, wikiTitle, wikiUrl } from 'the-binary-tree'
+import {
+  ERA_BY_ID,
+  creatorsOf,
+  creditsOf,
+  descendants,
+  formatYear,
+  portraitOf,
+  wikiFile,
+  wikiTitle,
+  wikiUrl,
+} from 'the-binary-tree'
 import type { TreeNode } from 'the-binary-tree'
 import { fetchFile, fetchSummary, type WikiImage, type WikiSummary } from '../wiki'
 
@@ -25,6 +35,8 @@ const KIND_LABELS: Record<string, string> = {
 
 export interface PanelHandlers {
   onNavigate: (node: TreeNode) => void
+  /** A credited name was clicked: show what else carries it. */
+  onCreator: (name: string) => void
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -38,11 +50,104 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node
 }
 
+function eraHex(era: string | undefined): string {
+  return `#${(ERA_BY_ID[era ?? '']?.color ?? 0x7c8798).toString(16).padStart(6, '0')}`
+}
+
 function eraDot(era: string | undefined): HTMLElement {
   const dot = el('i', 'dot')
-  const hex = (ERA_BY_ID[era ?? '']?.color ?? 0x7c8798).toString(16).padStart(6, '0')
-  dot.style.background = `#${hex}`
+  dot.style.setProperty('--c', eraHex(era))
   return dot
+}
+
+/**
+ * Show a picture large, over the page, until the next click or Escape.
+ *
+ * The small version is shown at once and the full one swapped in when it has
+ * loaded, so a multi-megabyte original never leaves the reader looking at an
+ * empty frame.
+ */
+function lightbox(full: string, preview: string, alt: string, caption: HTMLElement): void {
+  const overlay = el('div', 'lightbox')
+  overlay.setAttribute('role', 'dialog')
+  overlay.setAttribute('aria-modal', 'true')
+  overlay.setAttribute('aria-label', alt)
+  const img = el('img')
+  img.alt = alt
+  img.src = preview
+  if (full !== preview) {
+    const large = new Image()
+    large.addEventListener('load', () => {
+      img.src = full
+    })
+    large.src = full
+  }
+  const note = el('p', 'lightbox__caption')
+  note.append(...[...caption.childNodes].map((n) => n.cloneNode(true)))
+  const close = el('button', 'icon-btn lightbox__close')
+  close.type = 'button'
+  close.setAttribute('aria-label', 'Close')
+  close.append(el('span', 'icon-x'))
+  overlay.append(img, note, close)
+
+  const dismiss = (): void => {
+    overlay.remove()
+    document.removeEventListener('keydown', onKey, true)
+  }
+  const onKey = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape') return
+    event.stopPropagation()
+    dismiss()
+  }
+  overlay.addEventListener('click', (event) => {
+    // The source link in the caption is the one thing that should not close it.
+    if ((event.target as HTMLElement).closest('a')) return
+    dismiss()
+  })
+  document.addEventListener('keydown', onKey, true)
+  document.body.append(overlay)
+  close.focus()
+}
+
+/** Two letters to stand in for a portrait: first and last initial. */
+function initials(name: string): string {
+  // Drop a parenthetical title, so "William Thomson (Lord Kelvin)" is WT.
+  const words = name.replace(/\(.*?\)/g, '').split(/[\s-]+/).filter((w) => /^\p{L}/u.test(w))
+  if (!words.length) return '?'
+  const first = words[0][0]
+  const last = words.length > 1 ? words[words.length - 1][0] : ''
+  return (first + last).toUpperCase()
+}
+
+/**
+ * Size and place a photograph inside its round frame so the face is what shows.
+ *
+ * Everything is in percent of the frame, so the same numbers hold at any avatar
+ * size. Without a measured face this is an ordinary cover crop biased to the
+ * upper part of the picture, which is where a portrait keeps its subject. With
+ * one, the picture is enlarged until the face fills about half the frame and
+ * slid so the face sits in the middle: that is what turns a photograph of
+ * someone at a lectern into a picture of them.
+ */
+function frame(
+  img: HTMLImageElement,
+  width: number,
+  height: number,
+  face?: { x: number; y: number; h: number },
+): void {
+  if (!width || !height) {
+    img.style.cssText = 'inset:0;width:100%;height:100%;object-fit:cover'
+    return
+  }
+  const short = Math.min(width, height)
+  const zoom = face ? Math.min(6, Math.max(1, (0.5 * short) / ((face.h / 100) * height))) : 1
+  const w = (100 * zoom * width) / short
+  const h = (100 * zoom * height) / short
+  const clamp = (value: number, size: number) => Math.min(0, Math.max(100 - size, value))
+  img.style.width = `${w}%`
+  img.style.height = `${h}%`
+  img.style.left = `${clamp(50 - ((face?.x ?? 50) / 100) * w, w)}%`
+  img.style.top = `${clamp(50 - ((face?.y ?? 36) / 100) * h, h)}%`
 }
 
 /** "Image from <article>", linked to where the picture actually came from. */
@@ -88,6 +193,74 @@ export class Panel {
     private readonly handlers: PanelHandlers,
   ) {}
 
+  /** Node names by id, built once: the tree does not change under the panel. */
+  private nameIndex: Map<string, string> | null = null
+
+  private names(node: TreeNode): Map<string, string> {
+    if (this.nameIndex) return this.nameIndex
+    let top = node
+    while (top.parent) top = top.parent
+    this.nameIndex = new Map(descendants(top).map((n) => [n.id, n.data.name as string]))
+    return this.nameIndex
+  }
+
+  /** A list of people. Each row searches for everything that carries the name. */
+  private people(heading: string, rows: { name: string; note: string }[]): HTMLElement {
+    const section = el('section', 'people')
+    section.append(el('h3', undefined, heading))
+    const list = el('ul', 'people__list')
+    for (const { name, note } of rows) {
+      const item = el('li')
+      const button = el('button', 'person')
+      button.type = 'button'
+      button.title = `Find everything credited to ${name}`
+      const avatar = el('span', 'person__avatar', initials(name))
+      avatar.setAttribute('aria-hidden', 'true')
+      this.portrait(name, avatar)
+      const text = el('span', 'person__text')
+      text.append(el('span', 'person__name', name))
+      if (note) text.append(el('span', 'person__note', note))
+      const arrow = el('span', 'icon-right person__go')
+      arrow.setAttribute('aria-hidden', 'true')
+      button.append(avatar, text, arrow)
+      button.addEventListener('click', () => this.handlers.onCreator(name))
+      item.append(button)
+      list.append(item)
+    }
+    section.append(list)
+    return section
+  }
+
+  /**
+   * Lay a photograph over the initials, once it has actually loaded.
+   *
+   * Only for names in the checked table: looking a bare name up would put a
+   * racing driver on the Netscape card. The initials stay underneath, so a slow
+   * or failed image costs nothing.
+   */
+  private portrait(name: string, avatar: HTMLElement): void {
+    const portrait = portraitOf(name)
+    if (!portrait) return
+    const source: Promise<{ url: string; width: number; height: number } | null | undefined> =
+      portrait.title.startsWith('File:')
+        ? fetchFile(portrait.title)
+        : fetchSummary(portrait.title).then((summary) => summary?.image)
+    void source.then((image) => {
+      if (!image || !avatar.isConnected) return
+      const img = el('img')
+      img.alt = ''
+      img.decoding = 'async'
+      if (portrait.logo) avatar.dataset.kind = 'logo'
+      else frame(img, image.width, image.height, portrait.face)
+      img.addEventListener('load', () => {
+        avatar.dataset.photo = 'true'
+      })
+      img.addEventListener('error', () => img.remove())
+      img.src = image.url
+      avatar.append(img)
+    })
+  }
+
   /** The short line shown in the sheet's peek state. */
   private renderPeek(node: TreeNode | null): void {
     this.summaryLine.replaceChildren()
@@ -132,33 +305,68 @@ export class Panel {
     const data = node.data
     const era = ERA_BY_ID[(data.era as string) ?? '']
 
-    // --- header ---
-    if (era) {
-      const badge = el('div', 'badge')
-      badge.append(eraDot(data.era as string | undefined), document.createTextNode(era.label))
-      badge.title = era.span
-      this.body.append(badge)
-    }
+    // The card takes its accent from the era, so a tube machine and a present
+    // day one do not look like the same page with different words on it.
+    this.root.style.setProperty('--era', eraHex(data.era as string | undefined))
 
-    this.body.append(el('h2', undefined, data.name))
-
-    const meta = [
-      formatYear(data.year as number | undefined),
-      (data.origin as string) ?? '',
-      KIND_LABELS[(data.kind as string) ?? ''] ?? '',
-    ].filter(Boolean)
-    if (meta.length) this.body.append(el('p', 'meta', meta.join(' · ')))
-
-    // --- image slot, filled in later ---
+    // --- hero: picture, then the name sitting on its lower edge ---
     const title = wikiTitle(node.id)
     // Nodes whose article has no usable lead image carry a named Commons file
     // instead, so the slot is worth reserving for those too.
     const file = wikiFile(node.id)
+    const hero = el('header', 'hero')
     const figure = el('figure', 'figure')
     if (title || file) {
       figure.dataset.state = 'loading'
       figure.append(el('div', 'figure__placeholder'))
-      this.body.append(figure)
+    } else {
+      figure.dataset.state = 'empty'
+    }
+    const heading = el('div', 'hero__text')
+    if (era) {
+      const badge = el('div', 'badge')
+      badge.append(eraDot(data.era as string | undefined), document.createTextNode(era.label))
+      badge.title = era.span
+      heading.append(badge)
+    }
+    heading.append(el('h2', undefined, data.name))
+    hero.append(figure, heading)
+    this.body.append(hero)
+
+    // --- the three things people ask first ---
+    const spec = el('dl', 'spec')
+    const addSpec = (label: string, value: string) => {
+      if (!value) return
+      const cell = el('div', 'spec__cell')
+      cell.append(el('dt', undefined, label), el('dd', undefined, value))
+      spec.append(cell)
+    }
+    addSpec('Year', formatYear(data.year as number | undefined))
+    addSpec('Origin', (data.origin as string) ?? '')
+    addSpec('Type', KIND_LABELS[(data.kind as string) ?? ''] ?? '')
+    if (spec.childElementCount) this.body.append(spec)
+
+    // --- who made it ---
+    const creators = creatorsOf(node.id)
+    if (creators.length) {
+      const names = this.names(node)
+      const people = creators.map((name) => {
+        const others = creditsOf(name)
+          .filter((id) => id !== node.id)
+          .map((id) => names.get(id))
+          .filter((n): n is string => Boolean(n))
+        const also =
+          others.length > 2
+            ? `Also ${others.slice(0, 2).join(', ')} +${others.length - 2}`
+            : others.length
+              ? `Also ${others.join(', ')}`
+              : ''
+        return { name, note: also }
+      })
+      const section = this.people(creators.length > 1 ? 'Created by' : 'Creator', people)
+      // Marked so the sheet can lift it above the picture: see style.css.
+      section.classList.add('people--own')
+      this.body.append(section)
     }
 
     // --- our own text ---
@@ -169,6 +377,26 @@ export class Panel {
       const list = el('ul', 'facts')
       for (const fact of facts) list.append(el('li', undefined, fact))
       this.body.append(list)
+    }
+
+    // --- a branch's people ---
+    if (!creators.length && node.children.length) {
+      // A branch has no maker of its own, so it lists whoever appears most
+      // often beneath it. On the root that is the short list of people the
+      // whole history keeps coming back to.
+      const tally = new Map<string, number>()
+      for (const n of descendants(node)) {
+        for (const name of creatorsOf(n.id)) tally.set(name, (tally.get(name) ?? 0) + 1)
+      }
+      const top = [...tally].sort((a, b) => b[1] - a[1]).slice(0, 6)
+      if (top.length) {
+        this.body.append(
+          this.people(
+            'Key people',
+            top.map(([name, count]) => ({ name, note: count === 1 ? '1 work here' : `${count} works here` })),
+          ),
+        )
+      }
     }
 
     // --- statistics, cheap and genuinely informative ---
@@ -263,7 +491,8 @@ export class Panel {
     figure: HTMLElement,
     image: { url: string; width: number; height: number },
     alt: string,
-    href: string,
+    /** The largest version worth showing when the picture is enlarged. */
+    full: string,
     caption: HTMLElement,
   ): void {
     figure.dataset.state = 'ready'
@@ -283,12 +512,15 @@ export class Panel {
       figure.dataset.state = 'empty'
       figure.replaceChildren()
     })
-    const link = el('a')
-    link.href = href
-    link.target = '_blank'
-    link.rel = 'noopener noreferrer'
-    link.append(img)
-    figure.replaceChildren(link, caption)
+    // The picture enlarges in place rather than opening its file in a new tab.
+    // The caption still links to where it came from, which is where the author
+    // and the licence are.
+    const zoom = el('button', 'figure__zoom')
+    zoom.type = 'button'
+    zoom.setAttribute('aria-label', `Enlarge the picture of ${alt}`)
+    zoom.append(img)
+    zoom.addEventListener('click', () => lightbox(full, image.url, alt, caption))
+    figure.replaceChildren(zoom, caption)
   }
 
   /** The named-file path, for articles whose lead image is not free. */
@@ -311,7 +543,7 @@ export class Panel {
   private paintFile(node: TreeNode, image: WikiImage, figure: HTMLElement): void {
     // Name the file, not the article: this picture was chosen from further down
     // the page than the summary looks, so the article title would misdescribe it.
-    this.paint(figure, image, node.data.name as string, image.source, sourceCaption(image.name, image.source))
+    this.paint(figure, image, node.data.name as string, image.url, sourceCaption(image.name, image.source))
   }
 
   private fillWiki(
@@ -341,7 +573,7 @@ export class Panel {
         figure,
         summary.image,
         node.data.name as string,
-        summary.original ?? summary.url,
+        summary.original ?? summary.image.url,
         sourceCaption(summary.title, summary.url || wikiUrl(title)),
       )
     } else if (file && this.pending) {

@@ -13,6 +13,8 @@ import { prefetch } from '../wiki'
 export interface SearchHandlers {
   search: (query: string, limit: number) => TreeNode[]
   onPick: (node: TreeNode) => void
+  /** The dim second column of a row. Defaults to the parent's name. */
+  where?: (node: TreeNode, query: string) => string | undefined
 }
 
 export class Search {
@@ -43,6 +45,14 @@ export class Search {
     this.root.dataset.active = 'true'
     this.input.focus()
     this.input.select()
+  }
+
+  /** Open with a query already typed, as if the reader had entered it. */
+  query(text: string): void {
+    this.input.value = text
+    this.root.dataset.active = 'true'
+    this.input.focus()
+    this.run()
   }
 
   close(): void {
@@ -99,7 +109,7 @@ export class Search {
       const hex = (ERA_BY_ID[(node.data.era as string) ?? '']?.color ?? 0x7c8798)
         .toString(16)
         .padStart(6, '0')
-      dot.style.background = `#${hex}`
+      dot.style.setProperty('--c', `#${hex}`)
 
       const name = document.createElement('span')
       name.className = 'row__name'
@@ -107,7 +117,8 @@ export class Search {
 
       const where = document.createElement('span')
       where.className = 'row__where'
-      where.textContent = node.parent?.data.name ?? ''
+      where.textContent =
+        this.handlers.where?.(node, this.input.value.trim()) ?? node.parent?.data.name ?? ''
 
       const year = document.createElement('span')
       year.className = 'row__year'

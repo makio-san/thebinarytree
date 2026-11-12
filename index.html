@@ -13,9 +13,11 @@
       name="description"
       content="A 3D hyperbolic tree browser for the history of computing."
     />
-    <title>The Binary Tree - the family tree of computing</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/logo.svg" />
+    <title>The Binary Tree</title>
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/logo.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://en.wikipedia.org" crossorigin />
     <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin />
 
@@ -80,7 +82,7 @@
       </button>
 
       <div class="brand">
-        <img class="brand__mark" src="/logo.svg" width="30" height="30" alt="" />
+        <img class="brand__mark" src="/logo.png" width="36" height="36" alt="" />
         <span class="brand__text">
           <strong>The Binary Tree</strong>
           <span id="tagline">the family tree of computing</span>
@@ -101,6 +103,7 @@
             aria-label="Search the tree"
             aria-controls="search-results"
           />
+          <kbd class="search__key" aria-hidden="true">/</kbd>
           <button id="search-close" type="button" class="icon-btn search__close" aria-label="Close search">
             <span class="icon-x"></span>
           </button>
@@ -116,10 +119,12 @@
           <span class="icon-search"></span>
         </button>
         <button id="home" type="button" class="btn" title="Bring the root to the centre (Home)">
-          Recentre
+          <span class="icon-target" aria-hidden="true"></span>
+          <span class="btn__label">Recentre</span>
         </button>
         <button id="tour" type="button" class="btn" aria-pressed="false" title="Guided tour">
-          Tour
+          <span class="icon-play" aria-hidden="true"></span>
+          <span class="btn__label">Tour</span>
         </button>
         <button id="theme" type="button" class="icon-btn" aria-label="Light and dark theme">
           <span class="icon-contrast"></span>

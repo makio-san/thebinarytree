@@ -17,16 +17,18 @@
   --fg: #e9eef7;
   --fg-dim: #a5b2c6;
   --fg-faint: #8593a8;
-  --accent: #74a9ff;
-  --accent-soft: rgb(116 169 255 / 16%);
+  --accent: #94a3ff;
+  --accent-soft: rgb(148 163 255 / 15%);
+  --gold: #e3b578;
   --scrim: rgb(4 6 11 / 55%);
 
   --font:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-  --radius: 14px;
+  --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 20px 60px rgb(0 0 0 / 48%);
+  --shadow: 0 1px 0 rgb(255 255 255 / 5%) inset, 0 24px 64px rgb(0 0 0 / 50%);
+  --control-h: 38px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -46,10 +48,11 @@ body.theme-light {
   --fg: #111620;
   --fg-dim: #485466;
   --fg-faint: #5d6879;
-  --accent: #2563c9;
-  --accent-soft: rgb(37 99 201 / 12%);
+  --accent: #4450d2;
+  --accent-soft: rgb(68 80 210 / 11%);
+  --gold: #9a6a1c;
   --scrim: rgb(220 226 236 / 60%);
-  --shadow: 0 20px 52px rgb(20 30 50 / 16%);
+  --shadow: 0 1px 0 rgb(255 255 255 / 60%) inset, 0 20px 52px rgb(20 30 50 / 16%);
 
   color-scheme: light;
 }
@@ -79,6 +82,17 @@ body {
 .stage {
   position: fixed;
   inset: 0;
+}
+
+/* Thin, quiet scrollbars: the panel scrolls constantly and the default one is
+   the loudest thing on the card. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ring-strong) transparent;
+}
+
+::selection {
+  background: var(--accent-soft);
 }
 
 /* --- icons, drawn as masks so they inherit colour ----------------------- */
@@ -118,6 +132,10 @@ body {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M8 5.5v13l11-6.5z'/%3E%3C/svg%3E");
 }
 
+.icon-stop {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='6.5' y='6.5' width='11' height='11' rx='2' fill='black'/%3E%3C/svg%3E");
+}
+
 .icon-slider {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 8h16M4 16h16'/%3E%3Ccircle cx='9' cy='8' r='2.4' fill='black'/%3E%3Ccircle cx='15' cy='16' r='2.4' fill='black'/%3E%3C/svg%3E");
 }
@@ -145,8 +163,13 @@ body {
    but this is how you get somewhere without aiming at all. */
 .walk {
   display: none;
-  gap: 6px;
-  padding: 0 12px 10px;
+  gap: 1px;
+  margin: 0 16px 12px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-sm);
+  background: var(--ring);
   flex: 0 0 auto;
 }
 
@@ -155,30 +178,25 @@ body {
   gap: 5px;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 38px;
   padding: 0 10px;
-  border: 1px solid var(--ring);
-  border-radius: var(--radius-sm);
+  border: 0;
   color: var(--fg-dim);
-  background: rgb(255 255 255 / 4%);
+  background: var(--surface-solid);
   font: inherit;
   font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
   flex: 1 1 auto;
 }
 
-body.theme-light .walk button {
-  background: rgb(15 22 36 / 4%);
-}
-
 .walk button:active {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--fg);
+  background: var(--surface-raised);
 }
 
 .walk button:disabled {
-  opacity: 0.32;
+  color: color-mix(in srgb, var(--fg-faint) 45%, transparent);
   cursor: default;
 }
 
@@ -207,8 +225,9 @@ body.theme-light .walk button {
   background: var(--surface);
   font: inherit;
   font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px) saturate(1.3);
   transition:
     border-color 0.16s,
     color 0.16s,
@@ -216,18 +235,32 @@ body.theme-light .walk button {
 }
 
 .btn {
-  padding: 8px 13px;
+  height: var(--control-h);
+  padding: 0 14px 0 11px;
+}
+
+.btn [class^='icon-'] {
+  width: 15px;
+  height: 15px;
+  color: var(--fg-faint);
+  transition: color 0.16s;
+}
+
+.btn:hover [class^='icon-'],
+.btn[aria-pressed='true'] [class^='icon-'] {
+  color: inherit;
 }
 
 .icon-btn {
-  width: 36px;
-  height: 36px;
+  width: var(--control-h);
+  height: var(--control-h);
   padding: 0;
 }
 
 .btn:hover,
 .icon-btn:hover {
   border-color: var(--ring-strong);
+  background: var(--surface-raised);
 }
 
 .btn:focus-visible,
@@ -267,6 +300,29 @@ body.theme-light .walk button {
     calc(16px + var(--safe-left));
 }
 
+/* A soft scrim behind each bar, so a label drifting under the chrome fades out
+   instead of colliding with it. */
+.bar--top::before,
+.bar--bottom::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
+}
+
+.bar--top::before {
+  bottom: -18px;
+  background: linear-gradient(to bottom, var(--bg), transparent);
+  opacity: 0.85;
+}
+
+.bar--bottom::before {
+  top: -24px;
+  background: linear-gradient(to top, var(--bg) 35%, transparent);
+  opacity: 0.9;
+}
+
 .bar--bottom {
   right: 0;
   bottom: 0;
@@ -288,13 +344,17 @@ body.theme-light .walk button {
   min-width: 0;
 }
 
-/* A computed Poincaré disc: see scripts/make-logo.ts. It carries the era palette
-   and the geometry itself, and it is legible on both grounds, so there is nothing
-   here to theme. */
+/* The mark is a round image on black. The ring and the glow seat it on the dark
+   ground, and give it an edge on the light one. */
 .brand__mark {
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #000;
+  box-shadow:
+    0 0 0 1px var(--ring-strong),
+    0 0 22px rgb(120 130 255 / 35%);
   flex: 0 0 auto;
 }
 
@@ -306,8 +366,9 @@ body.theme-light .walk button {
 }
 
 .brand__text strong {
-  font-size: 14px;
-  letter-spacing: 0.01em;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 
@@ -315,6 +376,7 @@ body.theme-light .walk button {
   overflow: hidden;
   color: var(--fg-faint);
   font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -333,7 +395,7 @@ body.theme-light .walk button {
 
 .search {
   position: relative;
-  width: min(330px, 40vw);
+  width: min(400px, 40vw);
   flex: 0 0 auto;
 }
 
@@ -341,11 +403,31 @@ body.theme-light .walk button {
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 0 10px;
+  height: var(--control-h);
+  padding: 0 8px 0 11px;
   border: 1px solid var(--ring);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px) saturate(1.3);
+  transition:
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+
+/* The shortcut, shown until the field is in use. */
+.search__key {
+  padding: 1px 6px;
+  border: 1px solid var(--ring);
+  border-radius: 5px;
+  color: var(--fg-faint);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.4;
+  flex: 0 0 auto;
+}
+
+.search[data-active='true'] .search__key {
+  display: none;
 }
 
 .search__field .icon-search {
@@ -376,6 +458,7 @@ body.theme-light .walk button {
 
 .search[data-active='true'] .search__field {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .search__close {
@@ -440,12 +523,34 @@ body.theme-light .walk button {
   background: var(--accent-soft);
 }
 
+/* An era marker, drawn as a small lit sphere to match the nodes in the tree:
+   a highlight up and to the left, the colour, then its own shadow side. --c is
+   set per marker from the era palette. */
 .dot {
-  width: 8px;
-  height: 8px;
+  --c: #7c8798;
+
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in srgb, var(--c) 25%, #fff) 0%,
+    color-mix(in srgb, var(--c) 75%, #fff) 16%,
+    var(--c) 46%,
+    color-mix(in srgb, var(--c) 52%, #000) 100%
+  );
+  box-shadow:
+    inset 0 -1px 1px rgb(0 0 0 / 28%),
+    0 1px 2px rgb(0 0 0 / 45%),
+    0 0 7px color-mix(in srgb, var(--c) 40%, transparent);
   flex: 0 0 auto;
-  transform: translateY(-1px);
+  align-self: center;
+}
+
+body.theme-light .dot {
+  box-shadow:
+    inset 0 -1px 1px rgb(0 0 0 / 18%),
+    0 1px 2px rgb(20 30 50 / 30%);
 }
 
 .row__name {
@@ -487,7 +592,7 @@ body.theme-light .walk button {
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(22px) saturate(1.3);
   overflow: hidden;
 }
 
@@ -496,7 +601,10 @@ body.theme-light .walk button {
 }
 
 .panel__body {
-  padding: 16px 16px 18px;
+  --pad: 18px;
+  --pad-top: 18px;
+
+  padding: 18px 18px 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -507,85 +615,258 @@ body.theme-light .walk button {
   font-size: 12.5px;
 }
 
-.badge {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 8px;
-  padding: 3px 9px 3px 7px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--fg-dim);
-  font-size: 10.5px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+/* --- hero ---------------------------------------------------------------
+   The picture runs edge to edge and fades out at the bottom, and the name sits
+   on the fade. --era is set per node by the panel. */
+
+.panel {
+  --era: var(--accent);
 }
 
-.panel h2 {
-  margin: 0 0 3px;
-  font-size: 20px;
-  line-height: 1.2;
-  letter-spacing: -0.012em;
-  text-wrap: balance;
+/* A hairline in the era's colour across the top of the card. */
+.panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: 2px;
+  background: linear-gradient(90deg, var(--era), transparent 70%);
+  opacity: 0.8;
+  content: '';
+  pointer-events: none;
 }
 
-.meta {
-  margin: 0 0 12px;
-  color: var(--fg-faint);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Image slot. The placeholder reserves the space so text does not jump when
-   the picture arrives, and the whole figure collapses if there is none. */
-.figure {
-  margin: 0 0 13px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: rgb(255 255 255 / 4%);
-}
-
-body.theme-light .figure {
-  background: rgb(15 22 36 / 4%);
-}
-
-.figure[data-state='empty'] {
+.panel[data-empty='true']::before {
   display: none;
 }
 
+.hero {
+  position: relative;
+  margin: calc(-1 * var(--pad-top)) calc(-1 * var(--pad)) 14px;
+}
+
+.figure {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+}
+
+.figure[data-state='loading'],
+.figure[data-state='ready'] {
+  height: 208px;
+  mask-image: linear-gradient(to bottom, #000 58%, transparent);
+}
+
+/* No picture: a wash of the era's colour stands in, so the card still opens
+   with something rather than starting cold on a line of text. */
+.figure[data-state='empty'] {
+  height: 76px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--era) 42%, transparent), transparent 70%),
+    radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--era) 16%, transparent), transparent 70%);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+
 .figure__placeholder {
-  height: 132px;
+  height: 100%;
   background:
     linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 7%) 40%, transparent 60%)
-    0 0 / 240% 100% no-repeat;
+    0 0 / 240% 100% no-repeat,
+    color-mix(in srgb, var(--era) 10%, transparent);
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes shimmer {
   to {
-    background-position: -140% 0;
+    background-position:
+      -140% 0,
+      0 0;
   }
+}
+
+.figure__zoom {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.figure__zoom:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* --- enlarged picture --------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: calc(56px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
+  background: rgb(4 6 11 / 88%);
+  cursor: zoom-out;
+  backdrop-filter: blur(10px);
+  animation: lightbox-in 0.18s ease;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 30px 80px rgb(0 0 0 / 60%);
+  object-fit: contain;
+  flex: 0 1 auto;
+}
+
+.lightbox__caption {
+  margin: 0;
+  color: rgb(255 255 255 / 70%);
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+
+.lightbox__caption a {
+  color: #fff;
+}
+
+.lightbox__close {
+  position: absolute;
+  top: calc(12px + var(--safe-top));
+  right: calc(12px + var(--safe-right));
 }
 
 .figure img {
   display: block;
   width: 100%;
-  max-height: 240px;
+  height: 100%;
   object-fit: cover;
-  background: #000;
+  object-position: center 30%;
+  background: #05070c;
 }
 
+/* Source credit, as a small pill in the corner of the picture. */
 .figure figcaption {
-  padding: 5px 9px 6px;
-  color: var(--fg-faint);
-  font-size: 10.5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  max-width: 70%;
+  padding: 2px 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  color: rgb(255 255 255 / 82%);
+  background: rgb(6 8 14 / 62%);
+  font-size: 10px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(6px);
+}
+
+.figure figcaption a {
+  color: #fff;
+}
+
+.hero__text {
+  position: relative;
+  margin-top: -46px;
+  padding: 0 var(--pad);
+}
+
+.figure[data-state='empty'] + .hero__text {
+  margin-top: -34px;
+}
+
+.badge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 3px 10px 3px 8px;
+  border: 1px solid var(--ring-strong);
+  border-radius: 999px;
+  color: var(--fg-dim);
+  background: color-mix(in srgb, var(--surface-solid) 82%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-shadow: 0 1px 14px var(--surface-solid);
+  text-wrap: balance;
+}
+
+/* Year, origin, type: the three things people ask first. */
+.spec {
+  display: flex;
+  margin: 0 0 14px;
+  padding: 10px 0;
+  border-block: 1px solid var(--ring);
+}
+
+.spec__cell {
+  min-width: 0;
+  padding: 0 14px;
+  border-left: 1px solid var(--ring);
+  flex: 1 1 0;
+}
+
+.spec__cell:first-child {
+  padding-left: 0;
+  border-left: 0;
+  flex: 0 0 auto;
+}
+
+.spec dt {
+  color: var(--fg-faint);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spec dd {
+  margin: 2px 0 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.spec__cell:first-child dd {
+  font-size: 14px;
 }
 
 .summary {
   margin: 0 0 12px;
-  color: var(--fg-dim);
+  color: var(--fg);
   font-size: 13.5px;
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
@@ -609,40 +890,176 @@ body.theme-light .figure {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--fg-faint);
   content: '';
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-  gap: 1px;
-  margin: 0 0 14px;
+/* --- people ------------------------------------------------------------ */
+
+.people {
+  margin: 0 0 16px;
+}
+
+.people h3 {
+  margin: 0 0 6px;
+  color: var(--fg-faint);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.people__list {
+  margin: 0 -8px;
   padding: 0;
-  border: 1px solid var(--ring);
-  border-radius: var(--radius-sm);
+  list-style: none;
+}
+
+/* A person is a button: it searches for everything else that carries the name. */
+.person {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--fg);
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s;
+}
+
+.person:hover {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+.person:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Initials on a neutral ground, with the photograph laid over them when there
+   is a checked one. Deliberately colourless: the picture is the colour. */
+.person__avatar {
+  position: relative;
+  display: grid;
+  width: 40px;
+  height: 40px;
   overflow: hidden;
-  background: var(--ring);
+  border-radius: 50%;
+  color: var(--fg-dim);
+  background: color-mix(in srgb, var(--fg) 9%, transparent);
+  box-shadow: inset 0 0 0 1px var(--ring);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+/* Sized and placed inline, per picture: see frame() in panel.ts. */
+.person__avatar img {
+  position: absolute;
+  max-width: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+/* An organisation's mark: whole, on white, with air around it. */
+.person__avatar[data-kind='logo'] img {
+  inset: 18%;
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+}
+
+.person__avatar[data-kind='logo'][data-photo='true'] {
+  background: #fff;
+}
+
+.person__avatar[data-photo='true'] img {
+  opacity: 1;
+}
+
+.person__avatar[data-photo='true'] {
+  background: #0b0d13;
+  box-shadow: 0 0 0 1px var(--ring-strong);
+}
+
+.person__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+  flex: 1 1 auto;
+}
+
+.person__name {
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.person__note {
+  overflow: hidden;
+  color: var(--fg-faint);
+  font-size: 11.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.person__go {
+  width: 14px;
+  height: 14px;
+  color: var(--fg-faint);
+  opacity: 0.35;
+  transition: opacity 0.16s;
+}
+
+.person:hover .person__go {
+  opacity: 1;
+}
+
+.stats {
+  display: flex;
+  margin: 0 0 16px;
+  padding: 10px 0;
+  border-block: 1px solid var(--ring);
 }
 
 .stat {
-  padding: 7px 9px 8px;
-  background: var(--surface-solid);
+  min-width: 0;
+  padding: 0 12px;
+  border-left: 1px solid var(--ring);
+  flex: 1 1 0;
+}
+
+.stat:first-child {
+  padding-left: 0;
+  border-left: 0;
 }
 
 .stat dt {
+  overflow: hidden;
   color: var(--fg-faint);
   font-size: 9.5px;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .stat dd {
-  margin: 0;
-  font-size: 17px;
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  line-height: 1.2;
 }
 
 .extract[data-state='empty'] {
@@ -655,14 +1072,12 @@ body.theme-light .figure {
   color: var(--fg-faint);
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .extract {
-  margin-bottom: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--ring);
+  margin-bottom: 16px;
 }
 
 .extract p {
@@ -793,11 +1208,12 @@ body.theme-light .figure {
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 9px 13px;
+  height: var(--control-h);
+  padding: 0 13px;
   border: 1px solid var(--ring);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px) saturate(1.3);
 }
 
 .timeline label {
@@ -817,23 +1233,30 @@ body.theme-light .figure {
   accent-color: var(--accent);
 }
 
+/* The era key. One strip in the same glass as the other controls, with small
+   markers: it is a key to the colours in the tree, not a second set of them. */
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 11px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: 2px 14px;
+  align-items: center;
   min-width: 0;
-  flex: 1 1 auto;
+  min-height: var(--control-h);
+  margin: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  list-style: none;
+  backdrop-filter: blur(14px) saturate(1.3);
+  flex: 0 1 auto;
 }
 
-/* Below this the timeline, ten era swatches and the key list cannot share a
-   row without colliding, so the legend takes a line of its own. */
+/* Below this the timeline, ten eras and the key list cannot share a row
+   without colliding, so the legend takes a line of its own. */
 @media (1200px >= width > 860px) {
   .legend {
     order: 3;
-    flex-basis: 100%;
   }
 
   .help {
@@ -843,18 +1266,18 @@ body.theme-light .figure {
 
 .legend li {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   align-items: center;
-  color: var(--fg-faint);
+  color: var(--fg-dim);
   font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
-.legend i {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex: 0 0 auto;
+.legend .dot {
+  width: 9px;
+  height: 9px;
 }
 
 .help {
@@ -943,8 +1366,8 @@ body.theme-light .help kbd {
   }
 
   .brand__mark {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
   }
 
   .brand__text strong {
@@ -999,6 +1422,83 @@ body.theme-light .help kbd {
 
   .search__close {
     display: inline-flex;
+  }
+
+  .search__key {
+    display: none;
+  }
+
+  .search__field {
+    height: auto;
+  }
+
+  .bar--top::before,
+  .bar--bottom::before {
+    display: none;
+  }
+
+  .timeline {
+    height: auto;
+  }
+
+  /* The sheet's own header already carries the name and the era, and at half
+     height there is room for very little, so the picture shrinks and the
+     heading steps aside for what the header does not say. */
+  .hero {
+    margin-bottom: 12px;
+  }
+
+  /* A half open sheet shows about three rows. When and where it was made and
+     who made it go first; the picture follows. */
+  .panel__body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel__body > * {
+    flex: 0 0 auto;
+  }
+
+  .panel__body > .spec {
+    order: -2;
+    margin-bottom: 12px;
+    border-top: 0;
+    padding-top: 2px;
+  }
+
+  .panel__body > .people--own {
+    order: -1;
+  }
+
+  .hero__text {
+    display: none;
+  }
+
+  .figure[data-state='loading'],
+  .figure[data-state='ready'] {
+    height: 124px;
+    mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  }
+
+  .figure[data-state='empty'] {
+    display: none;
+  }
+
+  .person {
+    padding: 8px;
+  }
+
+  .person__avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .person__note {
+    font-size: 12.5px;
+  }
+
+  .person__name {
+    font-size: 15px;
   }
 
   .search__results {
@@ -1066,6 +1566,9 @@ body.theme-light .help kbd {
   }
 
   .panel__body {
+    --pad: 16px;
+    --pad-top: 0px;
+
     padding: 0 16px 20px;
     flex: 1 1 auto;
     -webkit-overflow-scrolling: touch;
@@ -1079,13 +1582,6 @@ body.theme-light .help kbd {
     opacity: 0.8;
   }
 
-  .panel h2 {
-    font-size: 22px;
-  }
-
-  .figure img {
-    max-height: 30vh;
-  }
 
   .rows li > button,
   .path button {
@@ -1117,6 +1613,20 @@ body.theme-light .help kbd {
     background: none;
     backdrop-filter: none;
     padding: 0;
+  }
+
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 14px;
+    padding: 0;
+    border: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .legend li {
+    font-size: 12.5px;
   }
 
   .timeline input[type='range'] {
@@ -1170,13 +1680,17 @@ body.theme-light .help kbd {
 @media (prefers-reduced-motion: reduce) {
   .btn,
   .icon-btn,
+  .person,
+  .person__go,
+  .search__field,
   .bar--bottom,
   .search {
     transition: none;
   }
 
   .figure__placeholder,
-  .extract__skeleton {
+  .extract__skeleton,
+  .lightbox {
     animation: none;
   }
 }

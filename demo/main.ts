@@ -10,6 +10,8 @@ import {
   BinaryTree,
   ERAS,
   computerHistory,
+  creatorsOf,
+  fold,
   formatYear,
   loaders,
   walk,
@@ -40,6 +42,8 @@ const bottomEl = $<HTMLElement>('bottom')
 const taglineEl = $<HTMLElement>('tagline')
 const tourButton = $<HTMLButtonElement>('tour')
 const tourTab = $<HTMLButtonElement>('tab-tour')
+const tourLabel = tourButton.querySelector('.btn__label') as HTMLElement
+const tourIcon = tourButton.querySelector('[class^="icon-"]') as HTMLElement
 // The tab button is an icon above a word; the word is the second span.
 const tourTabLabel = tourTab.querySelector('span:last-of-type') as HTMLElement
 
@@ -78,6 +82,36 @@ const yearFilter = (node: TreeNode): boolean => {
   return typeof year !== 'number' || year <= yearLimit
 }
 
+/** "Ken Thompson, Dennis Ritchie" or "Federico Faggin +3": short enough for a label. */
+function creditLine(id: string): string {
+  const names = creatorsOf(id)
+  if (names.length <= 2) return names.join(', ')
+  return `${names[0]} +${names.length - 1}`
+}
+
+/** The credited name a query matches, if any. */
+function creditMatch(node: TreeNode, query: string): string | undefined {
+  const needle = fold(query)
+  if (!needle) return undefined
+  return creatorsOf(node.id).find((name) => fold(name).includes(needle))
+}
+
+/**
+ * Search by name and by maker. The library ranks names and summaries; people
+ * are this dataset's own, so they are matched here and slotted in after the
+ * name hits and ahead of the looser summary ones.
+ */
+function searchTree(query: string, limit: number): TreeNode[] {
+  const needle = fold(query)
+  const byText = tree.api.search(query, limit)
+  const named = byText.filter((n) => fold(n.data.name).includes(needle))
+  const credited = tree.api
+    .nodes()
+    .filter((n) => creditMatch(n, query))
+    .sort((a, b) => ((a.data.year as number) ?? 0) - ((b.data.year as number) ?? 0))
+  return [...new Set([...named, ...credited, ...byText])].slice(0, limit)
+}
+
 // --- the tree --------------------------------------------------------------
 
 const tree = new BinaryTree(
@@ -103,10 +137,9 @@ const tree = new BinaryTree(
         fontScale: isPhone() ? 0.74 : 1,
         maxCards: isPhone() ? 1 : 3,
         detail: (n) => formatYear(n.data.year as number | undefined),
-        meta: (n) =>
-          [(n.data.origin as string) ?? '', (n.data.kind as string) ?? '']
-            .filter(Boolean)
-            .join(' · '),
+        // Who and where. The kind is on the detail panel, and on a branch
+        // heading it only ever said "group".
+        meta: (n) => [creditLine(n.id), (n.data.origin as string) ?? ''].filter(Boolean).join(' · '),
         // One sentence, so a card stays a card and not an essay.
         body: (n) => {
           const summary = n.data.summary as string | undefined
@@ -148,6 +181,7 @@ const panel = new Panel(panelEl, panelBody, panelPeek, {
     stopTour()
     void tree.api.select(node)
   },
+  onCreator: (name) => search.query(name),
 })
 
 const sheet = new Sheet(panelEl, panelGrab, {
@@ -236,7 +270,8 @@ for (const button of walkButtons) {
 // --- search ----------------------------------------------------------------
 
 const search = new Search(searchEl, searchInput, searchResults, {
-  search: (query, limit) => tree.api.search(query, limit),
+  search: searchTree,
+  where: creditMatch,
   onPick: (node) => {
     stopTour()
     void tree.api.select(node)
@@ -254,13 +289,14 @@ function renderLegend(): void {
   for (const era of ERAS) {
     const item = document.createElement('li')
     const swatch = document.createElement('i')
-    swatch.style.background = `#${era.color.toString(16).padStart(6, '0')}`
+    swatch.className = 'dot'
+    swatch.style.setProperty('--c', `#${era.color.toString(16).padStart(6, '0')}`)
     item.append(swatch, document.createTextNode(era.label))
     item.title = era.span
     legendList.append(item)
   }
   renderTagline()
-  searchInput.placeholder = `Search ${tree.api.nodes().length} nodes`
+  searchInput.placeholder = `Search ${tree.api.nodes().length} nodes and their creators`
 }
 
 /** The header subtitle, which the tour borrows to show its progress. */
@@ -342,7 +378,8 @@ function setTourPressed(on: boolean): void {
   for (const element of [tourButton, tourTab]) {
     element.setAttribute('aria-pressed', String(on))
   }
-  tourButton.textContent = on ? 'Stop' : 'Tour'
+  tourLabel.textContent = on ? 'Stop' : 'Tour'
+  tourIcon.className = on ? 'icon-stop' : 'icon-play'
   tourButton.title = on ? 'Stop the tour' : 'Walk the whole tree'
 }
 
@@ -466,6 +503,12 @@ for (const event of ['pointerdown', 'wheel'] as const) {
 }
 globalThis.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') stopTour()
+  // "/" jumps to search, as it does nearly everywhere else.
+  const typing = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement
+  if (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
+    event.preventDefault()
+    search.open()
+  }
 })
 
 syncLayout()
