@@ -260,22 +260,8 @@ demo/
 ├── wiki.ts          Wikipedia lookup, cached and failure tolerant
 └── ui/              panel, search, bottom sheet
 
-scripts/
-└── make-logo.ts     generates public/logo.svg and public/favicon.svg
+public/               logo.png, favicon.ico and the touch icon
 ```
-
-### The mark
-
-`npm run logo` regenerates it. The logo is computed, not drawn: it is a small
-binary tree laid out in the Poincaré disc by the same Möbius geometry the library
-uses, so the branch curves really are geodesics and the stroke widths really do
-follow Murray's law. Hand-tuned Bézier control points would have been quicker and
-would have been a picture of the idea rather than the idea.
-
-Two files come out, because the two jobs want different amounts of detail. A 22
-node tree is legible at 30px and noise at 16px, which is the whole reason a
-favicon is its own asset rather than a scaled copy of the logo. It is also two
-dimensional on purpose: a projection of the 3D layout at tab-icon size is mud.
 
 `math` deliberately knows nothing about three.js. The correctness of the
 geometry has to be testable without a WebGL context, and most of the tests live
