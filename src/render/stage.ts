@@ -19,14 +19,17 @@ import {
   LineLoop,
   Mesh,
   MeshBasicMaterial,
+  PMREMGenerator,
   PerspectiveCamera,
   Scene,
   SphereGeometry,
   Vector2,
   Vector3,
+  WebGLRenderTarget,
   WebGLRenderer,
 } from 'three'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
@@ -97,6 +100,7 @@ export class Stage {
   private readonly key: DirectionalLight
   private readonly fill: DirectionalLight
   private readonly rimLight: DirectionalLight
+  private readonly environmentTarget: WebGLRenderTarget
   private readonly options: StageOptions
   private composer: EffectComposer | null = null
   private bloomPass: UnrealBloomPass | null = null
@@ -164,7 +168,7 @@ export class Stage {
     // between the lit and unlit side - and a sphere without a terminator reads
     // as a flat disc of colour. The rim light behind picks out the silhouette so
     // a dark node still separates from a dark background.
-    this.ambient = new AmbientLight(0xffffff, 0.5)
+    this.ambient = new AmbientLight(0xffffff, 0.34)
     this.key = new DirectionalLight(0xffffff, 2.1)
     this.key.position.set(2, 3, 4)
     this.fill = new DirectionalLight(0x93b0ff, 0.62)
@@ -172,6 +176,19 @@ export class Stage {
     this.rimLight = new DirectionalLight(0xdce8ff, 1.25)
     this.rimLight.position.set(-1.2, 1.6, -3.4)
     this.scene.add(this.ambient, this.key, this.fill, this.rimLight)
+
+    // Something for the glossy surfaces to reflect. Punctual lights give a
+    // highlight and nothing else, which is why a sphere lit only by them looks
+    // like plastic: real wet tissue picks up the whole room, softly. A small
+    // studio environment, blurred and kept low, supplies that without adding a
+    // visible background.
+    const pmrem = new PMREMGenerator(this.renderer)
+    const room = new RoomEnvironment()
+    this.environmentTarget = pmrem.fromScene(room, 0.06)
+    this.scene.environment = this.environmentTarget.texture
+    this.scene.environmentIntensity = 0.42
+    room.dispose()
+    pmrem.dispose()
 
     if (this.options.bloom) this.setupComposer()
 
@@ -346,6 +363,7 @@ export class Stage {
     ;(this.rim.material as LineBasicMaterial).dispose()
     this.starfield?.dispose()
     this.composer?.dispose()
+    this.environmentTarget.dispose()
     this.renderer.dispose()
     this.canvas.remove()
   }

@@ -78,7 +78,9 @@ export const defaultNeuritesOptions: NeuritesOptions = {
   minWidth: 0.0007,
   minExtent: 0.0012,
   opacity: 0.95,
-  edgeShade: 0.14,
+  // The edges are shaded again in the fragment shader, by the profile of a
+  // cylinder, so this only sets how far the vertex colours fall toward them.
+  edgeShade: 0.5,
   wander: 1.5,
   // Kept short of a flash. Pushed harder the crest goes white, and a white
   // streak travelling down a thread reads as a spark or a short circuit rather
@@ -96,6 +98,27 @@ const ACROSS = 3
 const phaseOf = (i: number): number => {
   const x = Math.sin(i * 53.1287) * 43758.5453
   return (x - Math.floor(x)) * Math.PI * 2
+}
+
+/** Deterministic value in [0, 1) for a filament and a salt. */
+const unit = (i: number, salt: number): number => {
+  const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453
+  return x - Math.floor(x)
+}
+
+/**
+ * Varicosities: the small beads along a real axon where it releases signal. Two
+ * or three per filament, at fixed places, each a narrow swelling. Without them a
+ * thread is a perfectly even line, which is the single most synthetic thing left
+ * once the shading is right.
+ */
+const beads = (t: number, centres: readonly number[]): number => {
+  let swell = 0
+  for (const c of centres) {
+    const d = (t - c) * 9
+    swell += Math.exp(-d * d)
+  }
+  return swell
 }
 
 export class NeuritesLayer {
@@ -169,7 +192,13 @@ export class NeuritesLayer {
       }
     }
 
+    // Position across the ribbon, -1 at one wall, 0 on the axis, 1 at the other.
+    // The fragment shader turns it into the profile of a round filament.
+    const across = new Float32Array(vertices)
+    for (let v = 0; v < vertices; v++) across[v] = (v % ACROSS) - 1
+
     this.geometry = new BufferGeometry()
+    this.geometry.setAttribute('across', new BufferAttribute(across, 1))
     this.geometry.setAttribute('position', this.positionAttribute)
     this.geometry.setAttribute('color', this.colorAttribute)
     this.geometry.setIndex(new BufferAttribute(indices, 1))
@@ -182,6 +211,30 @@ export class NeuritesLayer {
       depthWrite: false,
       side: DoubleSide,
     })
+
+    // A flat ribbon shaded as the front of a cylinder: bright along the axis,
+    // falling away to the walls, with a narrow sheen just off the middle where a
+    // wet surface would catch the light. That is what makes a two dimensional
+    // strip read as a round, glistening thread.
+    this.material.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nattribute float across;\nvarying float vAcross;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAcross = across;')
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying float vAcross;')
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+{
+  float a = clamp(vAcross, -1.0, 1.0);
+  float height = sqrt(max(0.0, 1.0 - a * a));
+  float body = 0.34 + 0.66 * pow(height, 0.85);
+  float sheen = pow(max(0.0, 1.0 - abs(a + 0.3) * 2.4), 4.0) * 0.5;
+  diffuseColor.rgb = diffuseColor.rgb * body + (diffuseColor.rgb * 0.5 + 0.35) * sheen;
+}`,
+        )
+    }
+    this.material.customProgramCacheKey = () => 'bt-neurite-v1'
 
     this.mesh = new Mesh(this.geometry, this.material)
     this.mesh.frustumCulled = false
@@ -288,6 +341,8 @@ export class NeuritesLayer {
       const flare = 1.3
 
       const wanderPhase = phaseOf(li)
+      const bead = [0.18 + unit(li, 1) * 0.2, 0.46 + unit(li, 2) * 0.2, 0.74 + unit(li, 3) * 0.16]
+      const beadSize = 0.14 + unit(li, 4) * 0.16
       const sourceOffset = spikes.offsetOf(source)
       const targetOffset = spikes.offsetOf(target)
       const base = slot * perLink
@@ -322,6 +377,7 @@ export class NeuritesLayer {
         const shape = caliber * (flare + (1 - flare) * t)
         const conformal = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
         let half = width * shape * conformal * grow
+        half *= 1 + beadSize * beads(t, bead)
         half *= 1 + spikeSwell * spike
         if (half < minWidth) half = minWidth
 
@@ -330,7 +386,8 @@ export class NeuritesLayer {
         // a capillary wobbles by a capillary's worth.
         const anchor = Math.sin(t * Math.PI)
         const offsetAcross =
-          wander * half * anchor * Math.sin(wanderPhase + t * 5.4 + wanderPhase * 0.31)
+          wander * half * anchor * Math.sin(wanderPhase + t * 5.4 + wanderPhase * 0.31) +
+          wander * 0.45 * half * anchor * Math.sin(wanderPhase * 1.7 + t * 12.6)
 
         const r = this.a.r + (this.b.r - this.a.r) * t
         const g = this.a.g + (this.b.g - this.a.g) * t

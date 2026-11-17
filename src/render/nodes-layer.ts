@@ -13,7 +13,7 @@ import {
   Matrix4,
   Mesh,
   MeshBasicMaterial,
-  MeshStandardMaterial,
+  MeshPhysicalMaterial,
   Object3D,
   type PerspectiveCamera,
   type Quaternion,
@@ -86,14 +86,70 @@ export class NodesLayer {
     // sphere, and at 16 the outline visibly faceted on the centred node, which is
     // the one being looked at.
     const geometry = new SphereGeometry(1, 32, 24)
-    // Not metallic. A somewhat rough dielectric with a little sheen reads as
-    // something wet and organic; metalness gives a hard specular highlight that
-    // reads as a bead or a ball bearing.
-    const material = new MeshStandardMaterial({
-      roughness: 0.58,
+    // A wet cell, not a bead. Not metallic: metalness gives a hard highlight that
+    // reads as a ball bearing. Instead a fairly smooth dielectric under a thin
+    // clear coat, which is what a moist membrane is, with a soft sheen where the
+    // surface turns away from the light. The shader patch below adds the two
+    // things a plain material cannot: an uneven surface colour, and light
+    // bleeding through the thin edges.
+    const material = new MeshPhysicalMaterial({
+      roughness: 0.42,
       metalness: 0,
-      flatShading: false,
+      clearcoat: 0.4,
+      clearcoatRoughness: 0.3,
+      sheen: 0.7,
+      sheenRoughness: 0.55,
+      sheenColor: new Color(0xbfd0ff),
     })
+    material.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vLocal;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocal = position;')
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+varying vec3 vLocal;
+float btHash(vec3 p) {
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float btNoise(vec3 x) {
+  vec3 i = floor(x);
+  vec3 f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(btHash(i), btHash(i + vec3(1, 0, 0)), f.x),
+        mix(btHash(i + vec3(0, 1, 0)), btHash(i + vec3(1, 1, 0)), f.x), f.y),
+    mix(mix(btHash(i + vec3(0, 0, 1)), btHash(i + vec3(1, 0, 1)), f.x),
+        mix(btHash(i + vec3(0, 1, 1)), btHash(i + vec3(1, 1, 1)), f.x), f.y),
+    f.z);
+}`,
+        )
+        // Two octaves of mottling in the albedo, from the unit sphere's own
+        // coordinates so every instance carries the same pattern at its own size.
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+{
+  float m = btNoise(vLocal * 3.4) * 0.62 + btNoise(vLocal * 9.0) * 0.38;
+  diffuseColor.rgb *= 0.8 + 0.4 * m;
+}`,
+        )
+        // Light through the thin edge of a translucent body: a soft glow in the
+        // body's own colour where the surface is edge on to the eye.
+        .replace(
+          '#include <emissivemap_fragment>',
+          `#include <emissivemap_fragment>
+{
+  vec3 btView = normalize(vViewPosition);
+  float btRim = pow(1.0 - clamp(dot(normal, btView), 0.0, 1.0), 2.4);
+  totalEmissiveRadiance += diffuseColor.rgb * btRim * 0.5;
+}`,
+        )
+    }
+    material.customProgramCacheKey = () => 'bt-cell-v1'
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
     this.mesh.frustumCulled = false
 
@@ -289,7 +345,7 @@ export class NodesLayer {
 
   dispose(): void {
     this.mesh.geometry.dispose()
-    ;(this.mesh.material as MeshStandardMaterial).dispose()
+    ;(this.mesh.material as MeshPhysicalMaterial).dispose()
     this.mesh.dispose()
     this.selectionHalo.geometry.dispose()
     ;(this.selectionHalo.material as MeshBasicMaterial).dispose()
