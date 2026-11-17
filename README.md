@@ -398,11 +398,18 @@ offline browser all end the same way: the panel shows the dataset's own text.
 
 ## Dataset
 
-`computerHistory` is fourteen lineages and 609 nodes: mechanical calculation and
+`computerHistory` is twenty lineages and 944 nodes: mechanical calculation and
 theory, early computers, components and processors, peripherals, personal
-computers, operating systems, programming languages, tools and standards, data
-and databases, networks, cryptography and security, games and consoles, mobile,
-and supercomputing with AI.
+computers, operating systems, programming languages, tools and standards, open
+source and the cloud, data and databases, networks, telecommunications, the web
+platform, cryptography and security, blockchain, games and consoles, media and
+compression, mobile, robotics, and supercomputing with AI.
+
+Adding to it: a branch is one file in `src/data/branches/`, written with the
+`item()` and `group()` helpers from `src/data/build.ts`, then listed in
+`src/data/index.ts`. Ids must be unique, a child may not predate its parent by
+more than a decade, and every leaf needs a summary; `npm test` checks all three.
+Wikipedia titles go in `src/data/wiki.ts` and creators in `src/data/creators.ts`.
 
 Games are a branch rather than a footnote. They drove consumer 3D hardware, which
 became the GPU, which is what machine learning runs on; the line from Spacewar to
