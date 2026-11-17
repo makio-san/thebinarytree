@@ -186,7 +186,7 @@ export class Stage {
     const room = new RoomEnvironment()
     this.environmentTarget = pmrem.fromScene(room, 0.06)
     this.scene.environment = this.environmentTarget.texture
-    this.scene.environmentIntensity = 0.42
+    this.scene.environmentIntensity = 0.12
     room.dispose()
     pmrem.dispose()
 

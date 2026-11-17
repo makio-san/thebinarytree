@@ -92,14 +92,11 @@ export class NodesLayer {
     // surface turns away from the light. The shader patch below adds the two
     // things a plain material cannot: an uneven surface colour, and light
     // bleeding through the thin edges.
+    // Matte on purpose: no clear coat, no sheen, no rim glow. Realism here means
+    // an uneven, dull, organic body, not a shiny one.
     const material = new MeshPhysicalMaterial({
-      roughness: 0.42,
+      roughness: 0.9,
       metalness: 0,
-      clearcoat: 0.4,
-      clearcoatRoughness: 0.3,
-      sheen: 0.7,
-      sheenRoughness: 0.55,
-      sheenColor: new Color(0xbfd0ff),
     })
     material.onBeforeCompile = (shader) => {
       shader.vertexShader = shader.vertexShader
@@ -137,19 +134,8 @@ float btNoise(vec3 x) {
   diffuseColor.rgb *= 0.8 + 0.4 * m;
 }`,
         )
-        // Light through the thin edge of a translucent body: a soft glow in the
-        // body's own colour where the surface is edge on to the eye.
-        .replace(
-          '#include <emissivemap_fragment>',
-          `#include <emissivemap_fragment>
-{
-  vec3 btView = normalize(vViewPosition);
-  float btRim = pow(1.0 - clamp(dot(normal, btView), 0.0, 1.0), 2.4);
-  totalEmissiveRadiance += diffuseColor.rgb * btRim * 0.5;
-}`,
-        )
     }
-    material.customProgramCacheKey = () => 'bt-cell-v1'
+    material.customProgramCacheKey = () => 'bt-cell-v2'
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
     this.mesh.frustumCulled = false
 

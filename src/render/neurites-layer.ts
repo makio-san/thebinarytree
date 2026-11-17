@@ -228,13 +228,12 @@ export class NeuritesLayer {
 {
   float a = clamp(vAcross, -1.0, 1.0);
   float height = sqrt(max(0.0, 1.0 - a * a));
-  float body = 0.34 + 0.66 * pow(height, 0.85);
-  float sheen = pow(max(0.0, 1.0 - abs(a + 0.3) * 2.4), 4.0) * 0.5;
-  diffuseColor.rgb = diffuseColor.rgb * body + (diffuseColor.rgb * 0.5 + 0.35) * sheen;
+  float body = 0.6 + 0.4 * pow(height, 0.85);
+  diffuseColor.rgb *= body;
 }`,
         )
     }
-    this.material.customProgramCacheKey = () => 'bt-neurite-v1'
+    this.material.customProgramCacheKey = () => 'bt-neurite-v2'
 
     this.mesh = new Mesh(this.geometry, this.material)
     this.mesh.frustumCulled = false
