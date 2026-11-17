@@ -75,7 +75,7 @@ export interface ControlsOptions {
 
 export const defaultControlsOptions: ControlsOptions = {
   orbitSpeed: 0.0062,
-  zoomSpeed: 0.0013,
+  zoomSpeed: 0.0034,
   clickSlop: 5,
   enableKeyboard: true,
   touchTolerance: 24,
@@ -209,7 +209,7 @@ export class Controls {
     if (this.mode === 'pinch') {
       const d = this.currentPinchDistance()
       if (this.pinchDistance > 0 && d > 0) {
-        this.stage.dolly(this.pinchDistance / d)
+        this.stage.dolly(this.pinchDistance / d, true)
         this.handlers.requestRender()
       }
       this.pinchDistance = d
@@ -322,7 +322,12 @@ export class Controls {
   private onWheel = (event: WheelEvent): void => {
     event.preventDefault()
     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 400 : 1
-    this.stage.dolly(Math.exp(event.deltaY * unit * this.options.zoomSpeed))
+    // A trackpad pinch arrives as a wheel event with ctrl held and tiny deltas,
+    // so it needs a much larger gain to match a mouse wheel. One event is capped
+    // so a free-spinning wheel cannot throw the camera across the whole range.
+    const gain = event.ctrlKey ? 5 : 1
+    const step = Math.max(-0.9, Math.min(0.9, event.deltaY * unit * this.options.zoomSpeed * gain))
+    this.stage.dolly(Math.exp(step))
     this.handlers.requestRender()
   }
 

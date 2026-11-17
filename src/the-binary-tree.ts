@@ -322,13 +322,16 @@ export class BinaryTree {
     if (this.lastFrame === 0) this.lastFrame = now
     // Clamp the step: a backgrounded tab resumes with a huge gap, and letting
     // that through would teleport the flow and skip the whole growth animation.
-    this.clock += Math.min(0.1, (now - this.lastFrame) / 1000)
+    const step = Math.min(0.1, (now - this.lastFrame) / 1000)
+    this.clock += step
     this.lastFrame = now
+
+    const zooming = this.stage.tick(step)
 
     const flying = this.navigator.tick(now)
     const growing = this.advanceGrowth(now)
 
-    if (!flying && !growing && !this.dirty && !this.motion.ambient) return
+    if (!flying && !growing && !zooming && !this.dirty && !this.motion.ambient) return
     this.dirty = false
     this.draw()
   }
