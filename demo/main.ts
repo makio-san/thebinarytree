@@ -498,15 +498,63 @@ for (const gesture of ['gesturestart', 'gesturechange', 'gestureend']) {
 // WebKit can still start a page level pan from a touch that lands on the chrome.
 // Anything that is not one of the few things meant to scroll or slide is held
 // still. Non passive, because a passive listener cannot cancel a gesture.
+//
+// The scrollable parts get less than a free pass. A horizontal move is never
+// allowed inside them, and a vertical one only while that element can really
+// scroll that way. At the top or bottom of the content the gesture would chain
+// to the page, which is exactly the rubber band that makes the menu feel loose.
+const SCROLLERS = '.panel__body, .search__results, textarea'
+let touchX = 0
+let touchY = 0
+document.addEventListener(
+  'touchstart',
+  (event) => {
+    const touch = event.touches[0]
+    if (!touch) return
+    touchX = touch.clientX
+    touchY = touch.clientY
+  },
+  { passive: true },
+)
 document.addEventListener(
   'touchmove',
   (event) => {
+    if (event.touches.length > 1) {
+      event.preventDefault()
+      return
+    }
     const target = event.target as Element | null
-    if (target?.closest('.panel__body, .search__results, input[type="range"], textarea')) return
+    // The year slider moves its own thumb.
+    if (target?.closest('input[type="range"]')) return
+
+    const scroller = target?.closest<HTMLElement>(SCROLLERS)
+    const touch = event.touches[0]
+    if (scroller && touch) {
+      const dx = touch.clientX - touchX
+      const dy = touch.clientY - touchY
+      const vertical = Math.abs(dy) >= Math.abs(dx)
+      const top = scroller.scrollTop <= 0
+      const bottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1
+      const canScroll = scroller.scrollHeight > scroller.clientHeight + 1
+      if (vertical && canScroll && !(dy > 0 && top) && !(dy < 0 && bottom)) return
+    }
     event.preventDefault()
   },
   { passive: false },
 )
+// The visual viewport can slide away from the page when a keyboard opens or a
+// zoom slips through. Nothing here is meant to be panned, so put it back.
+const holdViewport = (): void => {
+  const viewport = globalThis.visualViewport
+  if (viewport && viewport.scale <= 1.001 && (viewport.offsetLeft !== 0 || viewport.pageLeft !== 0)) {
+    globalThis.scrollTo(0, 0)
+  }
+  if (document.documentElement.scrollLeft || document.documentElement.scrollTop) {
+    globalThis.scrollTo(0, 0)
+  }
+}
+globalThis.visualViewport?.addEventListener('scroll', holdViewport)
+globalThis.addEventListener('scroll', holdViewport, { passive: true })
 
 // Any hand on the canvas ends the tour. Without this it keeps pulling the view
 // away every couple of seconds while you are trying to look at something, and
