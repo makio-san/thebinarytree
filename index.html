@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
     />
     <meta name="theme-color" content="#080a11" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,11 +33,22 @@
         color-scheme: dark;
       }
 
+      /* The page is a fixed pane that never scrolls, zooms or rubber bands: only
+         the canvas and the panel's own scroll areas respond to a finger. Without
+         this, iOS lets a drag pan the whole page and a pinch zoom it, and the
+         fixed bars slide around with it. */
       html,
       body {
-        margin: 0;
+        position: fixed;
+        inset: 0;
+        width: 100%;
         height: 100%;
+        height: 100dvh;
+        margin: 0;
+        overflow: hidden;
+        overscroll-behavior: none;
         background: #080a11;
+        -webkit-text-size-adjust: 100%;
       }
 
       body {

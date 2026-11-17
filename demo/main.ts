@@ -492,7 +492,21 @@ globalThis.addEventListener('resize', () => {
 // this is the only event that fires when it opens or closes.
 globalThis.visualViewport?.addEventListener('resize', syncSafeArea)
 // Stop the page itself from bouncing on a phone; the canvas handles gestures.
-document.addEventListener('gesturestart', (event) => event.preventDefault())
+for (const gesture of ['gesturestart', 'gesturechange', 'gestureend']) {
+  document.addEventListener(gesture, (event) => event.preventDefault())
+}
+// WebKit can still start a page level pan from a touch that lands on the chrome.
+// Anything that is not one of the few things meant to scroll or slide is held
+// still. Non passive, because a passive listener cannot cancel a gesture.
+document.addEventListener(
+  'touchmove',
+  (event) => {
+    const target = event.target as Element | null
+    if (target?.closest('.panel__body, .search__results, input[type="range"], textarea')) return
+    event.preventDefault()
+  },
+  { passive: false },
+)
 
 // Any hand on the canvas ends the tour. Without this it keeps pulling the view
 // away every couple of seconds while you are trying to look at something, and

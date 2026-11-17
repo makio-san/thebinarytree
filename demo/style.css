@@ -84,6 +84,37 @@ body {
   inset: 0;
 }
 
+/* Every touch on the tree belongs to the tree: orbit, pull and pinch are handled
+   by the controls, never by the browser. */
+.stage,
+.stage canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Chrome that is only ever tapped: no double tap zoom, no text selection, and no
+   callout on a long press. */
+.bar,
+.tabbar,
+.panel__grab {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.panel__body,
+.search__results {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+.timeline input[type='range'] {
+  touch-action: pan-x;
+}
+
 /* Thin, quiet scrollbars: the panel scrolls constantly and the default one is
    the loudest thing on the card. */
 * {
