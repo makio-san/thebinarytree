@@ -10,8 +10,8 @@ describe('the computer history dataset', () => {
     expect(all.length).toBeGreaterThan(250)
   })
 
-  it('has fourteen top level branches', () => {
-    expect(computerHistory.children).toHaveLength(14)
+  it('has twenty top level branches', () => {
+    expect(computerHistory.children).toHaveLength(20)
   })
 
   it('uses unique ids everywhere', () => {

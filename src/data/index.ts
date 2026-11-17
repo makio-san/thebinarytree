@@ -1,7 +1,7 @@
 /**
  * The bundled dataset: the history of computing as one tree.
  *
- * Fourteen top level branches, chosen so that each one is a real lineage rather
+ * Twenty top level branches, chosen so that each one is a real lineage rather
  * than a bucket. Where something genuinely descends from something else it is
  * nested under it, even when that crosses branch boundaries in spirit: MINIX
  * sits under Unix and Linux sits under MINIX, because that is what happened.
@@ -10,20 +10,26 @@
  * sources agree on more clearly. Where the two differ the summary says so.
  */
 
+import { blockchain } from './branches/blockchain'
 import { dataStores } from './branches/data-stores'
 import { foundations } from './branches/foundations'
 import { frontier } from './branches/frontier'
 import { games } from './branches/games'
 import { languages } from './branches/languages'
 import { machines } from './branches/machines'
+import { media } from './branches/media'
 import { mobile } from './branches/mobile'
 import { networks } from './branches/networks'
+import { openSource } from './branches/open-source'
 import { operatingSystems } from './branches/operating-systems'
 import { peripherals } from './branches/peripherals'
 import { personal } from './branches/personal'
 import { processors } from './branches/processors'
+import { robotics } from './branches/robotics'
 import { security } from './branches/security'
+import { telecom } from './branches/telecom'
 import { tools } from './branches/tools'
+import { webPlatform } from './branches/web-platform'
 import type { ComputerDatum } from './types'
 
 export type { ComputerDatum, ComputerKind } from './types'
@@ -35,7 +41,7 @@ export const computerHistory: ComputerDatum = {
   kind: 'group',
   summary:
     'The family tree of computing, from the abacus to the quantum processor. Click a branch to bring it to the centre.',
-  facts: ['Fourteen main lineages', 'Around 5000 years'],
+  facts: ['Twenty main lineages', 'Around 5000 years'],
   children: [
     foundations,
     machines,
@@ -45,11 +51,17 @@ export const computerHistory: ComputerDatum = {
     operatingSystems,
     languages,
     tools,
+    openSource,
     dataStores,
     networks,
+    telecom,
+    webPlatform,
     security,
+    blockchain,
     games,
+    media,
     mobile,
+    robotics,
     frontier,
   ],
 }
