@@ -301,7 +301,7 @@ function renderLegend(): void {
 
 /** The header subtitle, which the tour borrows to show its progress. */
 function renderTagline(): void {
-  taglineEl.textContent = `${tree.api.nodes().length} nodes · 14 lineages`
+  taglineEl.textContent = `${tree.api.nodes().length} nodes · ${tree.api.root().children.length} lineages`
 }
 
 // --- year filter ---------------------------------------------------------
