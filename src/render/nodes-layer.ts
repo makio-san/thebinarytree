@@ -45,6 +45,8 @@ export interface NodesOptions {
    * supposed to have, so the tree recedes rather than disappearing.
    */
   minRadius: number
+  /** How node bodies are drawn. Can be changed later with `setStyle`. */
+  style: NodeStyle
   /** Only nodes numerically pinned to the boundary are dropped. */
   cullRadius: number
 }
@@ -58,10 +60,35 @@ export const defaultNodesOptions: NodesOptions = {
   radius: defaultRadius,
   color: defaultColor,
   minRadius: 0.0017,
+  style: 'neuron',
   cullRadius: 0.999985,
 }
 
 const HIDDEN_SCALE = 1e-4
+
+/**
+ * How a node's body is drawn.
+ *
+ * - `cell`    an uneven, matte cell body
+ * - `neuron`  a pale, translucent body with a nucleus, as under a microscope
+ * - `fruit`   a fruit on a branch, with a stalk hollow, blush and speckles
+ * - `model`   a clean painted ball, as in a desk model
+ * - `planet`  banded and rocky worlds lit by a single sun
+ */
+export type NodeStyle = 'cell' | 'neuron' | 'fruit' | 'model' | 'planet'
+
+export const NODE_STYLES: readonly NodeStyle[] = ['cell', 'neuron', 'fruit', 'model', 'planet']
+
+const STYLE_SETTINGS: Record<
+  NodeStyle,
+  { index: number; lump: number; dimple: number; roughness: number; transparent: boolean }
+> = {
+  cell: { index: 0, lump: 1, dimple: 0, roughness: 0.95, transparent: false },
+  neuron: { index: 1, lump: 0.85, dimple: 0, roughness: 1, transparent: true },
+  fruit: { index: 2, lump: 0.22, dimple: 1, roughness: 0.62, transparent: false },
+  model: { index: 3, lump: 0, dimple: 0, roughness: 0.78, transparent: false },
+  planet: { index: 4, lump: 0, dimple: 0, roughness: 1, transparent: false },
+}
 
 export class NodesLayer {
   readonly mesh: InstancedMesh
@@ -69,6 +96,9 @@ export class NodesLayer {
   readonly hoverHalo: Mesh
 
   private readonly options: NodesOptions
+  private readonly material: MeshPhysicalMaterial
+  private readonly uniforms = { style: { value: 0 }, lump: { value: 1 }, dimple: { value: 0 } }
+  private styleName: NodeStyle = 'neuron'
   private readonly dummy = new Object3D()
   private readonly matrix = new Matrix4()
   private readonly color = new Color()
@@ -96,10 +126,10 @@ export class NodesLayer {
     }
     geometry.setAttribute('seed', new InstancedBufferAttribute(seeds, 1))
 
-    // A cell body, not a ball. Matte on purpose: no clear coat, no sheen, no rim
-    // glow. What makes it read as real is that it is not a perfect sphere, its
-    // surface is uneven in colour, and the hollows are darker than the swells.
+    // One material, five looks, switched by uniforms so the choice can change
+    // while the tree is on screen. Matte throughout: none of them rely on gloss.
     const material = new MeshPhysicalMaterial({ roughness: 0.95, metalness: 0 })
+    this.material = material
     const noise = `
 float btHash(vec3 p) {
   p = fract(p * 0.3183099 + 0.1);
@@ -116,22 +146,33 @@ float btNoise(vec3 x) {
     mix(mix(btHash(i + vec3(0, 0, 1)), btHash(i + vec3(1, 0, 1)), f.x),
         mix(btHash(i + vec3(0, 1, 1)), btHash(i + vec3(1, 1, 1)), f.x), f.y),
     f.z);
+}
+float btFbm(vec3 x) {
+  return btNoise(x) * 0.5 + btNoise(x * 2.1) * 0.27 + btNoise(x * 4.3) * 0.15 + btNoise(x * 8.9) * 0.08;
 }`
     material.onBeforeCompile = (shader) => {
+      shader.uniforms.btStyle = this.uniforms.style
+      shader.uniforms.btLump = this.uniforms.lump
+      shader.uniforms.btDimple = this.uniforms.dimple
       shader.vertexShader = shader.vertexShader
         .replace(
           '#include <common>',
           `#include <common>
 attribute float seed;
+uniform float btLump;
+uniform float btDimple;
 varying vec3 vLocal;
 varying float vSeed;
 varying float vSwell;
 ${noise}
 // Signed offset of the surface along its normal: a broad lobe that makes the
-// body lopsided, and a finer one that keeps the outline from being smooth.
+// body lopsided, a finer one that keeps the outline from being smooth, and for
+// fruit the two hollows at the stalk and the base.
 float btSwell(vec3 q) {
   vec3 o = vec3(seed * 37.0, seed * 91.0, seed * 53.0);
-  return (btNoise(q * 1.5 + o) - 0.5) * 0.3 + (btNoise(q * 3.6 + o) - 0.5) * 0.1;
+  float lumps = (btNoise(q * 1.5 + o) - 0.5) * 0.3 + (btNoise(q * 3.6 + o) - 0.5) * 0.1;
+  float hollows = exp(-(1.0 - q.y) * 9.0) * 0.3 + exp(-(1.0 + q.y) * 12.0) * 0.12;
+  return lumps * btLump - hollows * btDimple;
 }
 vec3 btSurface(vec3 q) {
   q = normalize(q);
@@ -162,25 +203,104 @@ vSwell = btSwell(btP);`,
         .replace(
           '#include <common>',
           `#include <common>
+uniform float btStyle;
 varying vec3 vLocal;
 varying float vSeed;
 varying float vSwell;
 ${noise}`,
         )
-        // Uneven colour, different on every body, and darker in the hollows the
-        // way a real surface collects shadow where it folds in.
+        // The surface colour of each look. 0 cell, 1 neuron, 2 fruit, 3 model,
+        // 4 planet.
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
 {
   vec3 o = vec3(vSeed * 19.0, vSeed * 7.0, vSeed * 31.0);
-  float m = btNoise(vLocal * 3.2 + o) * 0.55 + btNoise(vLocal * 8.5 + o) * 0.3 + btNoise(vLocal * 21.0 + o) * 0.15;
-  float hollow = smoothstep(-0.16, 0.14, vSwell);
-  diffuseColor.rgb *= (0.72 + 0.4 * m) * (0.62 + 0.38 * hollow);
+  vec3 base = diffuseColor.rgb;
+  if (btStyle < 0.5) {
+    // Cell: uneven colour, darker in the hollows.
+    float m = btNoise(vLocal * 3.2 + o) * 0.55 + btNoise(vLocal * 8.5 + o) * 0.3 + btNoise(vLocal * 21.0 + o) * 0.15;
+    float hollow = smoothstep(-0.16, 0.14, vSwell);
+    diffuseColor.rgb = base * (0.72 + 0.4 * m) * (0.62 + 0.38 * hollow);
+  } else if (btStyle < 1.5) {
+    // Neuron under a microscope: a pale, grainy, stained body. The membrane
+    // and nucleus are added below, where the view direction is known.
+    float grain = btNoise(vLocal * 26.0 + o) * 0.6 + btNoise(vLocal * 60.0 + o) * 0.4;
+    vec3 pale = mix(base, vec3(0.86, 0.84, 0.8), 0.5);
+    diffuseColor.rgb = pale * (0.82 + 0.3 * grain);
+  } else if (btStyle < 2.5) {
+    // Fruit: a blush that runs from one side to the other, fine pale speckles,
+    // and a darker hollow at the stalk.
+    float blush = smoothstep(0.25, 0.75, btFbm(vLocal * 1.3 + o));
+    vec3 ripe = mix(base * 0.78, mix(base, vec3(0.95, 0.8, 0.45), 0.3), blush);
+    float streak = btNoise(vec3(atan(vLocal.z, vLocal.x) * 9.0, vLocal.y * 1.5, vSeed * 40.0));
+    ripe *= 0.9 + 0.16 * streak;
+    float speck = smoothstep(0.86, 0.93, btNoise(vLocal * 34.0 + o));
+    ripe = mix(ripe, ripe * 1.3 + 0.08, speck * 0.6);
+    float stalk = smoothstep(0.8, 1.0, vLocal.y);
+    diffuseColor.rgb = mix(ripe, vec3(0.2, 0.14, 0.08), stalk * 0.75);
+  } else if (btStyle < 3.5) {
+    // Model: an evenly painted ball, shaded underneath as if it sat in a room.
+    float under = 0.62 + 0.38 * smoothstep(-1.0, 0.5, vLocal.y);
+    diffuseColor.rgb = base * under;
+  } else {
+    // Planet: every third one is banded like a gas giant, the rest are rock
+    // with land, lowland and craters.
+    float kind = fract(vSeed * 7.31);
+    if (kind < 0.36) {
+      float warp = btFbm(vLocal * 2.4 + o) - 0.5;
+      float band = sin((vLocal.y + warp * 0.3) * (9.0 + vSeed * 9.0));
+      float fine = btNoise(vec3(vLocal.y * 34.0, warp * 3.0, vSeed * 9.0));
+      vec3 light = mix(base, vec3(0.93, 0.88, 0.78), 0.45);
+      diffuseColor.rgb = mix(base * 0.52, light, band * 0.5 + 0.5) * (0.86 + 0.24 * fine);
+    } else {
+      float land = btFbm(vLocal * 2.3 + o);
+      float rough = btFbm(vLocal * 9.0 + o);
+      vec3 low = base * 0.4;
+      vec3 high = mix(base, vec3(0.8, 0.76, 0.7), 0.35);
+      vec3 ground = mix(low, high, smoothstep(0.38, 0.6, land + (rough - 0.5) * 0.22));
+      float crater = smoothstep(0.7, 0.76, btNoise(vLocal * 6.5 + o * 1.7));
+      diffuseColor.rgb = ground * (0.82 + 0.3 * rough) * (1.0 - crater * 0.3);
+    }
+  }
 }`,
         )
+        // What depends on the lit result and the view direction.
+        .replace(
+          '#include <opaque_fragment>',
+          `{
+  vec3 btView = normalize(vViewPosition);
+  float facing = clamp(dot(normal, btView), 0.0, 1.0);
+  if (btStyle > 0.5 && btStyle < 1.5) {
+    // A thin body seen in transmitted light: the edge is where the membrane
+    // stacks up, so it is darker and more opaque; the middle lets light
+    // through; the nucleus is a dense, darker patch inside it.
+    vec3 o = vec3(vSeed * 19.0, vSeed * 7.0, vSeed * 31.0);
+    vec3 even = diffuseColor.rgb * 0.92;
+    outgoingLight = mix(outgoingLight, even, 0.65);
+    float membrane = pow(1.0 - facing, 2.2);
+    outgoingLight *= 1.0 - membrane * 0.55;
+    vec3 core = normalize(vec3(vSeed - 0.5, fract(vSeed * 3.7) - 0.5, 0.0) * 0.5 + vec3(0.0, 0.0, 1.0));
+    vec3 viewLocal = normalize(normal + (btNoise(vLocal * 5.0 + o) - 0.5) * 0.25);
+    float nucleus = smoothstep(0.86, 0.95, dot(viewLocal, core));
+    outgoingLight *= 1.0 - nucleus * 0.42;
+    float spot = smoothstep(0.985, 0.995, dot(viewLocal, core));
+    outgoingLight *= 1.0 - spot * 0.35;
+    diffuseColor.a = 0.55 + 0.4 * membrane + 0.25 * nucleus;
+  } else if (btStyle > 3.5) {
+    // One sun and nothing else: a hard day side and a night side that is
+    // nearly black, which is what makes a ball read as a planet.
+    vec3 sun = normalize((viewMatrix * vec4(2.0, 3.0, 4.0, 0.0)).xyz);
+    float day = smoothstep(-0.12, 0.22, dot(normal, sun));
+    outgoingLight = diffuseColor.rgb * (0.035 + 1.25 * day * max(0.0, dot(normal, sun) * 0.85 + 0.15));
+    float air = pow(1.0 - facing, 3.0) * day;
+    outgoingLight = mix(outgoingLight, diffuseColor.rgb * 0.6 + vec3(0.25, 0.32, 0.42), air * 0.28);
+  }
+}
+#include <opaque_fragment>`,
+        )
     }
-    material.customProgramCacheKey = () => 'bt-cell-v3'
+    material.customProgramCacheKey = () => 'bt-cell-v4'
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
     this.mesh.frustumCulled = false
 
@@ -195,7 +315,24 @@ ${noise}`,
     this.selectionHalo.renderOrder = 3
     this.hoverHalo.renderOrder = 3
 
+    this.setStyle(this.options.style)
     this.setTheme(theme)
+  }
+
+  get style(): NodeStyle {
+    return this.styleName
+  }
+
+  setStyle(style: NodeStyle): void {
+    const settings = STYLE_SETTINGS[style]
+    if (!settings) return
+    this.styleName = style
+    this.uniforms.style.value = settings.index
+    this.uniforms.lump.value = settings.lump
+    this.uniforms.dimple.value = settings.dimple
+    this.material.roughness = settings.roughness
+    this.material.transparent = settings.transparent
+    this.material.needsUpdate = true
   }
 
   setTheme(theme: Theme): void {

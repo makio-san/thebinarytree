@@ -27,7 +27,7 @@ import {
 import { GlowLayer, type GlowOptions } from './render/glow-layer'
 import { LabelsLayer, type LabelsOptions } from './render/labels-layer'
 import { NeuritesLayer, type NeuritesOptions } from './render/neurites-layer'
-import { NodesLayer, type NodesOptions } from './render/nodes-layer'
+import { NodesLayer, type NodeStyle, type NodesOptions } from './render/nodes-layer'
 import { SpikeField, type SpikeOptions } from './render/spikes'
 import { Stage, type StageOptions } from './render/stage'
 import { type Theme, type ThemeName, themes } from './render/theme'
@@ -114,6 +114,9 @@ export interface BinaryTreeApi {
   refilter(filter?: (node: TreeNode) => boolean): void
   relayout(options?: Partial<LayoutOptions>): void
   setTheme(theme: ThemeName | Theme): void
+  /** How node bodies are drawn. */
+  setNodeStyle(style: NodeStyle): void
+  nodeStyle(): NodeStyle
   /** Force one frame. Rendering is otherwise on demand. */
   render(): void
   resize(): void
@@ -532,6 +535,11 @@ export class BinaryTree {
         coneLayout(tree, { ...this.config.layout, ...options })
         this.dirty = true
       },
+      setNodeStyle: (style) => {
+        this.nodesLayer?.setStyle(style)
+        this.dirty = true
+      },
+      nodeStyle: () => this.nodesLayer?.style ?? 'neuron',
       setTheme: (theme) => {
         this.theme = typeof theme === 'string' ? (themes[theme] ?? this.theme) : theme
         this.themeName = typeof theme === 'string' ? theme : 'custom'
