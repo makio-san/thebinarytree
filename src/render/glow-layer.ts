@@ -36,7 +36,7 @@ export interface GlowOptions {
 
 export const defaultGlowOptions: GlowOptions = {
   scale: 4.2,
-  intensity: 0.55,
+  intensity: 0.22,
   minScale: 0.011,
   color: (n, theme) => theme.eraColor(n.data.era as string | undefined),
 }

@@ -74,12 +74,15 @@ export const defaultStageOptions: StageOptions = {
   bloom: !coarsePointer(),
   // Tuned against the filaments: a low threshold blooms their whole surface
   // into a white mass instead of just the spikes travelling through them.
-  bloomStrength: 0.44,
+  bloomStrength: 0.2,
   bloomRadius: 0.55,
-  bloomThreshold: 0.52,
+  bloomThreshold: 0.8,
   stars: true,
   maxPixelRatio: 2,
 }
+
+/** Time constant of the zoom glide, in seconds. Most of a move is done in twice this. */
+const ZOOM_TIME = 0.075
 
 export class Stage {
   readonly renderer: WebGLRenderer
@@ -105,6 +108,7 @@ export class Stage {
   private composer: EffectComposer | null = null
   private bloomPass: UnrealBloomPass | null = null
   private theme: Theme
+  private targetDistance: number
   private width = 1
   private height = 1
   private focusOffsetX = 0
@@ -114,6 +118,7 @@ export class Stage {
     this.options = { ...defaultStageOptions, ...options }
     this.theme = theme
     this.distance = this.options.distance
+    this.targetDistance = this.distance
 
     this.renderer = new WebGLRenderer({
       antialias: true,
@@ -300,12 +305,44 @@ export class Stage {
     this.updateCamera()
   }
 
-  dolly(factor: number): void {
-    this.distance = Math.max(
+  /**
+   * Move the camera in or out by a factor of its distance.
+   *
+   * By default this only moves the target, and `tick` glides the camera to it.
+   * That is what makes a wheel feel like a lens rather than a ratchet: every
+   * notch lands at once as intent, and the picture follows in a fraction of a
+   * second without stepping. `immediate` is for a pinch, where the picture has
+   * to stay under the fingers with no lag at all.
+   */
+  dolly(factor: number, immediate = false): void {
+    this.targetDistance = Math.max(
       this.options.minDistance,
-      Math.min(this.options.maxDistance, this.distance * factor),
+      Math.min(this.options.maxDistance, this.targetDistance * factor),
     )
+    if (immediate) {
+      this.distance = this.targetDistance
+      this.updateCamera()
+    }
+  }
+
+  /**
+   * Glide toward the zoom target. Returns true while the camera is still moving.
+   *
+   * Eased in the logarithm of the distance, so the motion is the same speed on
+   * screen at every zoom level, and with an exponential approach, so it starts
+   * at full speed and settles without a bounce. The rate is independent of the
+   * frame rate.
+   */
+  tick(seconds: number): boolean {
+    if (this.distance === this.targetDistance) return false
+    const gap = Math.log(this.targetDistance / this.distance)
+    if (Math.abs(gap) < 0.0015) {
+      this.distance = this.targetDistance
+    } else {
+      this.distance *= Math.exp(gap * (1 - Math.exp(-seconds / ZOOM_TIME)))
+    }
     this.updateCamera()
+    return true
   }
 
   /** 0 far out, 1 pressed right up against the centre. Drives label detail. */

@@ -9,6 +9,7 @@
 
 import {
   Color,
+  InstancedBufferAttribute,
   InstancedMesh,
   Matrix4,
   Mesh,
@@ -82,31 +83,24 @@ export class NodesLayer {
     this.options = { ...defaultNodesOptions, ...options }
     this.radii = new Float32Array(nodes.length)
 
-    // Higher latitude count than looks necessary: the silhouette is what sells a
-    // sphere, and at 16 the outline visibly faceted on the centred node, which is
-    // the one being looked at.
-    const geometry = new SphereGeometry(1, 32, 24)
-    // A wet cell, not a bead. Not metallic: metalness gives a hard highlight that
-    // reads as a ball bearing. Instead a fairly smooth dielectric under a thin
-    // clear coat, which is what a moist membrane is, with a soft sheen where the
-    // surface turns away from the light. The shader patch below adds the two
-    // things a plain material cannot: an uneven surface colour, and light
-    // bleeding through the thin edges.
-    // Matte on purpose: no clear coat, no sheen, no rim glow. Realism here means
-    // an uneven, dull, organic body, not a shiny one.
-    const material = new MeshPhysicalMaterial({
-      roughness: 0.9,
-      metalness: 0,
-    })
-    material.onBeforeCompile = (shader) => {
-      shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nvarying vec3 vLocal;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocal = position;')
-      shader.fragmentShader = shader.fragmentShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-varying vec3 vLocal;
+    // Dense enough that the displaced surface below stays smooth on the centred
+    // node, which is the one being looked at.
+    const geometry = new SphereGeometry(1, 48, 32)
+    // Every cell body gets its own seed, so no two are the same lump. It is an
+    // instance attribute rather than something derived from position, because
+    // positions move with every navigation and the shape must not.
+    const seeds = new Float32Array(nodes.length)
+    for (let i = 0; i < nodes.length; i++) {
+      const x = Math.sin((i + 1) * 91.3458) * 47453.5453
+      seeds[i] = x - Math.floor(x)
+    }
+    geometry.setAttribute('seed', new InstancedBufferAttribute(seeds, 1))
+
+    // A cell body, not a ball. Matte on purpose: no clear coat, no sheen, no rim
+    // glow. What makes it read as real is that it is not a perfect sphere, its
+    // surface is uneven in colour, and the hollows are darker than the swells.
+    const material = new MeshPhysicalMaterial({ roughness: 0.95, metalness: 0 })
+    const noise = `
 float btHash(vec3 p) {
   p = fract(p * 0.3183099 + 0.1);
   p *= 17.0;
@@ -122,20 +116,71 @@ float btNoise(vec3 x) {
     mix(mix(btHash(i + vec3(0, 0, 1)), btHash(i + vec3(1, 0, 1)), f.x),
         mix(btHash(i + vec3(0, 1, 1)), btHash(i + vec3(1, 1, 1)), f.x), f.y),
     f.z);
+}`
+    material.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+attribute float seed;
+varying vec3 vLocal;
+varying float vSeed;
+varying float vSwell;
+${noise}
+// Signed offset of the surface along its normal: a broad lobe that makes the
+// body lopsided, and a finer one that keeps the outline from being smooth.
+float btSwell(vec3 q) {
+  vec3 o = vec3(seed * 37.0, seed * 91.0, seed * 53.0);
+  return (btNoise(q * 1.5 + o) - 0.5) * 0.3 + (btNoise(q * 3.6 + o) - 0.5) * 0.1;
+}
+vec3 btSurface(vec3 q) {
+  q = normalize(q);
+  return q * (1.0 + btSwell(q));
 }`,
         )
-        // Two octaves of mottling in the albedo, from the unit sphere's own
-        // coordinates so every instance carries the same pattern at its own size.
+        // The normal has to follow the displaced surface or the lumps would be
+        // lit as if they were still a sphere. Two neighbours on the tangent
+        // plane give it by finite difference.
+        .replace(
+          '#include <beginnormal_vertex>',
+          `#include <beginnormal_vertex>
+vec3 btP = normalize(position);
+vec3 btT = normalize(cross(btP, abs(btP.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
+vec3 btB = cross(btP, btT);
+vec3 btHere = btSurface(btP);
+vec3 btN = normalize(cross(btSurface(btP + btT * 0.06) - btHere, btSurface(btP + btB * 0.06) - btHere));
+objectNormal = dot(btN, btP) < 0.0 ? -btN : btN;`,
+        )
+        .replace(
+          '#include <begin_vertex>',
+          `vec3 transformed = btHere;
+vLocal = btP;
+vSeed = seed;
+vSwell = btSwell(btP);`,
+        )
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          '#include <common>',
+          `#include <common>
+varying vec3 vLocal;
+varying float vSeed;
+varying float vSwell;
+${noise}`,
+        )
+        // Uneven colour, different on every body, and darker in the hollows the
+        // way a real surface collects shadow where it folds in.
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
 {
-  float m = btNoise(vLocal * 3.4) * 0.62 + btNoise(vLocal * 9.0) * 0.38;
-  diffuseColor.rgb *= 0.8 + 0.4 * m;
+  vec3 o = vec3(vSeed * 19.0, vSeed * 7.0, vSeed * 31.0);
+  float m = btNoise(vLocal * 3.2 + o) * 0.55 + btNoise(vLocal * 8.5 + o) * 0.3 + btNoise(vLocal * 21.0 + o) * 0.15;
+  float hollow = smoothstep(-0.16, 0.14, vSwell);
+  diffuseColor.rgb *= (0.72 + 0.4 * m) * (0.62 + 0.38 * hollow);
 }`,
         )
     }
-    material.customProgramCacheKey = () => 'bt-cell-v2'
+    material.customProgramCacheKey = () => 'bt-cell-v3'
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
     this.mesh.frustumCulled = false
 

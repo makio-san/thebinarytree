@@ -24,7 +24,6 @@
  */
 
 import {
-  AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   Color,
@@ -32,7 +31,6 @@ import {
   DynamicDrawUsage,
   MeshBasicMaterial,
   Mesh,
-  NormalBlending,
   Vector3,
 } from 'three'
 import { geodesicPoint, lengthSq } from '../math'
@@ -77,10 +75,10 @@ export const defaultNeuritesOptions: NeuritesOptions = {
   width: 0.0115,
   minWidth: 0.0007,
   minExtent: 0.0012,
-  opacity: 0.95,
+  opacity: 1,
   // The edges are shaded again in the fragment shader, by the profile of a
   // cylinder, so this only sets how far the vertex colours fall toward them.
-  edgeShade: 0.5,
+  edgeShade: 0.85,
   wander: 1.5,
   // Kept short of a flash. Pushed harder the crest goes white, and a white
   // streak travelling down a thread reads as a spark or a short circuit rather
@@ -127,8 +125,10 @@ export class NeuritesLayer {
   private readonly options: NeuritesOptions
   private readonly positionAttribute: BufferAttribute
   private readonly colorAttribute: BufferAttribute
+  private readonly sideAttribute: BufferAttribute
   private readonly positions: Float32Array
   private readonly colors: Float32Array
+  private readonly sides: Float32Array
   private readonly geometry: BufferGeometry
   private readonly material: MeshBasicMaterial
 
@@ -163,6 +163,9 @@ export class NeuritesLayer {
 
     this.positionAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
     this.colorAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
+    this.sideAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
+    this.sideAttribute.setUsage(DynamicDrawUsage)
+    this.sides = this.sideAttribute.array as Float32Array
     this.positionAttribute.setUsage(DynamicDrawUsage)
     this.colorAttribute.setUsage(DynamicDrawUsage)
     this.positions = this.positionAttribute.array as Float32Array
@@ -201,39 +204,47 @@ export class NeuritesLayer {
     this.geometry.setAttribute('across', new BufferAttribute(across, 1))
     this.geometry.setAttribute('position', this.positionAttribute)
     this.geometry.setAttribute('color', this.colorAttribute)
+    this.geometry.setAttribute('side', this.sideAttribute)
     this.geometry.setIndex(new BufferAttribute(indices, 1))
     this.geometry.setDrawRange(0, 0)
 
-    this.material = new MeshBasicMaterial({
-      vertexColors: true,
-      transparent: true,
-      opacity: this.options.opacity,
-      depthWrite: false,
-      side: DoubleSide,
-    })
+    // Solid, so a near fibre hides a far one. Fibres that add up as light are
+    // the glowing-wire look; real ones occlude each other.
+    this.material = new MeshBasicMaterial({ vertexColors: true, side: DoubleSide })
 
-    // A flat ribbon shaded as the front of a cylinder: bright along the axis,
-    // falling away to the walls, with a narrow sheen just off the middle where a
-    // wet surface would catch the light. That is what makes a two dimensional
-    // strip read as a round, glistening thread.
+    // A flat ribbon lit as the front of a round fibre. The surface normal is
+    // rebuilt from the position across the strip, then lit by the same key light
+    // as the cell bodies, so a fibre has a lit side and a shadowed side that
+    // agree with the bodies it joins. Matte: diffuse only, no highlight.
     this.material.onBeforeCompile = (shader) => {
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute float across;\nvarying float vAcross;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvAcross = across;')
+        .replace(
+          '#include <common>',
+          '#include <common>\nattribute float across;\nattribute vec3 side;\nvarying float vAcross;\nvarying vec3 vSide;',
+        )
+        .replace(
+          '#include <begin_vertex>',
+          '#include <begin_vertex>\nvAcross = across;\nvSide = normalize((modelViewMatrix * vec4(side, 0.0)).xyz);',
+        )
       shader.fragmentShader = shader.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying float vAcross;')
+        .replace('#include <common>', '#include <common>\nvarying float vAcross;\nvarying vec3 vSide;')
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
 {
   float a = clamp(vAcross, -1.0, 1.0);
   float height = sqrt(max(0.0, 1.0 - a * a));
-  float body = 0.6 + 0.4 * pow(height, 0.85);
-  diffuseColor.rgb *= body;
+  vec3 n = normalize(normalize(vSide) * a + vec3(0.0, 0.0, 1.0) * height);
+  vec3 keyDir = normalize((viewMatrix * vec4(2.0, 3.0, 4.0, 0.0)).xyz);
+  vec3 fillDir = normalize((viewMatrix * vec4(-3.0, -1.5, -2.0, 0.0)).xyz);
+  float key = max(0.0, dot(n, keyDir) * 0.6 + 0.4);
+  float fill = max(0.0, dot(n, fillDir));
+  float occlusion = 0.55 + 0.45 * height;
+  diffuseColor.rgb *= (0.3 + 0.78 * key * key + 0.12 * fill) * occlusion;
 }`,
         )
     }
-    this.material.customProgramCacheKey = () => 'bt-neurite-v2'
+    this.material.customProgramCacheKey = () => 'bt-neurite-v3'
 
     this.mesh = new Mesh(this.geometry, this.material)
     this.mesh.frustumCulled = false
@@ -245,11 +256,6 @@ export class NeuritesLayer {
     this.recede.setHex(theme.recede)
     this.highlight.setHex(theme.highlight)
     this.maxFade = theme.maxFade
-    // On a dark ground overlapping filaments should sum into a brighter web. On
-    // a light one adding can only reach white, so they blend normally and stack
-    // as ink instead.
-    this.material.blending = theme.glow === 'additive' ? AdditiveBlending : NormalBlending
-    this.material.needsUpdate = true
   }
 
   /**
@@ -337,7 +343,7 @@ export class NeuritesLayer {
       // single point and the centre saturates. The flare is the swelling where a
       // neurite leaves the soma.
       const caliber = target.caliber / this.trunk
-      const flare = 1.3
+      const taper = 1.35
 
       const wanderPhase = phaseOf(li)
       const bead = [0.18 + unit(li, 1) * 0.2, 0.46 + unit(li, 2) * 0.2, 0.74 + unit(li, 3) * 0.16]
@@ -373,7 +379,13 @@ export class NeuritesLayer {
         const fire = spikes.at(here, seconds, offset)
         const spike = Math.max(0, fire)
 
-        const shape = caliber * (flare + (1 - flare) * t)
+        // Thickest where it leaves the parent body, in a short cone like the
+        // hillock a real fibre grows out of, thinning toward the tip, with a
+        // small foot where it lands on the child.
+        const shape =
+          caliber *
+          (taper + (1 - taper) * t) *
+          (1 + 1.5 * Math.exp(-t * 11) + 0.6 * Math.exp(-(1 - t) * 14))
         const conformal = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
         let half = width * shape * conformal * grow
         half *= 1 + beadSize * beads(t, bead)
@@ -409,6 +421,7 @@ export class NeuritesLayer {
     this.geometry.setDrawRange(0, slot * segments * 12)
     this.positionAttribute.needsUpdate = true
     this.colorAttribute.needsUpdate = true
+    this.sideAttribute.needsUpdate = true
   }
 
   private writeVertex(
@@ -427,6 +440,10 @@ export class NeuritesLayer {
     pos[at] = p.x + this.side.x * offset
     pos[at + 1] = p.y + this.side.y * offset
     pos[at + 2] = p.z + this.side.z * offset
+    const sd = this.sides
+    sd[at] = this.side.x
+    sd[at + 1] = this.side.y
+    sd[at + 2] = this.side.z
 
     let cr = r * shade
     let cg = g * shade
