@@ -29,6 +29,10 @@ Approved for the exact tip, makio-san authorship, Conventional Commit messages, 
 
 Common rules (commit format, sources for every fact, Wikimedia rate limits, reports) are repeated at the end of each agent file so each one is self contained. Reports go in `agents/reports/`.
 
+## Live status on the site
+
+Every agent calls `node scripts/agent-live.mjs <agent> start` when it begins and `done "<summary>"` or `failed "<reason>"` when it ends. The script writes one file per agent to a secret GitHub gist whose id is in `agents/live.json`; the repository is private, so the static site cannot read it directly. The Agents button in the top bar polls that gist: while any agent works it turns green, pulses and shows how many are working, a toast appears when an agent starts or finishes, and the Agents view lists who is working, the next scheduled run and recent activity. A run that says nothing for three hours is shown as stalled. If the gist id is empty the site falls back to the counts built from `agents/reports/`.
+
 ## Running them
 
 Scheduled runs are set up in the Claude desktop app (Scheduled tasks). A run happens while the app is open, or on next launch. To stop everything reaching production, disable the `binary-tree-release-merger` task: the other agents then only fill branches. You can also start any agent by hand in a session.
