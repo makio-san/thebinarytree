@@ -18,7 +18,7 @@ import {
   wikiTitle,
   type TreeNode,
 } from 'the-binary-tree'
-import { openAgents } from './ui/agents'
+import { mountAgentsIndicator, openAgents } from './ui/agents'
 import { Panel } from './ui/panel'
 import { Search } from './ui/search'
 import { Sheet } from './ui/sheet'
@@ -461,6 +461,7 @@ function resyncTour(): void {
 
 $('home').addEventListener('click', recentre)
 $('agents').addEventListener('click', () => void openAgents())
+mountAgentsIndicator($<HTMLButtonElement>('agents'), () => void openAgents())
 $('tour').addEventListener('click', toggleTour)
 $('theme').addEventListener('click', toggleTheme)
 $('tab-home').addEventListener('click', recentre)
