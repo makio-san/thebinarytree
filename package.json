@@ -34,8 +34,10 @@
     "**/*.css"
   ],
   "scripts": {
+    "predev": "tsx scripts/agents-status.ts",
     "dev": "vite",
     "build": "vite build",
+    "prebuild:demo": "tsx scripts/agents-status.ts",
     "build:demo": "vite build --config vite.demo.config.ts",
     "preview": "vite preview --config vite.demo.config.ts",
     "test": "vitest run",

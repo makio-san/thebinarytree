@@ -6,3 +6,4 @@ dist-demo/
 .vite/
 coverage/
 .wiki-audit.json
+public/agents-status.json
