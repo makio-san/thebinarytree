@@ -18,6 +18,7 @@ import {
   wikiTitle,
   type TreeNode,
 } from 'the-binary-tree'
+import { openAgents } from './ui/agents'
 import { Panel } from './ui/panel'
 import { Search } from './ui/search'
 import { Sheet } from './ui/sheet'
@@ -459,6 +460,7 @@ function resyncTour(): void {
 }
 
 $('home').addEventListener('click', recentre)
+$('agents').addEventListener('click', () => void openAgents())
 $('tour').addEventListener('click', toggleTour)
 $('theme').addEventListener('click', toggleTheme)
 $('tab-home').addEventListener('click', recentre)
@@ -503,7 +505,7 @@ for (const gesture of ['gesturestart', 'gesturechange', 'gestureend']) {
 // allowed inside them, and a vertical one only while that element can really
 // scroll that way. At the top or bottom of the content the gesture would chain
 // to the page, which is exactly the rubber band that makes the menu feel loose.
-const SCROLLERS = '.panel__body, .search__results, textarea'
+const SCROLLERS = '.panel__body, .search__results, .agents__body, textarea'
 let touchX = 0
 let touchY = 0
 document.addEventListener(
