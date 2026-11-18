@@ -5,7 +5,7 @@
  *   npm run dev   (in another terminal, port 5199)
  *   node scripts/og-image.mjs
  *
- * Opens the dev server in headless Chrome at 1200x630, hides the controls, lays
+ * Opens the dev server in headless Chrome at 1200x630 CSS pixels and 2x density (a 2400x1260 picture, sharp on retina screens), hides the controls, lays
  * the title over the right side and saves a screenshot. Update the numbers in
  * OVERLAY when the tree grows.
  */
@@ -54,7 +54,7 @@ await new Promise((r) => ws.addEventListener('open', r))
 let id = 0; const wait = new Map()
 ws.addEventListener('message', (e) => { const m = JSON.parse(e.data); if (m.id && wait.has(m.id)) { wait.get(m.id)(m); wait.delete(m.id) } })
 const send = (method, params = {}) => new Promise((r) => { const n = ++id; wait.set(n, r); ws.send(JSON.stringify({ id: n, method, params })) })
-await send('Emulation.setDeviceMetricsOverride', { width: 1200, height: 630, deviceScaleFactor: 1, mobile: false })
+await send('Emulation.setDeviceMetricsOverride', { width: 1200, height: 630, deviceScaleFactor: 2, mobile: false })
 await send('Page.enable')
 await send('Page.navigate', { url: 'http://localhost:5199/' })
 await sleep(9000)
