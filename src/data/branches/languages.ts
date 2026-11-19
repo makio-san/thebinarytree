@@ -612,6 +612,17 @@ export const languages: ComputerDatum = {
           summary:
             'Guido van Rossum’s language, putting readability first. Indentation is part of the syntax; today it is the common language of data and machine learning.',
           facts: ['Indentation defines blocks', 'Became the default for scientific computing'],
+          children: [
+            {
+              id: 'project-jupyter',
+              name: 'Project Jupyter',
+              year: 2014,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Interactive notebooks that mix code, results and prose, spun off from IPython in 2014 and named for Julia, Python and R. The notebook became the standard working surface of data science.',
+            },
+          ],
         },
         {
           id: 'javascript',

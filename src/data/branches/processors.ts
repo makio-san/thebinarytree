@@ -61,6 +61,17 @@ export const processors: ComputerDatum = {
               summary:
                 'The field effect transistor developed by Mohamed Atalla and Dawon Kahng. Almost every transistor made today is one of these.',
               facts: ['The most manufactured object in history'],
+              children: [
+                {
+                  id: 'finfet',
+                  name: 'FinFET',
+                  year: 1999,
+                  era: 'modern',
+                  kind: 'component',
+                  summary:
+                    'A transistor whose channel stands up as a fin with the gate wrapped around it, built at Berkeley by Chenming Hu’s group and Digh Hisamoto in 1999 from Hisamoto’s 1989 design. Intel announced it as Tri-Gate at 22 nm in 2011, and it became the transistor of leading chips for a decade.',
+                },
+              ],
             },
           ],
         },
@@ -93,6 +104,15 @@ export const processors: ComputerDatum = {
               origin: 'USA',
               summary:
                 'Gordon Moore observed that the component count per chip doubles at a regular interval. Not a law of nature but a target the industry set itself.',
+            },
+            {
+              id: 'euv-lithography',
+              name: 'EUV Lithography',
+              year: 2019,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Chip patterning with 13.5 nm extreme ultraviolet light, in high volume manufacturing from 2019. As of 2025 ASML is the only company selling the machines, which leading 5 nm and 3 nm chips depend on.',
             },
           ],
         },

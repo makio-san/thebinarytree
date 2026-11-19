@@ -305,6 +305,15 @@ export const operatingSystems: ComputerDatum = {
                             'A mobile system on the Linux kernel, and now the most used operating system in the world.',
                           facts: ['First device: HTC Dream, 2008'],
                         },
+                        {
+                          id: 'ebpf',
+                          name: 'eBPF',
+                          year: 2014,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'Small programs, checked by a verifier, that run inside the Linux kernel without kernel modules, first exposed through the bpf system call in Linux 3.18. It now underpins networking, tracing and security tools across the cloud.',
+                        },
                       ],
                     },
                   ],

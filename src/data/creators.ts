@@ -482,6 +482,16 @@ export const CREATORS: Record<string, string[]> = {
   'model-context-protocol': ['David Soria Parra', 'Justin Spahr-Summers'],
   'alphafold-2': ['John Jumper', 'Demis Hassabis'],
   'http-3': ['Jim Roskind'],
+  gan: ['Ian Goodfellow'],
+  resnet: ['Kaiming He', 'Xiangyu Zhang', 'Shaoqing Ren', 'Jian Sun'],
+  pytorch: ['Adam Paszke', 'Sam Gross', 'Gregory Chanan', 'Soumith Chintala'],
+  'sword-of-damocles': ['Ivan Sutherland'],
+  'oculus-rift': ['Palmer Luckey'],
+  'project-jupyter': ['Fernando Pérez', 'Brian Granger'],
+  'tls-1-3': ['Eric Rescorla'],
+  wireguard: ['Jason A. Donenfeld'],
+  ebpf: ['Alexei Starovoitov', 'Daniel Borkmann'],
+  finfet: ['Digh Hisamoto', 'Chenming Hu'],
 
   // Open source, cloud and DevOps
   'gnu-project': ['Richard Stallman'],
