@@ -218,6 +218,29 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'Ivan Sutherland’s program for drawing on a screen with a light pen and declaring constraints. The start of computer graphics and CAD.',
+          children: [
+            {
+              id: 'sword-of-damocles',
+              name: 'The Sword of Damocles',
+              year: 1968,
+              era: 'integrated',
+              kind: 'device',
+              origin: 'USA',
+              summary:
+                'Ivan Sutherland’s head mounted display, hung from the ceiling on a tracking arm, and the first working augmented or virtual reality system. The nickname was a joke about the arm; he called it simply the head-mounted display.',
+              children: [
+                {
+                  id: 'oculus-rift',
+                  name: 'Oculus Rift',
+                  year: 2013,
+                  era: 'modern',
+                  kind: 'device',
+                  summary:
+                    'Palmer Luckey’s low cost virtual reality headset, shipped to developers as DK1 in March 2013, with the consumer version following in 2016. It restarted consumer VR.',
+                },
+              ],
+            },
+          ],
         },
         {
           id: 'voodoo',
@@ -427,6 +450,18 @@ export const frontier: ComputerDatum = {
                                   origin: 'USA',
                                   summary:
                                     'The first of OpenAI’s reasoning models, which spend time thinking before they answer. Spending more compute at answer time, not only at training time, became a standard technique after it.',
+                                  children: [
+                                    {
+                                      id: 'deepseek-r1',
+                                      name: 'DeepSeek-R1',
+                                      year: 2025,
+                                      era: 'modern',
+                                      kind: 'concept',
+                                      origin: 'China',
+                                      summary:
+                                        'An open weight reasoning model trained largely with reinforcement learning, released by the Chinese lab DeepSeek in January 2025. It performed comparably to OpenAI o1 on reasoning tasks and became the most downloaded free app on the US App Store within a week.',
+                                    },
+                                  ],
                                 },
                                 {
                                   id: 'model-context-protocol',
@@ -438,13 +473,62 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'An open standard from Anthropic for connecting models to tools and data through one protocol instead of a custom connector for each. OpenAI and Google DeepMind adopted it, and in December 2025 it was given to a fund under the Linux Foundation.',
                                 },
+                                {
+                                  id: 'llama',
+                                  name: 'Llama',
+                                  year: 2023,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'Meta’s family of large language models with downloadable weights, first offered to researchers in February 2023 and later under licenses that allow commercial use. It started the open weight model ecosystem.',
+                                },
                               ],
                             },
                           ],
                         },
+                        {
+                          id: 'tensorflow',
+                          name: 'TensorFlow',
+                          year: 2015,
+                          era: 'modern',
+                          kind: 'concept',
+                          origin: 'USA',
+                          summary:
+                            'Google Brain’s machine learning library, released as open source in November 2015 as the successor to its internal DistBelief system. It put large scale neural network training in everyone’s hands.',
+                        },
+                        {
+                          id: 'resnet',
+                          name: 'ResNet',
+                          year: 2015,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'Residual connections, which add a layer’s input back to its output, let networks hundreds of layers deep train, and won ImageNet in 2015. The same skip connection sits inside every transformer.',
+                        },
+                        {
+                          id: 'pytorch',
+                          name: 'PyTorch',
+                          year: 2016,
+                          era: 'modern',
+                          kind: 'concept',
+                          origin: 'USA',
+                          summary:
+                            'A deep learning library for Python from Facebook’s AI lab, now Meta’s, built around eager tensors and automatic differentiation and first released in September 2016. It became the default framework for research and for most large language models.',
+                        },
                       ],
                     },
                   ],
+                },
+                {
+                  id: 'gan',
+                  name: 'Generative Adversarial Networks',
+                  year: 2014,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'Canada',
+                  summary:
+                    'Two networks trained against each other, one generating samples and one judging whether they look real. Ian Goodfellow’s group at Montréal proposed it in 2014, and it was the first generative model to produce convincing synthetic photographs.',
                 },
               ],
             },

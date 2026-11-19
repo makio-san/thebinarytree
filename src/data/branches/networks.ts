@@ -224,6 +224,26 @@ export const networks: ComputerDatum = {
               kind: 'network',
               summary:
                 'Netscape’s SSL became a standard, and encrypted connections are now the default.',
+              children: [
+                {
+                  id: 'lets-encrypt',
+                  name: 'Let’s Encrypt',
+                  year: 2016,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A free, automated certificate authority run by the nonprofit Internet Security Research Group, out of beta in April 2016. It made HTTPS the default on the web and is now the largest certificate authority in the world.',
+                },
+                {
+                  id: 'tls-1-3',
+                  name: 'TLS 1.3',
+                  year: 2018,
+                  era: 'modern',
+                  kind: 'network',
+                  summary:
+                    'The 2018 revision of TLS, RFC 8446, which cut the handshake to one round trip and dropped old, weak ciphers. It is the version QUIC and HTTP/3 are built on.',
+                },
+              ],
             },
             {
               id: 'http-2',

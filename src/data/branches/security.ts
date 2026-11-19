@@ -108,6 +108,17 @@ export const security: ComputerDatum = {
           kind: 'concept',
           summary:
             'A stream cipher that is fast in software without special instructions, which is why phones and embedded devices use it.',
+          children: [
+            {
+              id: 'wireguard',
+              name: 'WireGuard',
+              year: 2015,
+              era: 'modern',
+              kind: 'network',
+              summary:
+                'A small, fast VPN protocol built on Curve25519, ChaCha20 and Poly1305, merged into Linux 5.6 in March 2020. It was designed to be lighter and faster than IPsec and OpenVPN.',
+            },
+          ],
         },
       ],
     },
