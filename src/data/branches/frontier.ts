@@ -167,6 +167,28 @@ export const frontier: ComputerDatum = {
                               summary:
                                 'The first machine officially past an exaflop, built from AMD processors and accelerators.',
                               facts: ['10^18 floating point operations per second'],
+                              children: [
+                                {
+                                  id: 'el-capitan',
+                                  name: 'El Capitan',
+                                  year: 2024,
+                                  era: 'modern',
+                                  kind: 'machine',
+                                  origin: 'USA',
+                                  summary:
+                                    'An HPE Cray machine at Lawrence Livermore built on AMD processors, verified at 1.742 exaflops in November 2024. It displaced Frontier and stayed the fastest computer in the world until June 2026.',
+                                },
+                              ],
+                            },
+                            {
+                              id: 'lineshine',
+                              name: 'LineShine',
+                              year: 2026,
+                              era: 'modern',
+                              kind: 'machine',
+                              origin: 'China',
+                              summary:
+                                'A system at the National Supercomputing Center in Shenzhen that debuted at number one on the June 2026 TOP500 list at 2.198 exaflops. The first machine past two exaflops on CPUs alone, with no accelerators.',
                             },
                           ],
                         },
@@ -265,6 +287,18 @@ export const frontier: ComputerDatum = {
                               origin: 'USA',
                               summary:
                                 'An accelerator specialised for transformer models, and the workhorse of the large language model era.',
+                              children: [
+                                {
+                                  id: 'nvidia-blackwell',
+                                  name: 'NVIDIA Blackwell',
+                                  year: 2024,
+                                  era: 'modern',
+                                  kind: 'component',
+                                  origin: 'USA',
+                                  summary:
+                                    'The architecture after Hopper, announced at GTC in March 2024 and named after the statistician David Blackwell. The next generation of hardware for training large models.',
+                                },
+                              ],
                             },
                           ],
                         },
@@ -363,6 +397,48 @@ export const frontier: ComputerDatum = {
                               kind: 'concept',
                               summary:
                                 'Capability rising predictably with model and data size, and text generation becoming an everyday tool.',
+                              children: [
+                                {
+                                  id: 'chatgpt',
+                                  name: 'ChatGPT',
+                                  year: 2022,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'A chatbot on OpenAI’s GPT models that reached 100 million monthly users two months after launch. It turned language models from a research topic into something everyone tried, and started the investment boom that followed.',
+                                },
+                                {
+                                  id: 'github-copilot',
+                                  name: 'GitHub Copilot',
+                                  year: 2021,
+                                  era: 'modern',
+                                  kind: 'component',
+                                  origin: 'USA',
+                                  summary:
+                                    'Code completion from a language model, inside the editor, announced by GitHub and OpenAI in June 2021. The first widely used tool to put a model into everyday programming.',
+                                },
+                                {
+                                  id: 'openai-o1',
+                                  name: 'OpenAI o1',
+                                  year: 2024,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'The first of OpenAI’s reasoning models, which spend time thinking before they answer. Spending more compute at answer time, not only at training time, became a standard technique after it.',
+                                },
+                                {
+                                  id: 'model-context-protocol',
+                                  name: 'Model Context Protocol',
+                                  year: 2024,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'An open standard from Anthropic for connecting models to tools and data through one protocol instead of a custom connector for each. OpenAI and Google DeepMind adopted it, and in December 2025 it was given to a fund under the Linux Foundation.',
+                                },
+                              ],
                             },
                           ],
                         },
@@ -403,6 +479,27 @@ export const frontier: ComputerDatum = {
           origin: 'England',
           summary:
             'Beat one of the world’s best Go players. Combining search with learning was a change of method where brute force was not enough.',
+          children: [
+            {
+              id: 'alphafold-2',
+              name: 'AlphaFold 2',
+              year: 2020,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'England',
+              summary:
+                'DeepMind’s protein structure predictor, which won the CASP14 assessment in 2020 with accuracy far above every other entry. Hassabis and Jumper shared the 2024 Nobel Prize in Chemistry for it.',
+            },
+          ],
+        },
+        {
+          id: 'stable-diffusion',
+          name: 'Stable Diffusion',
+          year: 2022,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A latent diffusion model that draws images from text, released in 2022 with its weights. Because it ran on an ordinary consumer GPU, image generation stopped being something only a few labs could do.',
         },
       ],
     },
@@ -471,6 +568,18 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'Announced as performing a specific, narrow computation beyond the reach of classical machines. The claim was debated for a long time afterwards.',
+          children: [
+            {
+              id: 'google-willow',
+              name: 'Google Willow',
+              year: 2024,
+              era: 'modern',
+              kind: 'machine',
+              origin: 'USA',
+              summary:
+                'A 105 qubit superconducting chip announced in December 2024. The first to show error correction improving as it grew: each step from a 3 by 3 to a 5 by 5 to a 7 by 7 grid halved the error rate.',
+            },
+          ],
         },
       ],
     },
