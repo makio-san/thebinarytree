@@ -479,6 +479,9 @@ export const CREATORS: Record<string, string[]> = {
   'dwave-one': ['Geordie Rose'],
   'ibm-quantum': ['Jay Gambetta'],
   sycamore: ['John Martinis', 'Hartmut Neven'],
+  'model-context-protocol': ['David Soria Parra', 'Justin Spahr-Summers'],
+  'alphafold-2': ['John Jumper', 'Demis Hassabis'],
+  'http-3': ['Jim Roskind'],
 
   // Open source, cloud and DevOps
   'gnu-project': ['Richard Stallman'],

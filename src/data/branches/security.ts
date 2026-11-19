@@ -167,6 +167,15 @@ export const security: ComputerDatum = {
           summary:
             'Algorithms chosen to survive Shor’s. Being standardised now because traffic recorded today can be decrypted later.',
         },
+        {
+          id: 'webauthn',
+          name: 'WebAuthn and Passkeys',
+          year: 2019,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A W3C Recommendation since March 2019 for signing in to websites with a public key credential held by the device instead of a password. The credentials came to be called passkeys.',
+        },
       ],
     },
     {

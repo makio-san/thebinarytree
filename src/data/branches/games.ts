@@ -257,6 +257,18 @@ export const games: ComputerDatum = {
           origin: 'Japan',
           summary:
             'An ARM tablet that docks to a television, ending the split between handheld and console.',
+          children: [
+            {
+              id: 'nintendo-switch-2',
+              name: 'Nintendo Switch 2',
+              year: 2025,
+              era: 'modern',
+              kind: 'machine',
+              origin: 'Japan',
+              summary:
+                'The successor, released in June 2025. Still a hybrid of handheld and docked console, now with 4K output when docked and Joy-Con that attach magnetically.',
+            },
+          ],
         },
       ],
     },
@@ -346,6 +358,17 @@ export const games: ComputerDatum = {
               kind: 'concept',
               summary:
                 'OpenGL ES in the browser, with no plugin. It is what draws the tree you are looking at.',
+              children: [
+                {
+                  id: 'webgpu',
+                  name: 'WebGPU',
+                  year: 2023,
+                  era: 'modern',
+                  kind: 'component',
+                  summary:
+                    'A W3C API that reaches the GPU through Vulkan, Metal and Direct3D 12, meant to supersede WebGL. Chrome turned it on by default in version 113 in May 2023, which opened the GPU to machine learning on the web as well as graphics.',
+                },
+              ],
             },
             {
               id: 'vulkan',

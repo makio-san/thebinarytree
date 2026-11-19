@@ -232,6 +232,17 @@ export const networks: ComputerDatum = {
               era: 'modern',
               kind: 'network',
               summary: 'Multiplexing and header compression over a single connection.',
+              children: [
+                {
+                  id: 'http-3',
+                  name: 'HTTP/3 and QUIC',
+                  year: 2022,
+                  era: 'modern',
+                  kind: 'network',
+                  summary:
+                    'HTTP carried over QUIC, a transport built on UDP instead of TCP. QUIC became RFC 9000 in May 2021 and HTTP/3 became RFC 9114 in June 2022, the first time the web moved off TCP.',
+                },
+              ],
             },
           ],
         },

@@ -283,6 +283,16 @@ export const mobile: ComputerDatum = {
           summary: 'The product that took the wrist worn computer mainstream.',
         },
         {
+          id: 'apple-vision-pro',
+          name: 'Apple Vision Pro',
+          year: 2024,
+          era: 'modern',
+          kind: 'device',
+          origin: 'USA',
+          summary:
+            'A head worn computer driven by eyes and hands instead of controllers, showing the room through cameras. Released in the US in February 2024, and Apple’s first new product category since the Watch.',
+        },
+        {
           id: 'raspberry-pi',
           name: 'Raspberry Pi',
           year: 2012,
