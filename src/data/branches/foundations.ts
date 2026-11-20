@@ -73,7 +73,7 @@ export const foundations: ComputerDatum = {
           kind: 'machine',
           origin: 'Germany',
           summary:
-            'Wilhelm Schickard built the first known mechanical calculator to handle all four operations. Its only copy was lost in a fire.',
+            'Wilhelm Schickard described a calculating clock to Kepler that paired an adding mechanism with rotating Napier rods to help with all four operations. The copy being built for Kepler burned before it was finished.',
         },
         {
           id: 'pascaline',
@@ -83,7 +83,7 @@ export const foundations: ComputerDatum = {
           kind: 'machine',
           origin: 'France',
           summary:
-            'Blaise Pascal designed it at nineteen for his father’s tax work. The first manufactured machine to automate carry propagation in gearing.',
+            'Blaise Pascal began it at eighteen for his father’s tax work and showed it publicly in 1645. The first calculator whose gearing could propagate a chain of carries.',
           facts: ['Around twenty were built', 'Addition and subtraction'],
         },
         {
@@ -105,7 +105,7 @@ export const foundations: ComputerDatum = {
           kind: 'machine',
           origin: 'France',
           summary:
-            'Thomas de Colmar’s machine was the first calculator to reach series production. Office arithmetic left the human for the first time.',
+            'Thomas de Colmar patented it in 1820 and put it into series production in 1851, the first calculator to get there. Office arithmetic left the human for the first time.',
         },
         {
           id: 'odhner',
@@ -115,7 +115,7 @@ export const foundations: ComputerDatum = {
           kind: 'machine',
           origin: 'Russia / Sweden',
           summary:
-            'Small and durable, built around a variable toothed wheel. The backbone of accounting offices until mid century.',
+            'Willgodt Odhner invented it in Saint Petersburg in 1873 and began production in 1890. Small and durable, built around a variable toothed wheel. The backbone of accounting offices until mid century.',
         },
         {
           id: 'curta',
@@ -279,7 +279,7 @@ export const foundations: ComputerDatum = {
         {
           id: 'norden-bombsight',
           name: 'Norden Bombsight',
-          year: 1932,
+          year: 1931,
           era: 'mechanical',
           kind: 'machine',
           origin: 'USA',
