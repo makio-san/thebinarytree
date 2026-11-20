@@ -101,6 +101,15 @@ export const networks: ComputerDatum = {
               summary:
                 'The protocol by which independent networks announce routes to each other, and the routing backbone of the internet today.',
             },
+            {
+              id: 'ipv6',
+              name: 'IPv6',
+              year: 1995,
+              era: 'network',
+              kind: 'network',
+              summary:
+                'The successor to IPv4, first specified in RFC 1883 in December 1995 with 128 bit addresses so the internet would not run out. It became a full Internet Standard in 2017.',
+            },
           ],
         },
       ],
