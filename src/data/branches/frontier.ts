@@ -483,6 +483,25 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'Meta’s family of large language models with downloadable weights, first offered to researchers in February 2023 and later under licenses that allow commercial use. It started the open weight model ecosystem.',
                                 },
+                                {
+                                  id: 'claude',
+                                  name: 'Claude',
+                                  year: 2023,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'Anthropic’s family of large language models, first released on 14 March 2023 and trained against a written constitution. It is also used heavily for writing software, through agentic coding tools.',
+                                },
+                                {
+                                  id: 'gemini',
+                                  name: 'Gemini',
+                                  year: 2023,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'Google DeepMind’s multimodal model family, announced on 6 December 2023 as the successor to PaLM 2. It was built to take text, images, audio and video from the start.',
+                                },
                               ],
                             },
                           ],

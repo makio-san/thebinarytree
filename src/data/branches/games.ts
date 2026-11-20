@@ -401,5 +401,15 @@ export const games: ComputerDatum = {
         },
       ],
     },
+    {
+      id: 'steam',
+      name: 'Steam',
+      year: 2003,
+      era: 'modern',
+      kind: 'concept',
+      origin: 'USA',
+      summary:
+        'Valve’s game client, launched in September 2003 to update Valve’s own games, which began selling other studios’ games in late 2005. It made digital distribution the normal way to buy PC games.',
+    },
   ],
 }
