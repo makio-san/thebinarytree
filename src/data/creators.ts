@@ -699,6 +699,16 @@ export const CREATORS: Record<string, string[]> = {
   opencv: ['Gary Bradski'],
   ros: ['Morgan Quigley', 'Brian Gerkey'],
   'velodyne-lidar': ['David Hall'],
+
+  // Scout inbox 2026-11-20
+  activitypub: ['Christine Lemmer-Webber', 'Jessica Tallon', 'Erin Shepherd', 'Amy Guy', 'Evan Prodromou'],
+  mastodon: ['Eugen Rochko'],
+  ipv6: ['Steve Deering', 'Robert Hinden'],
+  'apache-kafka': ['Jay Kreps', 'Neha Narkhede', 'Jun Rao'],
+  duckdb: ['Mark Raasveldt', 'Hannes Mühleisen'],
+  julia: ['Jeff Bezanson', 'Stefan Karpinski', 'Viral B. Shah', 'Alan Edelman'],
+  systemd: ['Lennart Poettering', 'Kay Sievers'],
+  wayland: ['Kristian Høgsberg'],
 }
 
 const NONE: readonly string[] = []
