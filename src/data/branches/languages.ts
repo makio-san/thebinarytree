@@ -674,6 +674,15 @@ export const languages: ComputerDatum = {
           origin: 'New Zealand',
           summary: 'A language and environment built for statistics and graphics.',
         },
+        {
+          id: 'julia',
+          name: 'Julia',
+          year: 2012,
+          era: 'modern',
+          kind: 'language',
+          summary:
+            'A dynamic language for numerical and scientific computing, announced on 14 February 2012. Multiple dispatch and just in time compilation let it read like a scripting language and run close to C speed.',
+        },
       ],
     },
   ],
