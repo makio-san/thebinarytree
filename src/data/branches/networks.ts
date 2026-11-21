@@ -52,6 +52,16 @@ export const networks: ComputerDatum = {
       facts: ['First four nodes: UCLA, SRI, UCSB, Utah', 'Interface Message Processors as the network layer'],
       children: [
         {
+          id: 'ftp',
+          name: 'File Transfer Protocol',
+          year: 1971,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'Abhay Bhushan specified it in RFC 114 in April 1971, which makes it one of the oldest application protocols still in use. It moved to TCP/IP in 1980, and its current form, RFC 959, dates from 1985.',
+        },
+        {
           id: 'email',
           name: 'Email',
           year: 1971,

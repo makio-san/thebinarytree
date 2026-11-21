@@ -120,6 +120,16 @@ export const security: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'kerberos',
+          name: 'Kerberos',
+          year: 1989,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'Ticket based network login built at MIT for Project Athena on the Needham and Schroeder protocol. Version 4, the first public one, came out in January 1989; version 5 is the default sign in for Windows domains.',
+        },
       ],
     },
     {
@@ -186,6 +196,16 @@ export const security: ComputerDatum = {
           kind: 'concept',
           summary:
             'A W3C Recommendation since March 2019 for signing in to websites with a public key credential held by the device instead of a password. The credentials came to be called passkeys.',
+        },
+        {
+          id: 'ssh',
+          name: 'Secure Shell (SSH)',
+          year: 1995,
+          era: 'network',
+          kind: 'network',
+          origin: 'Finland',
+          summary:
+            'Encrypted remote login that Tatu Ylönen designed in 1995 to replace Telnet, rsh and rlogin, which sent passwords in the clear. SSH-2 became an IETF standard in 2006, and it is now the default way to reach a remote machine.',
         },
       ],
     },

@@ -84,6 +84,16 @@ export const operatingSystems: ComputerDatum = {
           facts: ['Rewritten in C in 1973, making it portable', 'Pipes, a shell, a hierarchical file system'],
           children: [
             {
+              id: 'x-window-system',
+              name: 'X Window System',
+              year: 1984,
+              era: 'personal',
+              kind: 'os',
+              origin: 'USA',
+              summary:
+                "A network transparent windowing system from MIT's Project Athena, grown out of Stanford's W. The protocol has been at version 11 since September 1987, which is why most people call it X11.",
+            },
+            {
               id: 'research-unix-v6',
               name: 'Research Unix V6',
               year: 1975,
