@@ -86,6 +86,16 @@ export const languages: ComputerDatum = {
                 },
               ],
             },
+            {
+              id: 'matlab',
+              name: 'MATLAB',
+              year: 1984,
+              era: 'personal',
+              kind: 'language',
+              origin: 'USA',
+              summary:
+                'Cleve Moler wrote the first MATLAB in the late 1970s as an interactive matrix calculator for his students. Jack Little and Steve Bangert rewrote it in C, and MathWorks released it commercially in 1984.',
+            },
           ],
         },
       ],

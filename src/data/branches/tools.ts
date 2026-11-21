@@ -165,6 +165,18 @@ export const tools: ComputerDatum = {
           summary:
             'Donald Knuth wrote it because he could not bear how his own books were being typeset. Still the standard for mathematics, and famously close to bug free.',
           facts: ['Version numbers converge on pi'],
+          children: [
+            {
+              id: 'latex',
+              name: 'LaTeX',
+              year: 1984,
+              era: 'micro',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Leslie Lamport’s macros on top of TeX, written at SRI International in the early 1980s, so authors mark up structure and TeX handles the layout. Most mathematics and computer science papers are still written in it.',
+            },
+          ],
         },
         {
           id: 'vscode',

@@ -143,6 +143,28 @@ export const personal: ComputerDatum = {
                   origin: 'USA',
                   summary:
                     'The first spreadsheet. People bought an Apple II to run it: the first case of software selling hardware.',
+                  children: [
+                    {
+                      id: 'lotus-1-2-3',
+                      name: 'Lotus 1-2-3',
+                      year: 1983,
+                      era: 'personal',
+                      kind: 'concept',
+                      origin: 'USA',
+                      summary:
+                        'The spreadsheet that made the IBM PC a business machine, released on 26 January 1983. Spreadsheet, charts and a simple database in one program, hence the name, and it quickly overtook VisiCalc.',
+                    },
+                    {
+                      id: 'microsoft-excel',
+                      name: 'Microsoft Excel',
+                      year: 1985,
+                      era: 'personal',
+                      kind: 'concept',
+                      origin: 'USA',
+                      summary:
+                        'Microsoft’s spreadsheet, begun in 1983 for the PC and first released for the Macintosh on 30 September 1985. On Windows it overtook Lotus 1-2-3 in the early 1990s, and it is still the standard spreadsheet.',
+                    },
+                  ],
                 },
               ],
             },
