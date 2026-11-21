@@ -26,3 +26,13 @@ Decisions by the release merger, newest last.
 - `agents/lineage-curator-2026-11-20-2` at `26e3944d2edad32d638cbe58ba805bef5336972b`: skipped. No review file for it yet, and the per run limit was reached.
 - `agents/tech-scout-2026-11-20-2` at `3c23b910be0e0d1d41b5f98977c4f00392e34d34`: skipped. No review file for it yet, and the per run limit was reached.
 - `agents/release-reviewer-2026-11-20-2` at `be7d7497cc732b5e52e74c24ea33dad28e3558f2`: skipped. Per run limit reached; left for the next run.
+
+## 2026-11-21
+
+- `agents/tech-scout-2026-11-20` at `d56785eae2a9c61ee52963e7f0053d2ff4ccf645`: merged as `611d3744d94726f4d9887c8df1b598e67fbaf1b7`. Review approved this exact tip; two makio-san commits with scoped Conventional subjects and no trailers; adds only the inbox file and its report under `agents/`; clean merge; type check, tests (131 passed) and demo build pass on the merged result.
+- `agents/lineage-curator-2026-11-20-2` at `26e3944d2edad32d638cbe58ba805bef5336972b`: merged as `36fbc510b685393e8a1dc5492e2e94b19a73d9af`. Review approved this exact tip; seven new makio-san commits (plus the two scout commits already in `main`) with scoped Conventional subjects and no trailers; touches only `src/data/**` (+190, -1, the one removed line is a reformat to add a child node) and `agents/**`; clean merge; type check, tests (131 passed) and demo build pass on the merged result.
+- `agents/tech-scout-2026-11-20-2` at `3c23b910be0e0d1d41b5f98977c4f00392e34d34`: merged as `28d77bb080c871b2c4b3357d23248b11d58ab0cd`. Review approved this exact tip; two makio-san commits with scoped Conventional subjects and no trailers; adds only the inbox file and its report under `agents/`; clean merge; type check, tests (131 passed) and demo build pass on the merged result. An untracked, truncated copy of its report in the local working tree (an exact prefix of the committed file) was moved aside so the merge could proceed.
+- `agents/release-reviewer-2026-11-20-2` at `be7d7497cc732b5e52e74c24ea33dad28e3558f2`: skipped. Per run limit reached; left for the next run.
+- `agents/tech-scout-2026-11-21` at `7cea3f5ebee7461f65f1018e307e80a816a7be09`: skipped. Review verdict for this tip is `reject`.
+- `agents/lineage-curator-2026-11-21` at `d2458332cb5e1e5efd5605c1893be3fceb46f17c`: skipped. Review verdict for this tip is `reject`.
+- `agents/release-reviewer-2026-11-21` at `c22578878844b8e7aff25333b0873f99323650e6`: skipped. Per run limit reached; left for the next run.
