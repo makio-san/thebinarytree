@@ -229,6 +229,18 @@ export const dataStores: ComputerDatum = {
           kind: 'concept',
           summary:
             'Store a table by column rather than by row. An analytic query touches a few columns of many rows, and this makes that read sequential.',
+          children: [
+            {
+              id: 'duckdb',
+              name: 'DuckDB',
+              year: 2019,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'Netherlands',
+              summary:
+                'An embedded column store for analytical queries, built at CWI in Amsterdam and presented in 2019. It does for analysis what SQLite did for small transactional databases: a whole database in one library, no server.',
+            },
+          ],
         },
         {
           id: 'mapreduce',
@@ -259,6 +271,16 @@ export const dataStores: ComputerDatum = {
                 'Kept intermediate results in memory instead of writing them to disk between stages, which made iterative work practical.',
             },
           ],
+        },
+        {
+          id: 'apache-kafka',
+          name: 'Apache Kafka',
+          year: 2011,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'A distributed log for streams of events, open sourced by LinkedIn in January 2011 and later an Apache project. It made processing data as it arrives, rather than in nightly batches, a normal part of company infrastructure.',
         },
       ],
     },

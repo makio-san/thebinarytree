@@ -152,6 +152,16 @@ export const mobile: ComputerDatum = {
           summary:
             'A device that did few things well. Graffiti input and desktop synchronisation finally made the PDA sell.',
         },
+        {
+          id: 'amazon-kindle',
+          name: 'Amazon Kindle',
+          year: 2007,
+          era: 'mobile',
+          kind: 'device',
+          origin: 'USA',
+          summary:
+            'An E Ink reader from Amazon’s Lab126 that went on sale on 19 November 2007 and bought books over its own wireless connection. It turned e-books from a niche into a mass market.',
+        },
       ],
     },
     {

@@ -125,6 +125,17 @@ export const processors: ComputerDatum = {
           origin: 'USA',
           summary:
             'The Intel 1103 held a bit in one transistor and one capacitor. It wiped core memory off the market and is still main memory today.',
+          children: [
+            {
+              id: 'high-bandwidth-memory',
+              name: 'High Bandwidth Memory',
+              year: 2013,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'DRAM dies stacked on top of each other and set beside the processor, for far more bandwidth than memory on a board. JEDEC adopted it in October 2013, AMD’s Fiji GPUs shipped it first in 2015, and it now feeds the large AI accelerators.',
+            },
+          ],
         },
         {
           id: 'flash-memory',

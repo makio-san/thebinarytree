@@ -662,7 +662,20 @@ export const webPlatform = group(
           'modern',
           'concept',
           'Short public messages, limited to 140 characters to fit an SMS. Renamed X in 2023.',
-          { origin: 'USA' },
+          {
+            origin: 'USA',
+            children: [
+              item(
+                'bluesky',
+                'Bluesky',
+                2023,
+                'modern',
+                'concept',
+                'Began in 2019 as a research project at Twitter and became the reference app for the AT Protocol, which lets users keep their identity and followers when they move between servers. Invite only from February 2023, open to everyone from February 2024.',
+                { origin: 'USA' },
+              ),
+            ],
+          },
         ),
         item(
           'instagram',
@@ -699,6 +712,26 @@ export const webPlatform = group(
           'concept',
           'ByteDance’s short video app, launched in China as Douyin in 2016. Its recommendation feed became the model others copied.',
           { origin: 'China' },
+        ),
+        item(
+          'activitypub',
+          'ActivityPub',
+          2018,
+          'modern',
+          'network',
+          'The W3C standard for federated social networking, a Recommendation since 23 January 2018. Independent servers exchange posts and follows with it, and it is what holds the Fediverse together.',
+          {
+            children: [
+              item(
+                'mastodon',
+                'Mastodon',
+                2016,
+                'modern',
+                'concept',
+                'Eugen Rochko’s free software for running your own microblogging server, first released in March 2016. Its servers now talk to each other over ActivityPub, so people on different servers can follow one another.',
+              ),
+            ],
+          },
         ),
       ],
     ),

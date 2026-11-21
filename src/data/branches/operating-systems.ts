@@ -314,6 +314,24 @@ export const operatingSystems: ComputerDatum = {
                           summary:
                             'Small programs, checked by a verifier, that run inside the Linux kernel without kernel modules, first exposed through the bpf system call in Linux 3.18. It now underpins networking, tracing and security tools across the cloud.',
                         },
+                        {
+                          id: 'wayland',
+                          name: 'Wayland',
+                          year: 2008,
+                          era: 'modern',
+                          kind: 'os',
+                          summary:
+                            'A display protocol in which the compositor is the display server, started in 2008 as a simpler and more secure replacement for the X Window System. Fedora and other major distributions now use it by default.',
+                        },
+                        {
+                          id: 'systemd',
+                          name: 'systemd',
+                          year: 2010,
+                          era: 'modern',
+                          kind: 'os',
+                          summary:
+                            'The init system and service manager that runs as process 1 on nearly every Linux distribution since about 2015. It replaced shell script startup and brought logging, devices and logins under one suite.',
+                        },
                       ],
                     },
                   ],

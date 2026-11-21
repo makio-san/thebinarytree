@@ -974,6 +974,23 @@ export const WIKI_TITLES: Record<string, string> = {
   opencv: 'OpenCV',
   ros: 'Robot Operating System',
   'velodyne-lidar': 'Velodyne Lidar',
+
+  // Scout inbox 2026-11-20
+  activitypub: 'ActivityPub',
+  mastodon: 'Mastodon (social network)',
+  bluesky: 'Bluesky',
+  ipv6: 'IPv6',
+  'high-bandwidth-memory': 'High Bandwidth Memory',
+  'nvm-express': 'NVM Express',
+  'apache-kafka': 'Apache Kafka',
+  duckdb: 'DuckDB',
+  julia: 'Julia (programming language)',
+  systemd: 'Systemd',
+  wayland: 'Wayland (protocol)',
+  steam: 'Steam (service)',
+  'amazon-kindle': 'Amazon Kindle',
+  claude: 'Claude (AI)',
+  gemini: 'Gemini (language model)',
 }
 
 /**

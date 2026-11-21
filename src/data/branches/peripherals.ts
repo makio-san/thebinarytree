@@ -265,6 +265,17 @@ export const peripherals: ComputerDatum = {
           kind: 'component',
           summary:
             'Solid state storage with no moving parts. Cutting random access latency a thousandfold changed how fast software feels.',
+          children: [
+            {
+              id: 'nvm-express',
+              name: 'NVM Express',
+              year: 2011,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'A storage interface designed for flash rather than spinning disks, with many deep command queues over PCI Express. Version 1.0 came out on 1 March 2011, from a working group chaired by Intel’s Amber Huffman.',
+            },
+          ],
         },
         {
           id: 'raid',
