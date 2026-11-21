@@ -183,6 +183,10 @@ export const WIKI_TITLES: Record<string, string> = {
   hypertext: 'Hypertext',
   'command-line': 'Command-line interface',
 
+  scsi: 'SCSI',
+  'serial-ata': 'SATA',
+  hdmi: 'HDMI',
+  thunderbolt: 'Thunderbolt (interface)',
   // Personal computers
   'kenbak-1': 'Kenbak-1',
   'micral-n': "Intel 8008",
@@ -230,6 +234,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'sgi-iris': 'Silicon Graphics',
   'symbolics-lisp-machine': "Lisp machine",
 
+  firewire: 'FireWire',
   // Operating systems
   'gm-naa-io': "IBM 704",
   ctss: 'Compatible Time-Sharing System',
@@ -285,6 +290,7 @@ export const WIKI_TITLES: Record<string, string> = {
   beos: 'BeOS',
   qnx: 'QNX',
 
+  'x-window-system': 'X Window System',
   // Programming languages
   assembly: 'Assembly language',
   'a-0': "Grace Hopper",
@@ -372,6 +378,7 @@ export const WIKI_TITLES: Record<string, string> = {
   docker: 'Docker (software)',
   kubernetes: 'Kubernetes',
 
+  ftp: 'File Transfer Protocol',
   // Portable and mobile
   dynabook: "Alan Kay",
   'ibm-5100': 'IBM 5100',
@@ -399,6 +406,7 @@ export const WIKI_TITLES: Record<string, string> = {
   'raspberry-pi': 'Raspberry Pi',
   arduino: 'Arduino',
 
+  siri: 'Siri',
   // Supercomputing, graphics, and AI
   'cdc-6600': 'CDC 6600',
   'cdc-7600': 'CDC 7600',
@@ -469,6 +477,8 @@ export const WIKI_TITLES: Record<string, string> = {
   finfet: 'Fin field-effect transistor',
   'euv-lithography': 'EUV lithography',
 
+  'turing-test': 'Turing test',
+  eliza: 'ELIZA',
   // Data and databases
   isam: "IBM 305 RAMAC",
   ims: 'IBM Information Management System',
@@ -562,6 +572,8 @@ export const WIKI_TITLES: Record<string, string> = {
   'zero-trust': 'Zero trust architecture',
   spectre: 'Spectre (security vulnerability)',
 
+  kerberos: 'Kerberos (protocol)',
+  ssh: 'SSH',
   // Games and consoles
   nimrod: 'Nimrod (computer)',
   'tennis-for-two': 'Tennis for Two',

@@ -151,6 +151,8 @@ export const CREATORS: Record<string, string[]> = {
   wimp: ['Alan Kay', 'Larry Tesler', 'Dan Ingalls'],
   hypertext: ['Ted Nelson'],
 
+  scsi: ['Larry Boucher'],
+  hdmi: ['Hitachi', 'Panasonic', 'Sanyo', 'Philips', 'Silicon Image', 'Sony', 'Thomson', 'Toshiba'],
   // Personal computers
   'kenbak-1': ['John Blankenbaker'],
   'micral-n': ['François Gernelle', 'André Truong Trong Thi'],
@@ -225,6 +227,7 @@ export const CREATORS: Record<string, string[]> = {
   'mac-system-1': ['Andy Hertzfeld', 'Bill Atkinson', 'Bruce Horn', 'Steve Capps'],
   'amiga-os': ['Carl Sassenrath', 'R. J. Mical'],
   beos: ['Jean-Louis Gassée'],
+  'x-window-system': ['Bob Scheifler', 'Jim Gettys'],
   // Not the Gordon Bell of the PDP line: a namesake, hence the qualifier.
   qnx: ['Gordon Bell (QNX)', 'Dan Dodge'],
 
@@ -369,6 +372,7 @@ export const CREATORS: Record<string, string[]> = {
   docker: ['Solomon Hykes'],
   kubernetes: ['Joe Beda', 'Brendan Burns', 'Craig McLuckie'],
 
+  ftp: ['Abhay Bhushan'],
   // Cryptography and security
   vigenere: ['Giovan Battista Bellaso'],
   'one-time-pad': ['Gilbert Vernam', 'Joseph Mauborgne'],
@@ -390,6 +394,8 @@ export const CREATORS: Record<string, string[]> = {
   'zero-trust': ['John Kindervag'],
   spectre: ['Jann Horn', 'Paul Kocher', 'Daniel Gruss', 'Moritz Lipp'],
 
+  kerberos: ['Steve Miller', 'Clifford Neuman'],
+  ssh: ['Tatu Ylönen'],
   // Games and consoles
   nimrod: ['John Makepeace Bennett', 'Raymond Stuart-Williams'],
   'tennis-for-two': ['William Higinbotham'],
@@ -493,6 +499,8 @@ export const CREATORS: Record<string, string[]> = {
   ebpf: ['Alexei Starovoitov', 'Daniel Borkmann'],
   finfet: ['Digh Hisamoto', 'Chenming Hu'],
 
+  'turing-test': ['Alan Turing'],
+  eliza: ['Joseph Weizenbaum'],
   // Open source, cloud and DevOps
   'gnu-project': ['Richard Stallman'],
   fsf: ['Richard Stallman'],
