@@ -252,6 +252,16 @@ export const mobile: ComputerDatum = {
               summary:
                 'The closest anyone came to the Dynabook, and the device that actually created the tablet category.',
             },
+            {
+              id: 'siri',
+              name: 'Siri',
+              year: 2011,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A voice assistant spun off from SRI International, sold as an iOS app in December 2010, bought by Apple and built into the iPhone 4S in October 2011. It made talking to a phone ordinary, and Google Now, Cortana and Alexa followed.',
+            },
           ],
         },
       ],

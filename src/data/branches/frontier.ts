@@ -353,6 +353,28 @@ export const frontier: ComputerDatum = {
       summary: 'Seventy years of moving from writing rules to learning from data.',
       children: [
         {
+          id: 'turing-test',
+          name: 'Turing Test',
+          year: 1950,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'England',
+          summary:
+            'Turing\'s imitation game from "Computing Machinery and Intelligence" in Mind, October 1950. It swapped the question of whether machines can think for whether a judge can tell a machine from a person in conversation.',
+          children: [
+            {
+              id: 'eliza',
+              name: 'ELIZA',
+              year: 1966,
+              era: 'integrated',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                "An early chatbot Joseph Weizenbaum wrote at MIT, best known for its DOCTOR script, a therapist that reflected the user's words back. People who knew it was a program still confided in it, which became known as the ELIZA effect.",
+            },
+          ],
+        },
+        {
           id: 'dartmouth-workshop',
           name: 'Dartmouth Workshop',
           year: 1956,
