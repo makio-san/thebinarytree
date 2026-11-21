@@ -178,6 +178,16 @@ export const personal: ComputerDatum = {
               facts: ['9 inch monochrome display', 'The mouse came in the box'],
               children: [
                 {
+                  id: 'firewire',
+                  name: 'FireWire (IEEE 1394)',
+                  year: 1995,
+                  era: 'personal',
+                  kind: 'component',
+                  origin: 'USA',
+                  summary:
+                    'A fast serial bus Apple began in 1986 and finished with Sony and Panasonic as IEEE 1394-1995. It carried camcorder video in real time with no host controller, but USB, which came later, won the mass market.',
+                },
+                {
                   id: 'mac-ii',
                   name: 'Macintosh II',
                   year: 1987,

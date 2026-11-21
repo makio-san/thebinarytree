@@ -158,6 +158,15 @@ export const peripherals: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'hdmi',
+          name: 'HDMI',
+          year: 2003,
+          era: 'modern',
+          kind: 'component',
+          summary:
+            'One digital cable for picture and sound between players, consoles, computers and screens, kept electrically compatible with DVI. Work on 1.0 began in April 2002, and it went on to replace composite, S-Video and VGA.',
+        },
       ],
     },
     {
@@ -195,6 +204,25 @@ export const peripherals: ComputerDatum = {
             'IBM 350 RAMAC: the size of two refrigerators, holding 3.75 MB. The start of random access persistent storage.',
           facts: ['Fifty 24 inch platters for 5 MB', 'Leased for thousands of dollars a month'],
           children: [
+            {
+              id: 'scsi',
+              name: 'SCSI',
+              year: 1986,
+              era: 'personal',
+              kind: 'component',
+              origin: 'USA',
+              summary:
+                "A bus and command set for disks, tapes and scanners, standardised by ANSI as SCSI-1 in 1986 from Shugart's SASI of 1981. It ran servers and workstations for twenty years, and its commands live on in SAS and USB storage.",
+            },
+            {
+              id: 'serial-ata',
+              name: 'Serial ATA',
+              year: 2003,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                "A thin seven wire serial link that replaced the wide parallel ATA ribbon for disks and optical drives. Announced in 2000; revision 1.0 and the first drive, Seagate's Barracuda SATA V, came in January 2003.",
+            },
             {
               id: 'winchester-drive',
               name: 'Winchester Drive',
@@ -335,6 +363,16 @@ export const peripherals: ComputerDatum = {
             'Send text, get text back. Sixty years on it is still one of the most productive interfaces, because it composes.',
         },
       ],
+    },
+    {
+      id: 'thunderbolt',
+      name: 'Thunderbolt',
+      year: 2011,
+      era: 'modern',
+      kind: 'component',
+      origin: 'USA',
+      summary:
+        'PCI Express and DisplayPort on one cable with power, developed by Intel with Apple as Light Peak and first sold in the MacBook Pro on 24 February 2011. From version 3 it uses the USB-C connector.',
     },
   ],
 }
