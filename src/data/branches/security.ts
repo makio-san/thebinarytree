@@ -254,6 +254,15 @@ export const security: ComputerDatum = {
             'The first worm to disrupt the internet at large, exploiting a buffer overflow and weak passwords. It created the first coordinated response team.',
         },
         {
+          id: 'stuxnet',
+          name: 'Stuxnet',
+          year: 2010,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A worm uncovered in June 2010 that reprogrammed Siemens industrial controllers to wreck uranium centrifuges in Iran, using four zero day flaws. It is widely reported to be an American and Israeli weapon, though neither country has admitted it.',
+        },
+        {
           id: 'buffer-overflow',
           name: 'Buffer Overflow',
           year: 1972,

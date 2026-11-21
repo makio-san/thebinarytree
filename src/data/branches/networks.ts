@@ -60,6 +60,38 @@ export const networks: ComputerDatum = {
           origin: 'USA',
           summary:
             'Ray Tomlinson got messages working between machines over the network, and picked the @ sign to separate user from host.',
+          children: [
+            {
+              id: 'smtp',
+              name: 'SMTP',
+              year: 1982,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'The protocol mail servers still use to hand messages to each other, specified by Jon Postel in RFC 821 in August 1982. It built on the mail exchange ARPANET had used since 1971.',
+            },
+            {
+              id: 'imap',
+              name: 'IMAP',
+              year: 1986,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'Mark Crispin designed it in 1986 so mail could stay on the server and be managed from several clients, where POP only downloaded it. Version 2 became RFC 1064 in 1988, and almost every mail client speaks it today.',
+            },
+          ],
+        },
+        {
+          id: 'telnet',
+          name: 'Telnet',
+          year: 1969,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'The first way to log in to a remote computer over ARPANET, proposed by Steve Carr in RFC 15 in September 1969 and standardised as RFC 854 in 1983. It sent everything, passwords included, in plain text, which is why SSH replaced it.',
         },
         {
           id: 'tcp-ip',
@@ -83,6 +115,16 @@ export const networks: ComputerDatum = {
                 'A distributed naming system, built once a single hand maintained host list stopped scaling.',
             },
             {
+              id: 'ntp',
+              name: 'NTP',
+              year: 1985,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'David Mills’s protocol for keeping computer clocks in step over a network, published as RFC 958 in 1985. It is one of the oldest internet protocols still in use.',
+            },
+            {
               id: 'nsfnet',
               name: 'NSFNET',
               year: 1985,
@@ -100,6 +142,16 @@ export const networks: ComputerDatum = {
               kind: 'network',
               summary:
                 'The protocol by which independent networks announce routes to each other, and the routing backbone of the internet today.',
+            },
+            {
+              id: 'gopher',
+              name: 'Gopher',
+              year: 1991,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'A menu driven system for finding and fetching documents across the internet, released at the University of Minnesota in 1991. It caught on while the web was still new, until the university announced licence fees for its server in 1993.',
             },
             {
               id: 'ipv6',
@@ -235,6 +287,15 @@ export const networks: ComputerDatum = {
                 'Netscape’s SSL became a standard, and encrypted connections are now the default.',
               children: [
                 {
+                  id: 'heartbleed',
+                  name: 'Heartbleed',
+                  year: 2014,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A missing bounds check in OpenSSL’s TLS heartbeat code that let anyone read a server’s memory, disclosed and fixed on 7 April 2014. Neel Mehta at Google and a team at Codenomicon found it independently.',
+                },
+                {
                   id: 'lets-encrypt',
                   name: 'Let’s Encrypt',
                   year: 2016,
@@ -272,6 +333,15 @@ export const networks: ComputerDatum = {
                     'HTTP carried over QUIC, a transport built on UDP instead of TCP. QUIC became RFC 9000 in May 2021 and HTTP/3 became RFC 9114 in June 2022, the first time the web moved off TCP.',
                 },
               ],
+            },
+            {
+              id: 'oauth',
+              name: 'OAuth',
+              year: 2007,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A way to let one site act on your account at another without handing over your password. It began at Twitter in November 2006, OAuth Core 1.0 came out in October 2007, and OAuth 2.0 became RFC 6749 in 2012.',
             },
           ],
         },

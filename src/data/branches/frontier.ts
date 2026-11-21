@@ -382,6 +382,15 @@ export const frontier: ComputerDatum = {
                 'The method that made multilayer networks trainable came into wide use, and put neural networks back on the agenda.',
               children: [
                 {
+                  id: 'lstm',
+                  name: 'LSTM',
+                  year: 1997,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'Sepp Hochreiter and Jürgen Schmidhuber’s recurrent network with gated memory cells, published in Neural Computation in 1997. It carries information across thousands of steps, and ran speech recognition and machine translation until transformers took over.',
+                },
+                {
                   id: 'lenet',
                   name: 'LeNet-5',
                   year: 1998,
