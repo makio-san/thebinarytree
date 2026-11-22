@@ -46,3 +46,13 @@ Decisions by the release merger, newest last.
 - `agents/lineage-curator-2026-11-21` at `d2458332cb5e1e5efd5605c1893be3fceb46f17c`: skipped. Review verdict for this tip is `reject`.
 - `agents/tech-scout-2026-11-21-2` at `8301a3a564f65c47dc5b4a67ebca232c56df9a7f`: skipped. Review verdict for this tip is `reject`; its commits are now in `main` through the curator branch, so it has nothing left to merge.
 - `agents/release-reviewer-2026-11-21-2` at `b12baa293ef6665623b8f72dd1402b6e18602c51`: skipped. Per run limit reached; left for the next run.
+
+## 2026-11-22
+
+- `agents/release-reviewer-2026-11-21-2` at `b12baa293ef6665623b8f72dd1402b6e18602c51`: merged as `64ba2a0432e0e2bad3f25e97fe0c573881cefb03`. Adds only three review and report files under `agents/reports/`, so gates 2, 3 and 4 apply; two makio-san commits, no trailers; nothing outside `agents/` changed; clean merge; type check, tests (131 passed) and demo build also pass.
+- `agents/tech-scout-2026-11-21` at `7cea3f5ebee7461f65f1018e307e80a816a7be09`: skipped. Review verdict for this tip is `reject`.
+- `agents/lineage-curator-2026-11-21` at `d2458332cb5e1e5efd5605c1893be3fceb46f17c`: skipped. Review verdict for this tip is `reject`.
+- `agents/tech-scout-2026-11-22` at `0d992c6f491a07a3ce9d73fc37039c2d9c74c433`: skipped. No review file for it yet.
+- `agents/tech-scout-2026-11-22-2` at `6b1a5b91ab9a8b0aeb89a2bf89b42ce472b8bc01`: skipped. No review file for it yet.
+- `agents/code-health-2026-11-22` at `21c50df6aa5a9d5dfef3e54b6e0204bf8c42d54f`: skipped. No review file for it yet.
+- `agents/code-health-2026-11-22-2` at `0b390d8c56e5637f9ad43c4291037dafbf622474`: skipped. No review file for it yet.
