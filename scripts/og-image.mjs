@@ -6,15 +6,22 @@
  *   node scripts/og-image.mjs
  *
  * Opens the dev server in headless Chrome at 1200x630 CSS pixels and 2x density (a 2400x1260 picture, sharp on retina screens), hides the controls, lays
- * the title over the right side and saves a screenshot. Update the numbers in
- * OVERLAY when the tree grows.
+ * the title over the right side and saves a screenshot. The counts come from
+ * `scripts/og-counts.ts`; they are saved to `public/og-image.json`, and the
+ * `?v=` number on the preview lines of `index.html` goes up by one so sites
+ * that cache by URL fetch the new picture.
  */
-import { spawn } from 'node:child_process'
-import { writeFileSync, mkdtempSync } from 'node:fs'
+import { execFileSync, spawn } from 'node:child_process'
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const out = join(import.meta.dirname, '..', 'public', 'og-image.png')
+const root = join(import.meta.dirname, '..')
+const out = join(root, 'public', 'og-image.png')
+const counts = JSON.parse(
+  execFileSync(join(root, 'node_modules', '.bin', 'tsx'), [join(root, 'scripts', 'og-counts.ts'), '--json'], { encoding: 'utf8' }),
+)
+const fmt = (n) => n.toLocaleString('en-US')
 const OVERLAY = `(() => {
   const s = document.createElement('style')
   s.textContent = \`
@@ -31,7 +38,7 @@ const OVERLAY = `(() => {
   document.head.append(s)
   const d = document.createElement('div')
   d.className = 'og'
-  d.innerHTML = \`<img src="/logo.png" alt=""><h1>The Binary Tree</h1><p>The family tree of computing, from the abacus to the quantum processor.</p><div class="stats"><span>944 nodes</span><span>20 lineages</span><span class="live">8 AI agents growing it</span></div><div class="url">thebinarytree.io</div>\`
+  d.innerHTML = \`<img src="/logo.png" alt=""><h1>The Binary Tree</h1><p>The family tree of computing, from the abacus to the quantum processor.</p><div class="stats"><span>${fmt(counts.nodes)} nodes</span><span>${counts.lineages} lineages</span><span class="live">${counts.agents} AI agents growing it</span></div><div class="url">thebinarytree.io</div>\`
   document.body.append(d)
   // Drop the floating label of the selected root, whatever it is called.
   for (const el of document.querySelectorAll('body *')) {
@@ -63,4 +70,11 @@ await sleep(1500)
 const shot = await send('Page.captureScreenshot', { format: 'png' })
 writeFileSync(out, Buffer.from(shot.result.data, 'base64'))
 ws.close(); chrome.kill()
-console.log('saved', out)
+writeFileSync(join(root, 'public', 'og-image.json'), `${JSON.stringify(counts, null, 2)}\n`)
+
+// Bump the cache buster on the og:image and twitter:image lines.
+const html = join(root, 'index.html')
+const page = readFileSync(html, 'utf8')
+const version = Math.max(0, ...[...page.matchAll(/og-image\.png\?v=(\d+)/g)].map((m) => Number(m[1]))) + 1
+writeFileSync(html, page.replace(/og-image\.png(\?v=\d+)?/g, `og-image.png?v=${version}`))
+console.log('saved', out, counts, `v=${version}`)
