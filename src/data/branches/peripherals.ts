@@ -218,6 +218,16 @@ export const peripherals: ComputerDatum = {
             'Cheap removable magnetic media. It made software something you could sell in a box, and it survives as the save icon.',
           children: [
             {
+              id: 'file-allocation-table',
+              name: 'File Allocation Table',
+              year: 1977,
+              era: 'micro',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A simple file system Marc McDonald wrote for floppy disks in a forerunner of Microsoft’s Standalone Disk BASIC. Grown through FAT12, FAT16, FAT32 and exFAT, it still formats most USB drives and SD cards.',
+            },
+            {
               id: 'floppy-3-5',
               name: '3.5 inch Floppy',
               year: 1982,

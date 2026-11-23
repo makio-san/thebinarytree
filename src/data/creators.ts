@@ -720,6 +720,22 @@ export const CREATORS: Record<string, string[]> = {
   julia: ['Jeff Bezanson', 'Stefan Karpinski', 'Viral B. Shah', 'Alan Edelman'],
   systemd: ['Lennart Poettering', 'Kay Sievers'],
   wayland: ['Kristian Høgsberg'],
+
+  // Scout inbox 2026-11-23
+  'hamming-code': ['Richard Hamming'],
+  'reed-solomon': ['Irving S. Reed', 'Gustave Solomon'],
+  'dijkstra-algorithm': ['Edsger W. Dijkstra'],
+  quicksort: ['Tony Hoare'],
+  'cooley-tukey-fft': ['James Cooley', 'John Tukey'],
+  'monte-carlo': ['Stanislaw Ulam', 'John von Neumann', 'Nicholas Metropolis'],
+  pagerank: ['Larry Page', 'Sergey Brin'],
+  'bourne-shell': ['Stephen Bourne'],
+  ntfs: ['Tom Miller', 'Gary Kimura', 'Brian Andrew', 'David Goebel'],
+  'file-allocation-table': ['Marc McDonald'],
+  creeper: ['Bob Thomas', 'Ray Tomlinson'],
+  mathematica: ['Stephen Wolfram'],
+  'super-mario-bros': ['Shigeru Miyamoto', 'Takashi Tezuka'],
+  tetris: ['Alexey Pajitnov'],
 }
 
 const NONE: readonly string[] = []

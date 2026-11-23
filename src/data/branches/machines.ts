@@ -158,6 +158,16 @@ export const machines: ComputerDatum = {
           ],
           children: [
             {
+              id: 'monte-carlo',
+              name: 'Monte Carlo Method',
+              year: 1946,
+              era: 'tube',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Answering hard problems by repeated random sampling. Stanislaw Ulam had the idea at Los Alamos in 1946, and von Neumann and Metropolis ran the first fully automated Monte Carlo calculations on ENIAC in 1948.',
+            },
+            {
               id: 'edvac',
               name: 'EDVAC',
               year: 1949,

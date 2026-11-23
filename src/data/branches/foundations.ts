@@ -379,6 +379,30 @@ export const foundations: ComputerDatum = {
           summary:
             'Shannon measured information in bits and defined channel capacity and the limit for error free transmission over noise.',
           facts: ['The word "bit" entered common use with this paper'],
+          children: [
+            {
+              id: 'hamming-code',
+              name: 'Hamming Code',
+              year: 1950,
+              era: 'theory',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Richard Hamming wanted punched card readers to fix their own errors. His codes correct any single flipped bit, and Hamming(7,4) does it with three parity bits for every four of data.',
+              children: [
+                {
+                  id: 'reed-solomon',
+                  name: 'Reed-Solomon Codes',
+                  year: 1960,
+                  era: 'theory',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Irving Reed and Gustave Solomon built codes on symbols rather than single bits, so a whole burst of damage can be repaired. They sit inside CDs, DVDs, Blu-ray, QR codes, DSL and RAID 6.',
+                },
+              ],
+            },
+          ],
         },
         {
           id: 'von-neumann-architecture',
@@ -410,6 +434,36 @@ export const foundations: ComputerDatum = {
           origin: 'USA',
           summary:
             'Norbert Wiener put feedback and control in one framework covering both animals and machines.',
+        },
+        {
+          id: 'dijkstra-algorithm',
+          name: "Dijkstra's Algorithm",
+          year: 1956,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'Netherlands',
+          summary:
+            'Shortest paths from one node to every other in a weighted graph. Edsger Dijkstra conceived it in 1956 and published it in 1959, and link state routing such as OSPF and IS-IS still runs it.',
+        },
+        {
+          id: 'quicksort',
+          name: 'Quicksort',
+          year: 1959,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'England',
+          summary:
+            'Tony Hoare’s divide and conquer sort: pick a pivot, split the rest around it, recurse. Developed in 1959, published in 1961, and still one of the most used sorting algorithms.',
+        },
+        {
+          id: 'cooley-tukey-fft',
+          name: 'Cooley-Tukey FFT',
+          year: 1965,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'James Cooley and John Tukey showed how to compute a discrete Fourier transform in N log N steps by splitting it into smaller ones. Gauss had found the trick long before, but their 1965 paper is what made FFTs popular.',
         },
         {
           id: 'complexity-theory',

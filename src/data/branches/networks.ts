@@ -355,6 +355,16 @@ export const networks: ComputerDatum = {
             'Using link structure as a ranking signal moved the web from browsable to searchable.',
           children: [
             {
+              id: 'pagerank',
+              name: 'PageRank',
+              year: 1996,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Larry Page and Sergey Brin ranked a page by the number and weight of the links pointing at it. Developed at Stanford in 1996, it was the first ranking algorithm Google used.',
+            },
+            {
               id: 'chrome',
               name: 'Google Chrome',
               year: 2008,
