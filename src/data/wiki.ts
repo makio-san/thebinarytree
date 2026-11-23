@@ -1022,6 +1022,28 @@ export const WIKI_TITLES: Record<string, string> = {
   mathematica: 'Wolfram Mathematica',
   'super-mario-bros': 'Super Mario Bros.',
   tetris: 'Tetris',
+
+  // Scout inboxes 2026-11-20 (second run) and 2026-11-23 (second run)
+  pci: 'Peripheral Component Interconnect',
+  'pci-express': 'PCI Express',
+  cxl: 'Compute Express Link',
+  usb: 'USB',
+  gaafet: 'Multigate device',
+  jupiter: 'Jupiter (supercomputer)',
+  'quantinuum-helios': 'Quantinuum',
+  'free-threaded-cpython': 'Global interpreter lock',
+  qwen: 'Qwen',
+  'delay-line-memory': 'Delay-line memory',
+  'williams-tube': 'Williams tube',
+  eprom: 'EPROM',
+  'drum-memory': 'Drum memory',
+  'tomasulo-algorithm': "Tomasulo's algorithm",
+  mmx: 'MMX (instruction set)',
+  bash: 'Bash (Unix shell)',
+  zfs: 'ZFS',
+  bravo: 'Bravo (editor)',
+  'microsoft-word': 'Microsoft Word',
+  wordstar: 'WordStar',
 }
 
 /**
