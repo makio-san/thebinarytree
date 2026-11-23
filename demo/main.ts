@@ -19,6 +19,7 @@ import {
   type TreeNode,
 } from 'the-binary-tree'
 import { mountAgentsIndicator, openAgents } from './ui/agents'
+import { blogRoute, hasPosts, openBlog } from './ui/blog'
 import { Panel } from './ui/panel'
 import { Search } from './ui/search'
 import { Sheet } from './ui/sheet'
@@ -460,8 +461,22 @@ function resyncTour(): void {
 }
 
 $('home').addEventListener('click', recentre)
-$('agents').addEventListener('click', () => void openAgents())
-mountAgentsIndicator($<HTMLButtonElement>('agents'), () => void openAgents())
+// The blog, at #blog and #blog/<slug> so a post can be linked to.
+const showNode = (id: string): void => void tree.api.select(id, true)
+const blogLink = hasPosts() ? { label: 'Read what they wrote on the blog', open: () => openBlog(null, showNode) } : undefined
+const showAgents = (): void => void openAgents(blogLink)
+$('agents').addEventListener('click', showAgents)
+mountAgentsIndicator($<HTMLButtonElement>('agents'), showAgents)
+
+const blogButton = $<HTMLButtonElement>('blog')
+blogButton.hidden = !hasPosts()
+blogButton.addEventListener('click', () => openBlog(null, showNode))
+const routeBlog = (): void => {
+  const slug = blogRoute()
+  if (slug !== null && hasPosts()) openBlog(slug, showNode)
+}
+window.addEventListener('hashchange', routeBlog)
+routeBlog()
 $('tour').addEventListener('click', toggleTour)
 $('theme').addEventListener('click', toggleTheme)
 $('tab-home').addEventListener('click', recentre)
