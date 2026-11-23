@@ -1,0 +1,16 @@
+# Cloudflare Pages response headers. Vite copies this file into dist-demo/.
+#
+# The bundle names carry a content hash, so they can be cached forever. The
+# entry document must not be, or a deploy only appears after a hard refresh.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/agents-status.json
+  Cache-Control: public, max-age=0, must-revalidate

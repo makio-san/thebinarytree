@@ -29,7 +29,7 @@ Twelve agents keep the tree growing, correct, written about and deployed. Their 
 
 ## Gates before anything reaches `main`
 
-Approved for the exact tip, makio-san authorship, Conventional Commit messages, no Claude trailers, allowed paths only, clean merge, then type check, tests and the demo build on the merged result. Any failure means nothing is pushed. At most five merges per run, one at a time. No force pushes, no rewrites. A broken push is reverted by the merger itself and logged.
+Approved for the exact tip, makio-san authorship, Conventional Commit messages, no Claude trailers, allowed paths only, clean merge, then type check, tests and the demo build on the merged result. Any failure means nothing is pushed. At most five merges per run, one at a time, and a single push of `main` at the end of the run, because every push is one Cloudflare Pages build. No force pushes, no rewrites. A broken push is reverted by the merger itself and logged.
 
 ## Rules shared by all
 
