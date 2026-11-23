@@ -94,6 +94,16 @@ export const operatingSystems: ComputerDatum = {
                 'The first release to spread outside Bell Labs. Universities got it with source and taught from it.',
               children: [
                 {
+                  id: 'bourne-shell',
+                  name: 'Bourne Shell',
+                  year: 1979,
+                  era: 'network',
+                  kind: 'language',
+                  origin: 'USA',
+                  summary:
+                    'Stephen Bourne’s replacement for the Thompson shell, begun at Bell Labs in 1976 and shipped as the default shell of Version 7 Unix. POSIX sh syntax comes from it, and /bin/sh still points to it or a compatible shell.',
+                },
+                {
                   id: 'bsd',
                   name: 'BSD',
                   year: 1977,
@@ -505,6 +515,16 @@ export const operatingSystems: ComputerDatum = {
             'A kernel written by Dave Cutler’s team, entirely independent of DOS and coming out of the VMS tradition. The real ancestor of today’s Windows.',
           facts: ['32 bit and multiprocessor from the start', 'Protection and file system designed seriously'],
           children: [
+            {
+              id: 'ntfs',
+              name: 'NTFS',
+              year: 1993,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'The journaling file system that shipped with Windows NT 3.1 and replaced FAT. Over its versions it added access control lists, encryption, compression and shadow copies.',
+            },
             {
               id: 'windows-2000',
               name: 'Windows 2000',

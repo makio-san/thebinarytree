@@ -119,6 +119,16 @@ export const languages: ComputerDatum = {
           facts: ['Code and data share one structure', 'The first language with garbage collection'],
           children: [
             {
+              id: 'mathematica',
+              name: 'Wolfram Mathematica',
+              year: 1988,
+              era: 'personal',
+              kind: 'language',
+              origin: 'USA',
+              summary:
+                'Stephen Wolfram’s system for symbolic and numeric mathematics, released in June 1988. The Wolfram Language underneath is fundamentally based on Lisp.',
+            },
+            {
               id: 'scheme',
               name: 'Scheme',
               year: 1975,

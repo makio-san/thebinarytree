@@ -74,6 +74,16 @@ export const games: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'tetris',
+          name: 'Tetris',
+          year: 1984,
+          era: 'personal',
+          kind: 'concept',
+          origin: 'USSR',
+          summary:
+            'A falling block puzzle Alexey Pajitnov wrote in his spare time at the Dorodnitsyn Computing Center in Moscow, on an Elektronika 60 with pieces drawn in brackets. Around 220 versions have since shipped on at least 70 platforms.',
+        },
       ],
     },
     {
@@ -185,6 +195,16 @@ export const games: ComputerDatum = {
           summary:
             'Rebuilt the market after the crash with a licensing lockout chip and a dedicated graphics processor. 6502 derived, with hardware scrolling and sprites.',
           children: [
+            {
+              id: 'super-mario-bros',
+              name: 'Super Mario Bros.',
+              year: 1985,
+              era: 'personal',
+              kind: 'concept',
+              origin: 'Japan',
+              summary:
+                'Nintendo’s side scrolling platformer for the NES, directed by Shigeru Miyamoto. Its first level, World 1-1, was built as a tutorial for platform play, and it started the Super Mario series.',
+            },
             {
               id: 'game-boy',
               name: 'Game Boy',

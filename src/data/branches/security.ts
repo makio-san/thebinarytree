@@ -149,6 +149,18 @@ export const security: ComputerDatum = {
           origin: 'USA',
           summary:
             'Encryption and signatures from the difficulty of factoring large numbers. It made the certificate, and therefore the padlock in the browser, possible.',
+          children: [
+            {
+              id: 'x509',
+              name: 'X.509',
+              year: 1988,
+              era: 'network',
+              kind: 'concept',
+              origin: 'International',
+              summary:
+                'The ITU standard format for public key certificates, first issued in July 1988 alongside the X.500 directory. Every TLS certificate behind HTTPS is an X.509 certificate.',
+            },
+          ],
         },
         {
           id: 'ecc',
@@ -244,6 +256,16 @@ export const security: ComputerDatum = {
       summary: 'The failures that keep recurring, and the defences that answer them.',
       children: [
         {
+          id: 'creeper',
+          name: 'Creeper',
+          year: 1971,
+          era: 'network',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Bob Thomas wrote it at BBN as an experiment that moved between TENEX machines on the ARPANET. Counted as the first worm, and Reaper, written to remove it, as the first antivirus program.',
+        },
+        {
           id: 'morris-worm',
           name: 'Morris Worm',
           year: 1988,
@@ -261,6 +283,15 @@ export const security: ComputerDatum = {
           kind: 'concept',
           summary:
             'A worm uncovered in June 2010 that reprogrammed Siemens industrial controllers to wreck uranium centrifuges in Iran, using four zero day flaws. It is widely reported to be an American and Israeli weapon, though neither country has admitted it.',
+        },
+        {
+          id: 'wannacry',
+          name: 'WannaCry',
+          year: 2017,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A ransomware worm that encrypted Windows machines in 150 countries in May 2017. It spread through EternalBlue, an NSA exploit leaked a month earlier, mostly on machines missing a patch that already existed.',
         },
         {
           id: 'buffer-overflow',
