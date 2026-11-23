@@ -60,6 +60,28 @@ export const personal: ComputerDatum = {
               summary:
                 'The Alto ideas as a product: desktop metaphor, icons, folders. Too expensive to sell, but the direct model for the Lisa and the Macintosh.',
             },
+            {
+              id: 'bravo',
+              name: 'Bravo',
+              year: 1974,
+              era: 'personal',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'The first WYSIWYG document editor, showing several fonts on the Alto’s bitmap display. Butler Lampson, Charles Simonyi and colleagues at Xerox PARC had it working on 14 September 1974.',
+              children: [
+                {
+                  id: 'microsoft-word',
+                  name: 'Microsoft Word',
+                  year: 1983,
+                  era: 'personal',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Charles Simonyi, Bravo’s main developer, started it at Microsoft as Multi-Tool Word, first released for Xenix in October 1983. It eclipsed WordPerfect in the 1990s and became the standard word processor.',
+                },
+              ],
+            },
           ],
         },
         {

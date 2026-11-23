@@ -102,6 +102,18 @@ export const operatingSystems: ComputerDatum = {
                   origin: 'USA',
                   summary:
                     'Stephen Bourne’s replacement for the Thompson shell, begun at Bell Labs in 1976 and shipped as the default shell of Version 7 Unix. POSIX sh syntax comes from it, and /bin/sh still points to it or a compatible shell.',
+                  children: [
+                    {
+                      id: 'bash',
+                      name: 'Bash',
+                      year: 1989,
+                      era: 'network',
+                      kind: 'language',
+                      origin: 'USA',
+                      summary:
+                        'Brian Fox’s free replacement for the Bourne shell, written for the GNU Project in 1989. Its syntax is a superset of the Bourne shell’s, and it is the default login shell of many Linux distributions.',
+                    },
+                  ],
                 },
                 {
                   id: 'bsd',
@@ -169,6 +181,18 @@ export const operatingSystems: ComputerDatum = {
                           origin: 'USA',
                           summary:
                             'Sun’s move to a System V base. ZFS, DTrace, and container-like zones came from here.',
+                          children: [
+                            {
+                              id: 'zfs',
+                              name: 'ZFS',
+                              year: 2005,
+                              era: 'modern',
+                              kind: 'concept',
+                              origin: 'USA',
+                              summary:
+                                'A file system and volume manager in one, designed at Sun by a team led by Jeff Bonwick, Bill Moore and Matthew Ahrens. It was published as open source with OpenSolaris in 2005, reached Solaris 10 in 2006, and lives on as OpenZFS.',
+                            },
+                          ],
                         },
                       ],
                     },

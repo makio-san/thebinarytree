@@ -188,6 +188,16 @@ export const tools: ComputerDatum = {
           summary:
             'A web technology editor that became the default. The Language Server Protocol it introduced decoupled language support from the editor.',
         },
+        {
+          id: 'wordstar',
+          name: 'WordStar',
+          year: 1978,
+          era: 'personal',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Rob Barnaby’s word processor for CP/M, published by MicroPro. It dominated microcomputers in the early and mid 1980s until WordPerfect overtook it from 1985.',
+        },
       ],
     },
     {
