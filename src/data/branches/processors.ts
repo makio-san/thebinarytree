@@ -70,6 +70,18 @@ export const processors: ComputerDatum = {
                   kind: 'component',
                   summary:
                     'A transistor whose channel stands up as a fin with the gate wrapped around it, built at Berkeley by Chenming Hu’s group and Digh Hisamoto in 1999 from Hisamoto’s 1989 design. Intel announced it as Tri-Gate at 22 nm in 2011, and it became the transistor of leading chips for a decade.',
+                  children: [
+                    {
+                      id: 'gaafet',
+                      name: 'Gate-All-Around FET',
+                      year: 2022,
+                      era: 'modern',
+                      kind: 'component',
+                      origin: 'South Korea',
+                      summary:
+                        'The gate wraps the channel on every side, using stacked nanosheets instead of a single fin. Samsung started initial production of its 3 nm node with it, under the name MBCFET, in June 2022.',
+                    },
+                  ],
                 },
               ],
             },
@@ -146,6 +158,35 @@ export const processors: ComputerDatum = {
           origin: 'Japan',
           summary:
             'Fujio Masuoka developed erasable non volatile memory at Toshiba. The basis of the phone and the SSD.',
+        },
+        {
+          id: 'delay-line-memory',
+          name: 'Delay-Line Memory',
+          year: 1944,
+          era: 'tube',
+          kind: 'component',
+          origin: 'USA',
+          summary:
+            'Bits kept alive as pulses circulating through a column of mercury, read and rewritten as they came round. J. Presper Eckert turned radar delay lines into computer memory from 1944, and EDSAC began work with 16 of them.',
+        },
+        {
+          id: 'williams-tube',
+          name: 'Williams Tube',
+          year: 1947,
+          era: 'tube',
+          kind: 'component',
+          origin: 'UK',
+          summary:
+            'The first random access digital memory, storing bits as charged dots on a cathode ray tube. Freddie Williams and Tom Kilburn patented it in 1946 and 1947, and the Manchester Baby was built to test it.',
+        },
+        {
+          id: 'eprom',
+          name: 'EPROM',
+          year: 1971,
+          era: 'micro',
+          kind: 'component',
+          summary:
+            'Read only memory that can be erased with ultraviolet light through a quartz window and programmed again. Dov Frohman invented it in 1971; each bit is a floating-gate transistor.',
         },
       ],
     },
@@ -300,6 +341,16 @@ export const processors: ComputerDatum = {
                                               ],
                                             },
                                           ],
+                                        },
+                                        {
+                                          id: 'mmx',
+                                          name: 'MMX',
+                                          year: 1997,
+                                          era: 'modern',
+                                          kind: 'concept',
+                                          origin: 'USA',
+                                          summary:
+                                            'Intel’s first SIMD extension to x86, one instruction working on several small values at once, introduced with the Pentium MMX in January 1997. SSE and AVX extended it.',
                                         },
                                       ],
                                     },

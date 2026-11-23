@@ -200,6 +200,16 @@ export const frontier: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'jupiter',
+          name: 'JUPITER',
+          year: 2025,
+          era: 'modern',
+          kind: 'machine',
+          origin: 'Germany',
+          summary:
+            'Europe’s first exascale supercomputer, inaugurated at Forschungszentrum Jülich in September 2025. Its booster, built by Eviden, holds about 24,000 NVIDIA GH200 Grace Hopper superchips.',
+        },
       ],
     },
     {
@@ -511,6 +521,16 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'Google DeepMind’s multimodal model family, announced on 6 December 2023 as the successor to PaLM 2. It was built to take text, images, audio and video from the start.',
                                 },
+                                {
+                                  id: 'qwen',
+                                  name: 'Qwen',
+                                  year: 2023,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'China',
+                                  summary:
+                                    'Alibaba Cloud’s family of mostly open weight language models, first released as a beta in April 2023. Permissive licences and small sizes made it a common base for fine tuned models.',
+                                },
                               ],
                             },
                           ],
@@ -692,6 +712,15 @@ export const frontier: ComputerDatum = {
                 'A 105 qubit superconducting chip announced in December 2024. The first to show error correction improving as it grew: each step from a 3 by 3 to a 5 by 5 to a 7 by 7 grid halved the error rate.',
             },
           ],
+        },
+        {
+          id: 'quantinuum-helios',
+          name: 'Quantinuum Helios',
+          year: 2025,
+          era: 'modern',
+          kind: 'machine',
+          summary:
+            'A trapped-ion quantum computer launched in November 2025, its 98 qubits single barium ions held above a chip. Quantinuum reports the highest gate fidelities of any commercial machine.',
         },
       ],
     },
