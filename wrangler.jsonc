@@ -1,0 +1,10 @@
+// Cloudflare Workers static assets: serves the demo build in dist-demo/.
+// Cloudflare runs `npm run build:demo`, then `npx wrangler deploy` reads this
+// file. Cache headers come from public/_headers, which the build copies over.
+{
+  "name": "thebinarytree",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist-demo"
+  }
+}
