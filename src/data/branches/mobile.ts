@@ -260,7 +260,7 @@ export const mobile: ComputerDatum = {
               kind: 'concept',
               origin: 'USA',
               summary:
-                'A voice assistant spun off from SRI International, sold as an iOS app in December 2010, bought by Apple and built into the iPhone 4S in October 2011. It made talking to a phone ordinary, and Google Now, Cortana and Alexa followed.',
+                'A voice assistant spun off from SRI International in 2007, sold as a free iPhone app, bought by Apple in April 2010 and built into the iPhone 4S in October 2011. It made talking to a phone ordinary, and Google Now, Cortana and Alexa followed.',
             },
           ],
         },
