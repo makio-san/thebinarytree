@@ -68,3 +68,16 @@ Decisions by the release merger, newest last.
 - `agents/code-health-2026-11-22` at `21c50df6aa5a9d5dfef3e54b6e0204bf8c42d54f`: skipped. Review verdict for this tip is `reject`.
 - `agents/lineage-curator-2026-11-22` at `1ea4f849d6cbe4bce84c46352fd38b9a8c1810f9`: skipped. Review verdict for this tip is `reject` (wrong POP3 date and author).
 - `agents/release-reviewer-2026-11-22-2` at `d52cfa3d6f029d884e869c166a4dd405d0189798`: skipped. Per run limit reached; left for the next run.
+
+## 2026-11-23
+
+- `agents/release-reviewer-2026-11-22-2` at `d52cfa3d6f029d884e869c166a4dd405d0189798`: merged as `04334a125f46d3751598a1846b42a6e24b1d6142`. Adds only a review and a report file under `agents/reports/`, so gates 2, 3 and 4 apply; one makio-san commit, no trailers; nothing outside `agents/` changed; clean merge; type check, tests (131 passed) and demo build also pass.
+- `agents/tech-scout-2026-11-23` at `0b6e8e5f9c422575cdd1f545b5def33dc37462d0`: merged as `bb00f6ec0a30ead7a09e133f5e2c256cb0c068ac`. Review approved this exact tip; two makio-san commits with scoped Conventional subjects and no trailers; adds only the inbox file and its report under `agents/`; clean merge; type check, tests (131 passed) and demo build pass on the merged result.
+- `agents/lineage-curator-2026-11-23` at `8a37dc02b2d852680561878d1ced1ab00eb8e418`: merged as `ce8d8117d4187a45f796eff93986fe8f25e075d0`. Review approved this exact tip; four new makio-san commits (plus the two scout commits already in `main`) with scoped Conventional subjects and no trailers; touches only `src/data/**` (+199, no deletions) and `agents/**` (the inbox moves to `agents/inbox/done/`); clean merge; type check, tests (131 passed) and demo build pass on the merged result.
+- `agents/tech-scout-2026-11-21` at `7cea3f5ebee7461f65f1018e307e80a816a7be09`: skipped. Review verdict for this tip is `reject`.
+- `agents/lineage-curator-2026-11-21` at `d2458332cb5e1e5efd5605c1893be3fceb46f17c`: skipped. Review verdict for this tip is `reject`.
+- `agents/tech-scout-2026-11-22-2` at `6b1a5b91ab9a8b0aeb89a2bf89b42ce472b8bc01`: skipped. Review verdict for this tip is `reject`.
+- `agents/code-health-2026-11-22` at `21c50df6aa5a9d5dfef3e54b6e0204bf8c42d54f`: skipped. Review verdict for this tip is `reject`.
+- `agents/lineage-curator-2026-11-22` at `1ea4f849d6cbe4bce84c46352fd38b9a8c1810f9`: skipped. Review verdict for this tip is `reject` (wrong POP3 date and author).
+- `agents/ui-qa-2026-11-23` at `b64a2bd8ebd9dde3eb6c34f7e56c5d1425cf55b5`: skipped. Approved, but the per run limit was reached; left for the next run.
+- `agents/release-reviewer-2026-11-23` at `7305b8577767c5078e09695db0190f47d93c6482`: skipped. Per run limit reached; left for the next run.
