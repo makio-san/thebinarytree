@@ -1,6 +1,6 @@
 # Agents for The Binary Tree
 
-Eight agents keep the tree growing, correct and deployed. Their definitions are in `.claude/agents/`. Seven of them work on branches named `agents/<agent>-<date>` and never touch `main`. One, the `release-merger`, merges only reviewed branches and is the only agent that pushes `main`, which deploys.
+Twelve agents keep the tree growing, correct, written about and deployed. Their definitions are in `.claude/agents/`. Eleven of them work on branches named `agents/<agent>-<date>` and never touch `main`. One, the `release-merger`, merges only reviewed branches and is the only agent that pushes `main`, which deploys.
 
 | Agent | Job | Output |
 | --- | --- | --- |
@@ -10,20 +10,26 @@ Eight agents keep the tree growing, correct and deployed. Their definitions are 
 | `portrait-finder` | Adds verified free portraits for creators | `portraits.ts` entries |
 | `ui-qa` | Runs desktop and phone checks | fixes and a bug list |
 | `code-health` | Type check, tests, build, dependency updates | `chore` and `test` commits |
+| `lineage-architect` | Plans whole new lineages the tree lacks, with first nodes | `agents/inbox/<date>-lineages.md` |
+| `branch-fixer` | Fixes branches the reviewer rejected and sends them back | `agents/branch-fixer-*` branches |
+| `blog-writer` | Writes a post on what reached `main` since the last one | `blog/<date>-<slug>.md` |
+| `preview-refresher` | Redraws the link preview when the counts change | `public/og-image.png` |
 | `release-reviewer` | Reviews every agent branch and approves or rejects the exact tip | `agents/reports/review-*.md` |
 | `release-merger` | Merges approved branches, re-verifies, pushes `main` | `main`, `agents/reports/merge-log.md` |
 
 ## Flow
 
-1. `tech-scout` writes the inbox.
-2. `lineage-curator` turns confirmed entries into nodes.
+1. `tech-scout` writes the inbox, and once a week `lineage-architect` adds a planned new lineage to it.
+2. `lineage-curator` turns confirmed entries into nodes, oldest inbox file first.
 3. `fact-checker`, `portrait-finder`, `ui-qa` and `code-health` improve what is already there.
 4. `release-reviewer` reviews each branch and records `verdict: approve` or `reject` for its exact commit.
-5. `release-merger` merges only approved, unchanged branches that stay green on the merged result, then pushes `main`.
+5. `branch-fixer` takes rejected branches, fixes what the review found on a branch of its own, and the reviewer looks again.
+6. `release-merger` merges only approved, unchanged branches that stay green on the merged result, then pushes `main`.
+7. `preview-refresher` redraws the link preview when the counts changed, and `blog-writer` writes up what reached `main` twice a week. Both go through review like everything else.
 
 ## Gates before anything reaches `main`
 
-Approved for the exact tip, makio-san authorship, Conventional Commit messages, no Claude trailers, allowed paths only, clean merge, then type check, tests and the demo build on the merged result. Any failure means nothing is pushed. At most three merges per run, one at a time. No force pushes, no rewrites. A broken push is reverted by the merger itself and logged.
+Approved for the exact tip, makio-san authorship, Conventional Commit messages, no Claude trailers, allowed paths only, clean merge, then type check, tests and the demo build on the merged result. Any failure means nothing is pushed. At most five merges per run, one at a time. No force pushes, no rewrites. A broken push is reverted by the merger itself and logged.
 
 ## Rules shared by all
 

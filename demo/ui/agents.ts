@@ -31,6 +31,9 @@ const when = (iso: string): string => {
 const clock = (d: Date): string =>
   d.toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit' })
 
+const WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen']
+const inWords = (n: number): string => WORDS[n] ?? String(n)
+
 const nameOf = (id: string): string => AGENTS.find((a) => a.id === id)?.name ?? id
 
 const running = (snapshot: LiveSnapshot | null): LiveAgent[] =>
@@ -118,7 +121,7 @@ function feed(snapshot: LiveSnapshot): HTMLElement | null {
 }
 
 /** The Agents view: who looks after the tree, and what they are doing right now. */
-export async function openAgents(): Promise<void> {
+export async function openAgents(blog?: { label: string; open: () => void }): Promise<void> {
   const overlay = el('div', 'agents')
   overlay.setAttribute('role', 'dialog')
   overlay.setAttribute('aria-modal', 'true')
@@ -133,7 +136,7 @@ export async function openAgents(): Promise<void> {
     el(
       'p',
       'agents__lede',
-      'Eight Claude agents run on a schedule to find new technologies, add them, check them and publish. Nothing reaches the live site without a review.',
+      `${inWords(AGENTS.length)} Claude agents run on a schedule to find new technologies, add them, check them, write about them and publish. Nothing reaches the live site without a review.`,
     ),
   )
   const close = el('button', 'icon-btn agents__close')
@@ -141,6 +144,16 @@ export async function openAgents(): Promise<void> {
   close.setAttribute('aria-label', 'Close')
   close.append(el('span', 'icon-x'))
   head.append(titles, close)
+  if (blog) {
+    const link = el('a', 'agents__blog', blog.label)
+    link.href = '#blog'
+    link.addEventListener('click', (event) => {
+      event.preventDefault()
+      dismiss()
+      blog.open()
+    })
+    titles.append(link)
+  }
 
   const body = el('div', 'agents__body')
   const now = el('div', 'agents__now')

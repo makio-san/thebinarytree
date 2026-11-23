@@ -1,7 +1,8 @@
 /**
  * The bundled dataset: the history of computing as one tree.
  *
- * Twenty top level branches, chosen so that each one is a real lineage rather
+ * Top level branches (twenty to start with, more as the lineage architect
+ * agent proposes them), chosen so that each one is a real lineage rather
  * than a bucket. Where something genuinely descends from something else it is
  * nested under it, even when that crosses branch boundaries in spirit: MINIX
  * sits under Unix and Linux sits under MINIX, because that is what happened.

@@ -10,8 +10,9 @@ describe('the computer history dataset', () => {
     expect(all.length).toBeGreaterThan(250)
   })
 
-  it('has twenty top level branches', () => {
-    expect(computerHistory.children).toHaveLength(20)
+  it('has at least twenty top level branches', () => {
+    // The lineage architect adds new ones; the site counts them itself.
+    expect(computerHistory.children!.length).toBeGreaterThanOrEqual(20)
   })
 
   it('uses unique ids everywhere', () => {

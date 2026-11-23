@@ -26,6 +26,10 @@ const AGENTS = [
   'portrait-finder',
   'ui-qa',
   'code-health',
+  'lineage-architect',
+  'blog-writer',
+  'preview-refresher',
+  'branch-fixer',
   'release-reviewer',
   'release-merger',
 ]

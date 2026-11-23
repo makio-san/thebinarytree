@@ -398,7 +398,8 @@ offline browser all end the same way: the panel shows the dataset's own text.
 
 ## Dataset
 
-`computerHistory` is twenty lineages and 944 nodes: mechanical calculation and
+`computerHistory` is twenty lineages and over a thousand nodes, and agents keep
+adding to it (see `agents/README.md`): mechanical calculation and
 theory, early computers, components and processors, peripherals, personal
 computers, operating systems, programming languages, tools and standards, open
 source and the cloud, data and databases, networks, telecommunications, the web
