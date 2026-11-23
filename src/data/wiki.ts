@@ -1004,6 +1004,24 @@ export const WIKI_TITLES: Record<string, string> = {
   'amazon-kindle': 'Amazon Kindle',
   claude: 'Claude (AI)',
   gemini: 'Gemini (language model)',
+
+  // Scout inbox 2026-11-23
+  'hamming-code': 'Hamming code',
+  'reed-solomon': 'Reed-Solomon error correction',
+  'dijkstra-algorithm': "Dijkstra's algorithm",
+  quicksort: 'Quicksort',
+  'cooley-tukey-fft': 'Cooley-Tukey FFT algorithm',
+  'monte-carlo': 'Monte Carlo method',
+  pagerank: 'PageRank',
+  'bourne-shell': 'Bourne shell',
+  ntfs: 'NTFS',
+  'file-allocation-table': 'File Allocation Table',
+  creeper: 'Creeper and Reaper',
+  wannacry: 'WannaCry ransomware attack',
+  x509: 'X.509',
+  mathematica: 'Wolfram Mathematica',
+  'super-mario-bros': 'Super Mario Bros.',
+  tetris: 'Tetris',
 }
 
 /**
