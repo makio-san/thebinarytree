@@ -73,13 +73,13 @@ export const networks: ComputerDatum = {
             },
             {
               id: 'pop3',
-              name: 'POP3',
+              name: 'POP',
               year: 1984,
               era: 'network',
               kind: 'network',
               origin: 'USA',
               summary:
-                'A simple way for a mail client to download its messages from a server and then disconnect. Joyce Reynolds wrote the first version as RFC 918 in 1984, and version 3, the one still in use, followed in RFC 1081 in 1988.',
+                'A simple way for a mail client to download its messages from a server and then disconnect. Joyce Reynolds wrote the first version as RFC 918 in 1984, and version 3, the one still in use, followed from Marshall Rose as RFC 1081 in 1988.',
             },
             {
               id: 'imap',
