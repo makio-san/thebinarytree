@@ -38,6 +38,15 @@ export const webPlatform = group(
                   origin: 'Switzerland',
                   children: [
                     item(
+                      'markdown',
+                      'Markdown',
+                      2004,
+                      'modern',
+                      'language',
+                      'John Gruber’s plain text markup, released in March 2004 with Aaron Swartz as his sounding board, meant to read well as is and to convert to HTML. CommonMark gave it an unambiguous specification in 2014; README files, forums and chat are written in it.',
+                      { origin: 'USA' },
+                    ),
+                    item(
                       'html-2',
                       'HTML 2.0',
                       1995,

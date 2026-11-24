@@ -108,6 +108,16 @@ export const processors: ComputerDatum = {
           facts: ['Kilby, Nobel Prize in Physics 2000', 'Noyce’s planar process enabled mass production'],
           children: [
             {
+              id: 'fpga',
+              name: 'FPGA',
+              year: 1985,
+              era: 'micro',
+              kind: 'component',
+              origin: 'USA',
+              summary:
+                'A chip whose logic blocks and the wiring between them can be programmed after manufacture. Xilinx produced the first commercially viable one, the XC2064, with 64 configurable logic blocks, in 1985.',
+            },
+            {
               id: 'moores-law',
               name: "Moore's Law",
               year: 1965,

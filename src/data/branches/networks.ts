@@ -232,6 +232,16 @@ export const networks: ComputerDatum = {
       summary: 'Connecting machines inside one building.',
       children: [
         {
+          id: 'smb',
+          name: 'Server Message Block',
+          year: 1983,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'Barry Feigenbaum designed it at IBM in 1983 to share files and printers between PCs running PC DOS. Microsoft and 3Com carried it into LAN Manager in 1987, and it is still how Windows machines share files.',
+        },
+        {
           id: 'ethernet',
           name: 'Ethernet',
           year: 1973,
@@ -283,6 +293,16 @@ export const networks: ComputerDatum = {
         'Tim Berners-Lee designed HTTP, HTML, and the URL at CERN to link documents. Releasing it royalty free in 1993 is the real reason it spread.',
       facts: ['The first server ran on a NeXT machine', 'Placed in the public domain in 1993'],
       children: [
+        {
+          id: 'webkit',
+          name: 'WebKit',
+          year: 2003,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            "Lisa Melton started it at Apple in June 2001 as a fork of KDE's KHTML and KJS, and it came out with Safari in January 2003. It runs almost every browser on iOS, and Google forked Blink from it in 2013.",
+        },
         {
           id: 'mosaic',
           name: 'NCSA Mosaic',
