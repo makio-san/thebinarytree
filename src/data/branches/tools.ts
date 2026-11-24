@@ -386,6 +386,25 @@ export const tools: ComputerDatum = {
           summary:
             'A subset of JavaScript literals used as a data format. It won over XML by being small enough to read and write by hand.',
         },
+        {
+          id: 'yaml',
+          name: 'YAML',
+          year: 2001,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A data format that marks nesting with indentation instead of brackets, first proposed by Clark Evans in May 2001 and designed with Ingy döt Net and Oren Ben-Kiki. It became the usual format for configuration files, from CI pipelines to Kubernetes.',
+        },
+        {
+          id: 'protocol-buffers',
+          name: 'Protocol Buffers',
+          year: 2001,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Google’s compact binary format for structured data, described once in a schema and compiled into code for each language. Used inside Google from early 2001 and released as open source in July 2008.',
+        },
       ],
     },
   ],

@@ -414,6 +414,15 @@ export const openSource = group(
                       { origin: 'England' },
                     ),
                     item(
+                      'qemu',
+                      'QEMU',
+                      2003,
+                      'modern',
+                      'component',
+                      'Fabrice Bellard’s open source emulator, first released in 2003, which runs software built for one processor on another by translating its code on the fly. Paired with KVM it became the usual virtual machine monitor on Linux.',
+                      { origin: 'France' },
+                    ),
+                    item(
                       'kvm',
                       'KVM',
                       2007,

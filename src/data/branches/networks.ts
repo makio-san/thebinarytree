@@ -72,6 +72,16 @@ export const networks: ComputerDatum = {
                 'The protocol mail servers still use to hand messages to each other, specified by Jon Postel in RFC 821 in August 1982. It built on the mail exchange ARPANET had used since 1971.',
             },
             {
+              id: 'pop3',
+              name: 'POP',
+              year: 1984,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'A simple way for a mail client to download its messages from a server and then disconnect. Joyce Reynolds wrote the first version as RFC 918 in 1984, and version 3, the one still in use, followed from Marshall Rose as RFC 1081 in 1988.',
+            },
+            {
               id: 'imap',
               name: 'IMAP',
               year: 1986,
@@ -80,6 +90,16 @@ export const networks: ComputerDatum = {
               origin: 'USA',
               summary:
                 'Mark Crispin designed it in 1986 so mail could stay on the server and be managed from several clients, where POP only downloaded it. Version 2 became RFC 1064 in 1988, and almost every mail client speaks it today.',
+            },
+            {
+              id: 'mime',
+              name: 'MIME',
+              year: 1992,
+              era: 'network',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Multipurpose Internet Mail Extensions, RFC 1341 in June 1992, let an email carry attachments, images and text in any character set, not just ASCII. HTTP later borrowed its content types, so every web response still names its MIME type.',
             },
           ],
         },
@@ -142,6 +162,44 @@ export const networks: ComputerDatum = {
               kind: 'network',
               summary:
                 'The protocol by which independent networks announce routes to each other, and the routing backbone of the internet today.',
+            },
+            {
+              id: 'snmp',
+              name: 'SNMP',
+              year: 1988,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'A standard way to ask routers, switches and printers how they are doing and to change their settings remotely. Published as RFC 1067 in August 1988, it became the base of network monitoring.',
+            },
+            {
+              id: 'ldap',
+              name: 'LDAP',
+              year: 1993,
+              era: 'network',
+              kind: 'network',
+              summary:
+                'The Lightweight Directory Access Protocol, a lighter way to reach X.500 directories over TCP/IP, first published as RFC 1487 in 1993. It became the usual central store for user accounts and passwords inside organisations.',
+            },
+            {
+              id: 'dhcp',
+              name: 'DHCP',
+              year: 1993,
+              era: 'network',
+              kind: 'network',
+              origin: 'USA',
+              summary:
+                'Ralph Droms’s protocol for handing a device its IP address and network settings when it joins a network, published as RFC 1531 in October 1993. It is why plugging in a cable or joining Wi-Fi needs no manual setup.',
+            },
+            {
+              id: 'mqtt',
+              name: 'MQTT',
+              year: 1999,
+              era: 'network',
+              kind: 'network',
+              summary:
+                'A tiny publish and subscribe messaging protocol, written by Andy Stanford-Clark and Arlen Nipper in 1999 to monitor oil pipelines over expensive satellite links. It became the common language of the Internet of things and an OASIS and ISO standard.',
             },
             {
               id: 'gopher',
@@ -331,6 +389,16 @@ export const networks: ComputerDatum = {
                   kind: 'network',
                   summary:
                     'HTTP carried over QUIC, a transport built on UDP instead of TCP. QUIC became RFC 9000 in May 2021 and HTTP/3 became RFC 9114 in June 2022, the first time the web moved off TCP.',
+                },
+                {
+                  id: 'grpc',
+                  name: 'gRPC',
+                  year: 2016,
+                  era: 'modern',
+                  kind: 'component',
+                  origin: 'USA',
+                  summary:
+                    'An open source remote procedure call framework on HTTP/2 and Protocol Buffers, grown from Stubby, the RPC system Google had used internally for over a decade. Google opened it in 2015 and version 1.0 shipped in August 2016; it is now a common way for microservices to talk.',
                 },
               ],
             },
