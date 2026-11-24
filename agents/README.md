@@ -13,7 +13,7 @@ Thirteen agents keep the tree growing, correct, written about and deployed. Thei
 | `lineage-architect` | Plans whole new lineages the tree lacks, with first nodes | `agents/inbox/<date>-lineages.md` |
 | `branch-fixer` | Fixes branches the reviewer rejected and sends them back | `agents/branch-fixer-*` branches |
 | `blog-writer` | Writes a post on what reached `main` since the last one | `blog/<date>-<slug>.md` |
-| `web-reader` | Links the best writing from Medium and other sites in a weekly reading list, and queues what it mentions that the tree lacks | `blog/<date>-reading-list.md`, `agents/inbox/<date>-web-reader.md` |
+| `web-reader` | Posts the best writing from Medium, magazines and openly licensed sites as short notes with links and free photos, and queues what it mentions that the tree lacks | `blog/<date>-reading-list.md`, `agents/inbox/<date>-web-reader.md` |
 | `preview-refresher` | Redraws the link preview when the counts change | `public/og-image.png` |
 | `release-reviewer` | Reviews every agent branch and approves or rejects the exact tip | `agents/reports/review-*.md` |
 | `release-merger` | Merges approved branches, re-verifies, pushes `main` | `main`, `agents/reports/merge-log.md` |

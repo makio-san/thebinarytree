@@ -23,6 +23,7 @@ summary: <one sentence for the list and for link previews>
 ```
 
    The body may use `##` headings, paragraphs, `-` lists, `**bold**`, `*italic*`, `` `code` `` and links. Nothing else is rendered.
+   A photo goes on a line of its own as `![alt](url "Photo: author, licence, via source")`. Only freely licensed or public domain files from `upload.wikimedia.org` or `thumb.wikimedia.org`, `images-assets.nasa.gov`, `ids.si.edu` or `tile.loc.gov` are shown, and the credit must name the author and the licence (a test checks both). Confirm the licence on the file's page and look at the picture before using it. One or two photos per post at most, as 960 px thumbnails: take `thumburl` from the Commons API with `iiurlwidth=960`, without its `?utm_...` part.
 6. Run the type check and the tests (they check front matter, dashes and node links). Commit as `docs(blog): add the post on <topic>.`, push your branch, and stop.
 
 ## Rules every agent follows
