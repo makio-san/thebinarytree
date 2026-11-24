@@ -439,10 +439,12 @@ body {
 }
 
 .brand__text strong {
+  overflow: hidden;
   font-size: 15px;
   font-weight: 650;
   letter-spacing: -0.01em;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .brand__text span {
