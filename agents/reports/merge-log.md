@@ -97,3 +97,10 @@ Decisions by the release merger, newest last.
 - `agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21` at `4f88415692cdbf3117441e3c95835a545afdceb1`: skipped. Approved, but the per run limit was reached; left for the next run.
 - `agents/branch-fixer-2026-11-23-lineage-curator-2026-11-22` at `82ff3b450caa2d23962df38d13cb581d00e6db17`: skipped. Approved, but the per run limit was reached; left for the next run.
 - `agents/release-reviewer-2026-11-23-2` at `d5508c3f849e00e4e92e586817e4e8d314048a0b`: skipped. Per run limit reached; left for the next run.
+
+## 2026-11-24
+- agents/lineage-curator-2026-11-23-2 (0408e7a7): merged, approved and green.
+- agents/branch-fixer-2026-11-23-tech-scout-2026-11-21 (4a27b911): merged, approved and green.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped, merge conflict with main.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-22 (82ff3b45): merged, approved and green.
+- Not reached (three merge limit): fact-checker-2026-11-24, lineage-curator-2026-11-24, tech-scout-2026-11-24, web-reader-2026-11-24.
