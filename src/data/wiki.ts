@@ -1055,6 +1055,20 @@ export const WIKI_TITLES: Record<string, string> = {
   bravo: 'Bravo (editor)',
   'microsoft-word': 'Microsoft Word',
   wordstar: 'WordStar',
+  mach: 'Mach (kernel)',
+  sel4: 'SeL4',
+  irc: 'IRC',
+  shrdlu: 'SHRDLU',
+  'ibm-watson': 'IBM Watson',
+  imagenet: 'ImageNet',
+  itanium: 'Itanium',
+  oled: 'OLED',
+  sendmail: 'Sendmail',
+  grep: 'Grep',
+  ospf: 'Open Shortest Path First',
+  directx: 'DirectX',
+  'seti-at-home': 'SETI@home',
+  trackball: 'Trackball',
 }
 
 /**

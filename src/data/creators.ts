@@ -759,6 +759,16 @@ export const CREATORS: Record<string, string[]> = {
   bravo: ['Butler Lampson', 'Charles Simonyi'],
   'microsoft-word': ['Charles Simonyi', 'Richard Brodie'],
   wordstar: ['Rob Barnaby'],
+  mach: ['Richard Rashid', 'Avie Tevanian'],
+  irc: ['Jarkko Oikarinen'],
+  shrdlu: ['Terry Winograd'],
+  'ibm-watson': ['David Ferrucci'],
+  imagenet: ['Fei-Fei Li'],
+  oled: ['Ching Wan Tang', 'Steven Van Slyke'],
+  sendmail: ['Eric Allman'],
+  grep: ['Ken Thompson'],
+  directx: ['Craig Eisler', 'Eric Engstrom', 'Alex St. John'],
+  trackball: ['Ralph Benjamin'],
 }
 
 const NONE: readonly string[] = []
