@@ -1,4 +1,4 @@
-import { POSTS, renderMarkdown, type Post } from '../blog'
+import { photos, POSTS, renderMarkdown, type Post } from '../blog'
 
 const el = <K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -16,6 +16,18 @@ const when = (iso: string): string => {
   return Number.isNaN(d.getTime())
     ? iso
     : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+const isReadingList = (post: Post): boolean => /reading-list/.test(post.slug)
+const kind = (post: Post): string => (isReadingList(post) ? 'Reading list' : 'Tree update')
+const minutes = (post: Post): string => `${Math.max(1, Math.round(post.body.split(/\s+/).length / 220))} min read`
+
+/** Date, kind and reading time, as a small row of text. */
+const meta = (post: Post): HTMLElement => {
+  const row = el('div', 'blog__meta')
+  const chip = el('span', `blog__kind${isReadingList(post) ? ' blog__kind--list' : ''}`, kind(post))
+  row.append(chip, el('time', 'blog__date', when(post.date)), el('span', 'blog__dot'), el('span', 'blog__time', minutes(post)))
+  return row
 }
 
 export const hasPosts = (): boolean => POSTS.length > 0
@@ -58,6 +70,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
   const showList = (): void => {
     setHash('#blog')
     titles.replaceChildren(
+      el('p', 'blog__eyebrow', 'The Binary Tree'),
       el('h2', undefined, 'Blog'),
       el('p', 'agents__lede', 'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.'),
     )
@@ -70,7 +83,20 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
         event.preventDefault()
         showPost(post)
       })
-      link.append(el('time', 'blog__date', when(post.date)), el('strong', undefined, post.title), el('span', undefined, post.summary))
+      const text = el('div', 'blog__text')
+      const more = el('span', 'blog__more', isReadingList(post) ? 'Open the list' : 'Read the post')
+      text.append(meta(post), el('strong', 'blog__title', post.title), el('span', 'blog__summary', post.summary), more)
+      link.append(text)
+      const cover = photos(post.body)[0]
+      if (cover) {
+        const img = el('img', 'blog__cover')
+        img.src = cover.url
+        img.alt = ''
+        img.loading = 'lazy'
+        img.referrerPolicy = 'no-referrer'
+        link.classList.add('blog__item--cover')
+        link.append(img)
+      }
       item.append(link)
       list.append(item)
     }
@@ -83,7 +109,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
     const back = el('button', 'blog__back', 'All posts')
     back.type = 'button'
     back.addEventListener('click', showList)
-    titles.replaceChildren(back, el('h2', undefined, post.title), el('p', 'agents__lede', when(post.date)))
+    titles.replaceChildren(back, meta(post), el('h2', 'blog__heading', post.title), el('p', 'agents__lede', post.summary))
     const article = el('article', 'blog__post')
     article.innerHTML = renderMarkdown(post.body)
     body.replaceChildren(article)
