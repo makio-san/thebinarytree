@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nodeLinks, parsePost, photos, PHOTO_HOSTS, POSTS, renderMarkdown } from '../demo/blog'
+import { isReadingList, nodeLinks, parsePost, photos, PHOTO_HOSTS, POSTS, readingItems, renderMarkdown } from '../demo/blog'
 import { computerHistory, flatten } from '../src/data'
 
 const ids = new Set(flatten(computerHistory).map((node) => node.id))
@@ -30,6 +30,16 @@ describe('the blog', () => {
     expect(renderMarkdown('![x](https://upload.wikimedia.org/a.jpg" onerror="x "c")')).not.toMatch(/<img|onerror="/)
   })
 
+  it('reads the day each piece in a reading list was published', () => {
+    const body =
+      '## One\n\n*Jane Doe, on Site, 18 November*\n\nText.\n\n## Two\n\n*No day in this byline*\n\nText.\n\n## Three\n\n*A B, on C, 30 December*\n\n## Four\n\n*D E, on F, 25 November*'
+    const days = (date: string): (string | null)[] => readingItems({ date, body }).map((item) => item.published)
+    expect(days('2026-11-24')).toEqual(['2026-11-18', null, '2025-12-30', '2026-11-25'])
+    expect(days('2027-01-03')).toEqual(['2026-11-18', null, '2026-12-30', '2026-11-25'])
+    expect(readingItems({ date: '2026-11-24', body })[1].title).toBe('Two')
+    expect(readingItems({ date: '2026-11-24', body: '## Odd\n\n*X, on Y, 31 February*' })[0].published).toBeNull()
+  })
+
   for (const post of POSTS) {
     describe(post.slug, () => {
       it('has a dated slug that matches its date', () => {
@@ -52,6 +62,19 @@ describe('the blog', () => {
       it('links only to nodes that exist', () => {
         for (const id of nodeLinks(post.body)) expect(ids.has(id), `unknown node "${id}"`).toBe(true)
       })
+
+      if (isReadingList(post)) {
+        it('dates every piece, and none is more than a week older than the list', () => {
+          const items = readingItems(post)
+          expect(items.length).toBeGreaterThan(0)
+          for (const item of items) {
+            expect(item.published, `"${item.title}" needs the day it was published at the end of its byline`).not.toBeNull()
+            const age = (Date.parse(post.date) - Date.parse(item.published as string)) / 86_400_000
+            expect(age, `"${item.title}" was published ${age} days before the list`).toBeGreaterThanOrEqual(-1)
+            expect(age, `"${item.title}" was published ${age} days before the list`).toBeLessThanOrEqual(7)
+          }
+        })
+      }
     })
   }
 })

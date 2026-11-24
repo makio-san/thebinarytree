@@ -1,4 +1,4 @@
-import { photos, POSTS, renderMarkdown, type Post } from '../blog'
+import { isReadingList, photos, POSTS, renderMarkdown, type Post } from '../blog'
 
 const el = <K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -18,7 +18,6 @@ const when = (iso: string): string => {
     : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-const isReadingList = (post: Post): boolean => /reading-list/.test(post.slug)
 const kind = (post: Post): string => (isReadingList(post) ? 'Reading list' : 'Tree update')
 const minutes = (post: Post): string => `${Math.max(1, Math.round(post.body.split(/\s+/).length / 220))} min read`
 
