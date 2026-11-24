@@ -137,12 +137,14 @@ const makeTheme = (
 }
 
 export const darkTheme: Theme = makeTheme({
-  background: 0x080a11,
-  neutral: 0x7c8798,
-  boundary: 0x2b3550,
-  link: 0x46536a,
+  // Neutral, with no blue in it. A tinted black reads as navy the moment it
+  // sits inside a black phone bezel or beside the page's own black panels.
+  background: 0x050506,
+  neutral: 0x82828e,
+  boundary: 0x34363f,
+  link: 0x4b4d58,
   highlight: 0xffffff,
-  recede: 0x080a11,
+  recede: 0x050506,
   maxFade: 0.94,
   glow: 'additive',
   allowBloom: true,

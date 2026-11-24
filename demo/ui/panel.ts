@@ -405,15 +405,17 @@ export class Panel {
     const leaves = subtree.filter((n) => n.children.length === 0).length
     // Each stat is its own grid cell holding both terms. A flat run of dt/dd
     // children lets the grid interleave them and the pairing falls apart.
-    const addStat = (label: string, value: string) => {
+    const addStat = (label: string, value: string, meaning: string) => {
       const cell = el('div', 'stat')
+      cell.title = meaning
       cell.append(el('dt', undefined, label), el('dd', undefined, value))
       stats.append(cell)
     }
-    addStat('Depth', String(node.depth))
-    addStat('Branches', String(node.children.length))
-    if (subtree.length > 1) addStat('Descendants', String(subtree.length - 1))
-    if (leaves > 1) addStat('Leaves', String(leaves))
+    // Short labels: four of these share one row on a phone.
+    addStat('Depth', String(node.depth), 'Steps from the root of the tree')
+    addStat('Branches', String(node.children.length), 'Nodes that come directly from this one')
+    if (subtree.length > 1) addStat('Nodes', String(subtree.length - 1), 'Everything that descends from this one')
+    if (leaves > 1) addStat('Leaves', String(leaves), 'Descendants with nothing after them')
     this.body.append(stats)
 
     // --- Wikipedia extract slot ---

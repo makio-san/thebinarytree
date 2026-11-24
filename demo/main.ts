@@ -186,8 +186,11 @@ const panel = new Panel(panelEl, panelBody, panelPeek, {
   onCreator: (name) => search.query(name),
 })
 
+/** Height of the sheet's own header: the handle and the line with the name. */
+const SHEET_HEADER = 64
+
 const sheet = new Sheet(panelEl, panelGrab, {
-  peek: 118,
+  peek: SHEET_HEADER + 58,
   half: 0.46,
   onStateChange: (state) => {
     document.body.dataset.sheet = state
@@ -212,19 +215,22 @@ function syncSafeArea(): void {
   }
   const height = globalThis.innerHeight
   const state = sheet.current
+  const tabbar = document.getElementById('tabbar')?.offsetHeight ?? 0
   const covered =
     state === 'full'
       ? height * 0.5
       : state === 'half'
-        ? Math.min(height * 0.42, panelEl.offsetHeight * (1 - 0.46))
-        : 118
-  const tabbar = document.getElementById('tabbar')?.offsetHeight ?? 0
-  tree.api.setSafeArea({ top: 56, bottom: Math.round(covered + tabbar * 0.35), right: 0, left: 0 })
+        ? Math.min(height * 0.42, panelEl.offsetHeight * (1 - 0.46)) + tabbar * 0.35
+        : SHEET_HEADER + tabbar
+  tree.api.setSafeArea({ top: 56, bottom: Math.round(covered), right: 0, left: 0 })
 }
 
 function syncLayout(): void {
   const phone = isPhone()
   document.body.dataset.mode = phone ? 'phone' : 'desktop'
+  // The peek shows the sheet's header above the tab bar, and the tab bar is
+  // taller on a phone with a home indicator. A fixed number left a sliver.
+  sheet.setPeek(SHEET_HEADER + (document.getElementById('tabbar')?.offsetHeight ?? 58))
   sheet.setEnabled(phone)
   if (phone && sheet.current === 'hidden') sheet.setState('peek')
   if (!phone) bottomEl.dataset.open = 'true'
@@ -327,7 +333,7 @@ function recentre(): void {
 function toggleTheme(): void {
   dark = !dark
   document.body.classList.toggle('theme-light', !dark)
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#080a11' : '#f3f5f9')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#050506' : '#f3f5f9')
   tree.api.setTheme(dark ? 'dark' : 'light')
 }
 

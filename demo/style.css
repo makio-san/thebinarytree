@@ -8,26 +8,33 @@
    ========================================================================== */
 
 :root {
-  --bg: #080a11;
-  --surface: rgb(14 18 27 / 82%);
-  --surface-solid: #0d1119;
-  --surface-raised: rgb(22 28 40 / 92%);
-  --ring: rgb(255 255 255 / 10%);
-  --ring-strong: rgb(255 255 255 / 18%);
-  --fg: #e9eef7;
-  --fg-dim: #a5b2c6;
-  --fg-faint: #8593a8;
+  /* Neutral near black throughout. No blue in the greys: a tinted dark reads as
+     navy as soon as it sits beside a black screen bezel. */
+  --bg: #050506;
+  --surface: rgb(13 13 15 / 94%);
+  --surface-solid: #0b0b0d;
+  --surface-raised: #17171a;
+  /* A block inside a card, and the same block under the pointer. */
+  --fill: rgb(255 255 255 / 5%);
+  --fill-hover: rgb(255 255 255 / 9%);
+  --ring: rgb(255 255 255 / 8%);
+  --ring-strong: rgb(255 255 255 / 16%);
+  --fg: #f4f4f5;
+  --fg-dim: #a9a9b4;
+  --fg-faint: #80808c;
   --accent: #94a3ff;
-  --accent-soft: rgb(148 163 255 / 15%);
+  --accent-soft: rgb(148 163 255 / 14%);
   --gold: #e3b578;
-  --scrim: rgb(4 6 11 / 55%);
+  --scrim: rgb(0 0 0 / 66%);
 
   --font:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 1px 0 rgb(255 255 255 / 5%) inset, 0 24px 64px rgb(0 0 0 / 50%);
+  --shadow: 0 24px 64px rgb(0 0 0 / 60%);
+  /* A sheet rising from the bottom edge casts its shadow upward. */
+  --shadow-up: 0 -24px 60px rgb(0 0 0 / 55%);
   --control-h: 38px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -40,10 +47,12 @@
 
 body.theme-light {
   --bg: #f3f5f9;
-  --surface: rgb(255 255 255 / 84%);
+  --surface: rgb(255 255 255 / 94%);
   --surface-solid: #ffffff;
-  --surface-raised: rgb(255 255 255 / 95%);
-  --ring: rgb(15 22 36 / 11%);
+  --surface-raised: #f4f5f8;
+  --fill: rgb(15 22 36 / 4.5%);
+  --fill-hover: rgb(15 22 36 / 8%);
+  --ring: rgb(15 22 36 / 10%);
   --ring-strong: rgb(15 22 36 / 20%);
   --fg: #111620;
   --fg-dim: #485466;
@@ -51,8 +60,9 @@ body.theme-light {
   --accent: #4450d2;
   --accent-soft: rgb(68 80 210 / 11%);
   --gold: #9a6a1c;
-  --scrim: rgb(220 226 236 / 60%);
-  --shadow: 0 1px 0 rgb(255 255 255 / 60%) inset, 0 20px 52px rgb(20 30 50 / 16%);
+  --scrim: rgb(220 226 236 / 70%);
+  --shadow: 0 20px 52px rgb(20 30 50 / 16%);
+  --shadow-up: 0 -14px 40px rgb(20 30 50 / 12%);
 
   color-scheme: light;
 }
@@ -213,49 +223,51 @@ body {
 
 /* Arrow keys are the fastest way through a tree and a phone has none, so the
    same four moves get real buttons. Hitting a node with a finger is possible
-   but this is how you get somewhere without aiming at all. */
+   but this is how you get somewhere without aiming at all. One block with
+   hairlines between the moves, like the strips of facts below it. */
 .walk {
   display: none;
-  gap: 1px;
-  margin: 0 16px 12px;
+  margin: 0 16px 14px;
   padding: 0;
   overflow: hidden;
-  border: 1px solid var(--ring);
-  border-radius: var(--radius-sm);
-  background: var(--ring);
+  border-radius: 12px;
+  background: var(--fill);
   flex: 0 0 auto;
 }
 
 .walk button {
   display: inline-flex;
-  gap: 5px;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
+  min-height: 42px;
   padding: 0 10px;
   border: 0;
-  color: var(--fg-dim);
-  background: var(--surface-solid);
+  color: var(--fg);
+  background: none;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
   flex: 1 1 auto;
 }
 
+.walk button + button {
+  box-shadow: -1px 0 0 var(--ring);
+}
+
 .walk button:active {
-  color: var(--fg);
-  background: var(--surface-raised);
+  background: var(--fill-hover);
 }
 
 .walk button:disabled {
-  color: color-mix(in srgb, var(--fg-faint) 45%, transparent);
+  color: color-mix(in srgb, var(--fg-faint) 50%, transparent);
   cursor: default;
 }
 
 .walk button[data-walk='prev'],
 .walk button[data-walk='next'] {
-  flex: 0 0 46px;
+  flex: 0 0 50px;
   padding: 0;
 }
 
@@ -280,7 +292,6 @@ body {
   font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
-  backdrop-filter: blur(14px) saturate(1.3);
   transition:
     border-color 0.16s,
     color 0.16s,
@@ -461,7 +472,6 @@ body {
   border: 1px solid var(--ring);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  backdrop-filter: blur(14px) saturate(1.3);
   transition:
     border-color 0.16s,
     box-shadow 0.16s;
@@ -537,7 +547,6 @@ body {
   background: var(--surface-raised);
   box-shadow: var(--shadow);
   list-style: none;
-  backdrop-filter: blur(18px);
   overscroll-behavior: contain;
 }
 
@@ -630,23 +639,29 @@ body.theme-light .dot {
   flex: 0 0 auto;
 }
 
-/* --- detail panel ------------------------------------------------------- */
+/* --- detail panel -------------------------------------------------------
+   A card on a desktop and a sheet on a phone. One flat, near black surface:
+   the scene behind it is already bright and busy, and a card that glows or
+   blurs competes with it. Facts sit in grouped blocks a shade lighter than the
+   card, prose sits directly on it, and the only colour is the era's. */
 
 .panel {
+  --era: var(--accent);
+
   position: fixed;
   top: 74px;
   right: calc(16px + var(--safe-right));
   z-index: 5;
   display: flex;
   flex-direction: column;
-  width: min(370px, 34vw);
-  max-height: calc(100vh - 74px - 108px);
-  border: 1px solid var(--ring);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(22px) saturate(1.3);
+  width: min(384px, 34vw);
+  max-height: calc(100vh - 182px);
+  max-height: calc(100dvh - 182px);
   overflow: hidden;
+  border: 1px solid var(--ring);
+  border-radius: 18px;
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
 }
 
 .panel__grab {
@@ -654,87 +669,73 @@ body.theme-light .dot {
 }
 
 .panel__body {
-  --pad: 18px;
-  --pad-top: 18px;
-
-  padding: 18px 18px 20px;
+  padding: 16px 16px 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 .hint {
   margin: 0;
-  color: var(--fg-faint);
-  font-size: 12.5px;
+  color: var(--fg-dim);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
-/* --- hero ---------------------------------------------------------------
-   The picture runs edge to edge and fades out at the bottom, and the name sits
-   on the fade. --era is set per node by the panel. */
-
-.panel {
-  --era: var(--accent);
-}
-
-/* A hairline in the era's colour across the top of the card. */
-.panel::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 2;
-  height: 2px;
-  background: linear-gradient(90deg, var(--era), transparent 70%);
-  opacity: 0.8;
-  content: '';
-  pointer-events: none;
-}
-
-.panel[data-empty='true']::before {
-  display: none;
-}
+/* --- picture and name ---------------------------------------------------
+   The picture is a rounded tile inside the card's padding, never edge to edge:
+   on a phone an edge to edge picture in the middle of a sheet reads as
+   something that has slipped out of its frame. */
 
 .hero {
-  position: relative;
-  margin: calc(-1 * var(--pad-top)) calc(-1 * var(--pad)) 14px;
+  margin: 0 0 16px;
 }
 
 .figure {
   position: relative;
-  margin: 0;
+  margin: 0 0 16px;
   overflow: hidden;
+  border-radius: 12px;
+  background: var(--fill);
 }
 
 .figure[data-state='loading'],
 .figure[data-state='ready'] {
-  height: 208px;
-  mask-image: linear-gradient(to bottom, #000 58%, transparent);
+  aspect-ratio: 16 / 10;
 }
 
-/* No picture: a wash of the era's colour stands in, so the card still opens
-   with something rather than starting cold on a line of text. */
+/* No picture, no slot. The card simply starts at the name. */
 .figure[data-state='empty'] {
-  height: 76px;
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--era) 42%, transparent), transparent 70%),
-    radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--era) 16%, transparent), transparent 70%);
-  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  display: none;
 }
 
-.figure__placeholder {
-  height: 100%;
-  background:
-    linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 7%) 40%, transparent 60%)
-    0 0 / 240% 100% no-repeat,
-    color-mix(in srgb, var(--era) 10%, transparent);
+/* A hairline over the picture, so a dark photograph still has an edge. */
+.figure::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--ring);
+  content: '';
+  pointer-events: none;
+}
+
+.figure__placeholder,
+.extract__skeleton {
+  background: linear-gradient(100deg, transparent 20%, var(--fill-hover) 40%, transparent 60%) 0 0 /
+    240% 100% no-repeat;
   animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Whatever fills the slot is pinned to its edges, so nothing depends on a
+   percentage height resolving against the slot's aspect ratio. */
+.figure__placeholder,
+.figure__zoom {
+  position: absolute;
+  inset: 0;
 }
 
 @keyframes shimmer {
   to {
-    background-position:
-      -140% 0,
-      0 0;
+    background-position: -140% 0;
   }
 }
 
@@ -742,6 +743,7 @@ body.theme-light .dot {
   display: block;
   width: 100%;
   height: 100%;
+  margin: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -751,6 +753,60 @@ body.theme-light .dot {
 .figure__zoom:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  background: #000;
+}
+
+/* Source credit, as a small tag in the corner of the picture. */
+.figure figcaption {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 1;
+  max-width: calc(100% - 16px);
+  padding: 3px 8px;
+  overflow: hidden;
+  border-radius: 7px;
+  color: rgb(255 255 255 / 84%);
+  background: rgb(0 0 0 / 66%);
+  font-size: 10.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.figure figcaption a {
+  color: #fff;
+}
+
+.hero__text {
+  min-width: 0;
+}
+
+/* The era, as a line of text with its marker. */
+.badge {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  margin-bottom: 7px;
+  color: var(--fg-dim);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
 }
 
 /* --- enlarged picture --------------------------------------------------- */
@@ -765,9 +821,8 @@ body.theme-light .dot {
   align-items: center;
   justify-content: center;
   padding: calc(56px + var(--safe-top)) 20px calc(24px + var(--safe-bottom));
-  background: rgb(4 6 11 / 88%);
+  background: rgb(0 0 0 / 92%);
   cursor: zoom-out;
-  backdrop-filter: blur(10px);
   animation: lightbox-in 0.18s ease;
 }
 
@@ -804,168 +859,143 @@ body.theme-light .dot {
   right: calc(12px + var(--safe-right));
 }
 
-.figure img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
-  background: #05070c;
+/* --- facts in a strip ---------------------------------------------------
+   Year, origin and type, and further down the counts: one block with hairlines
+   between the cells, rather than a row of separate boxes. */
+
+.spec,
+.stats {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  margin: 0 0 16px;
+  padding: 0;
+  border-radius: 12px;
+  background: var(--fill);
 }
 
-/* Source credit, as a small pill in the corner of the picture. */
-.figure figcaption {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  max-width: 70%;
-  padding: 2px 8px;
+.spec__cell,
+.stat {
+  min-width: 0;
+  padding: 10px 12px 11px;
+}
+
+.spec__cell + .spec__cell,
+.stat + .stat {
+  box-shadow: -1px 0 0 var(--ring);
+}
+
+.spec dt,
+.stat dt {
   overflow: hidden;
-  border-radius: 999px;
-  color: rgb(255 255 255 / 82%);
-  background: rgb(6 8 14 / 62%);
-  font-size: 10px;
-  letter-spacing: 0.02em;
+  color: var(--fg-faint);
+  font-size: 11.5px;
+  font-weight: 500;
   white-space: nowrap;
   text-overflow: ellipsis;
-  backdrop-filter: blur(6px);
 }
 
-.figure figcaption a {
-  color: #fff;
-}
-
-.hero__text {
-  position: relative;
-  margin-top: -46px;
-  padding: 0 var(--pad);
-}
-
-.figure[data-state='empty'] + .hero__text {
-  margin-top: -34px;
-}
-
-.badge {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 8px;
-  padding: 3px 10px 3px 8px;
-  border: 1px solid var(--ring-strong);
-  border-radius: 999px;
-  color: var(--fg-dim);
-  background: color-mix(in srgb, var(--surface-solid) 82%, transparent);
-  backdrop-filter: blur(8px);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
+.spec dd::first-letter {
   text-transform: uppercase;
 }
 
-.panel h2 {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
-  text-shadow: 0 1px 14px var(--surface-solid);
-  text-wrap: balance;
-}
-
-/* Year, origin, type: the three things people ask first. */
-.spec {
-  display: flex;
-  margin: 0 0 14px;
-  padding: 10px 0;
-  border-block: 1px solid var(--ring);
-}
-
-.spec__cell {
-  min-width: 0;
-  padding: 0 14px;
-  border-left: 1px solid var(--ring);
-  flex: 1 1 0;
-}
-
-.spec__cell:first-child {
-  padding-left: 0;
-  border-left: 0;
-  flex: 0 0 auto;
-}
-
-.spec dt {
-  color: var(--fg-faint);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.spec dd {
+.spec dd,
+.stat dd {
   margin: 2px 0 0;
   overflow: hidden;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.spec__cell:first-child dd {
-  font-size: 14px;
-}
+/* --- our own text ------------------------------------------------------ */
 
 .summary {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: var(--fg);
-  font-size: 13.5px;
-  line-height: 1.55;
+  font-size: 14.5px;
+  line-height: 1.6;
   text-wrap: pretty;
 }
 
 .facts {
-  margin: 0 0 13px;
+  display: grid;
+  gap: 5px;
+  margin: 0 0 18px;
   padding: 0;
   list-style: none;
 }
 
 .facts li {
   position: relative;
-  padding-left: 15px;
+  padding-left: 16px;
   color: var(--fg-dim);
-  font-size: 12.5px;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .facts li::before {
   position: absolute;
-  top: 0.62em;
-  left: 3px;
-  width: 4px;
-  height: 4px;
+  top: 0.58em;
+  left: 2px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--fg-faint);
+  background: var(--era);
   content: '';
+}
+
+/* --- headings of the blocks below -------------------------------------- */
+
+.people h3,
+.extract h3,
+.section h3 {
+  margin: 0 0 8px;
+  color: var(--fg-dim);
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 /* --- people ------------------------------------------------------------ */
 
 .people {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
-.people h3 {
-  margin: 0 0 6px;
-  color: var(--fg-faint);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.people__list {
-  margin: 0 -8px;
+/* A grouped list: one block, rows divided by a hairline that starts where the
+   names do. */
+.people__list,
+.rows {
+  margin: 0;
   padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--fill);
   list-style: none;
+}
+
+.people__list li + li,
+.rows li + li {
+  position: relative;
+}
+
+.people__list li + li::before,
+.rows li + li::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 62px;
+  height: 1px;
+  background: var(--ring);
+  content: '';
+  pointer-events: none;
+}
+
+.rows li + li::before {
+  left: 33px;
 }
 
 /* A person is a button: it searches for everything else that carries the name. */
@@ -974,24 +1004,25 @@ body.theme-light .dot {
   gap: 12px;
   align-items: center;
   width: 100%;
-  padding: 7px 8px;
+  padding: 9px 12px;
   border: 0;
-  border-radius: 10px;
   color: var(--fg);
   background: none;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background 0.16s;
+  transition: background-color 0.16s;
 }
 
 .person:hover {
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  background: var(--fill-hover);
 }
 
-.person:focus-visible {
+.person:focus-visible,
+.rows li > button:focus-visible,
+.path button:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline-offset: -2px;
 }
 
 /* Initials on a neutral ground, with the photograph laid over them when there
@@ -999,14 +1030,13 @@ body.theme-light .dot {
 .person__avatar {
   position: relative;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   overflow: hidden;
   border-radius: 50%;
   color: var(--fg-dim);
-  background: color-mix(in srgb, var(--fg) 9%, transparent);
-  box-shadow: inset 0 0 0 1px var(--ring);
-  font-size: 12.5px;
+  background: var(--fill-hover);
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
   place-items: center;
@@ -1038,8 +1068,7 @@ body.theme-light .dot {
 }
 
 .person__avatar[data-photo='true'] {
-  background: #0b0d13;
-  box-shadow: 0 0 0 1px var(--ring-strong);
+  background: #000;
 }
 
 .person__text {
@@ -1052,7 +1081,7 @@ body.theme-light .dot {
 
 .person__name {
   overflow: hidden;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1061,7 +1090,7 @@ body.theme-light .dot {
 .person__note {
   overflow: hidden;
   color: var(--fg-faint);
-  font-size: 11.5px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1070,7 +1099,7 @@ body.theme-light .dot {
   width: 14px;
   height: 14px;
   color: var(--fg-faint);
-  opacity: 0.35;
+  opacity: 0.5;
   transition: opacity 0.16s;
 }
 
@@ -1078,396 +1107,153 @@ body.theme-light .dot {
   opacity: 1;
 }
 
-.stats {
-  display: flex;
-  margin: 0 0 16px;
-  padding: 10px 0;
-  border-block: 1px solid var(--ring);
-}
+/* --- from Wikipedia ---------------------------------------------------- */
 
-.stat {
-  min-width: 0;
-  padding: 0 12px;
-  border-left: 1px solid var(--ring);
-  flex: 1 1 0;
-}
-
-.stat:first-child {
-  padding-left: 0;
-  border-left: 0;
-}
-
-.stat dt {
-  overflow: hidden;
-  color: var(--fg-faint);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.stat dd {
-  margin: 2px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+.extract {
+  margin: 0 0 18px;
 }
 
 .extract[data-state='empty'] {
   display: none;
 }
 
-.extract h3,
-.section h3 {
-  margin: 0 0 6px;
-  color: var(--fg-faint);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.extract {
-  margin-bottom: 16px;
-}
-
 .extract p {
   margin: 0 0 8px;
   color: var(--fg-dim);
-  font-size: 13px;
+  font-size: 13.5px;
+  line-height: 1.6;
   text-wrap: pretty;
 }
 
 .extract__skeleton {
-  height: 54px;
-  border-radius: 6px;
-  background:
-    linear-gradient(100deg, transparent 20%, rgb(255 255 255 / 6%) 40%, transparent 60%)
-    0 0 / 240% 100% no-repeat;
-  animation: shimmer 1.5s ease-in-out infinite;
+  height: 60px;
+  border-radius: 8px;
 }
 
 .extract__link {
   color: var(--accent);
-  font-size: 12.5px;
+  font-size: 13px;
+  font-weight: 550;
   text-decoration: none;
+}
+
+.extract__link::after {
+  margin-left: 4px;
+  content: '\2197';
 }
 
 .extract__link:hover {
   text-decoration: underline;
 }
 
-.section {
-  padding-top: 12px;
-  border-top: 1px solid var(--ring);
-}
+/* --- lineage, branches, siblings --------------------------------------- */
 
-.section + .section {
-  margin-top: 12px;
+.section {
+  margin-top: 18px;
 }
 
 .path {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px 4px;
+  gap: 6px 2px;
+  align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 12px;
+}
+
+.path li {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
 }
 
 .path button {
-  padding: 2px 6px;
+  max-width: 100%;
+  padding: 5px 10px;
+  overflow: hidden;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   color: var(--fg-dim);
-  background: none;
+  background: var(--fill);
   font: inherit;
+  font-size: 12.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   cursor: pointer;
+  transition:
+    background-color 0.16s,
+    color 0.16s;
 }
 
 .path button:hover {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--fg);
+  background: var(--fill-hover);
 }
 
-.path li:not(:last-child)::after {
+.path li + li::before {
+  margin: 0 5px 0 3px;
   color: var(--fg-faint);
-  content: '›';
-  opacity: 0.6;
-}
-
-.rows {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  content: '\203a';
 }
 
 .rows li > button {
   display: flex;
-  gap: 8px;
-  align-items: baseline;
+  gap: 10px;
+  align-items: center;
   width: 100%;
-  padding: 6px 7px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: 8px;
-  color: var(--fg-dim);
+  color: var(--fg);
   background: none;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13.5px;
   text-align: left;
   cursor: pointer;
+  transition: background-color 0.16s;
 }
 
 .rows li > button:hover {
-  color: var(--fg);
-  background: var(--accent-soft);
+  background: var(--fill-hover);
 }
 
-/* --- detail panel, editorial finish -------------------------------------
-   The same dark, quiet surface as the blog: a near black sheet, hairline
-   borders, figures set in small tiles, labels in small monospaced capitals. */
-
-.panel {
-  --card: rgb(255 255 255 / 3.5%);
-  --card-hover: rgb(255 255 255 / 6%);
-  --card-line: rgb(255 255 255 / 7%);
-  --card-line-strong: rgb(148 163 255 / 34%);
-
-  border-color: var(--card-line);
-  border-radius: 18px;
-  background:
-    radial-gradient(110% 40% at 0% 0%, color-mix(in srgb, var(--era) 10%, transparent), transparent 70%),
-    rgb(9 12 19 / 94%);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 5%) inset,
-    0 30px 90px rgb(0 0 0 / 60%);
-}
-
-body.theme-light .panel {
-  --card: rgb(15 22 36 / 3%);
-  --card-hover: rgb(15 22 36 / 5.5%);
-  --card-line: rgb(15 22 36 / 9%);
-  --card-line-strong: rgb(68 80 210 / 36%);
-
-  background:
-    radial-gradient(110% 40% at 0% 0%, color-mix(in srgb, var(--era) 9%, transparent), transparent 70%),
-    rgb(255 255 255 / 96%);
-  box-shadow: 0 24px 70px rgb(20 30 50 / 16%);
-}
-
-.panel__body {
-  --pad: 20px;
-  --pad-top: 20px;
-
-  padding: 20px 20px 22px;
-}
-
-.panel .badge {
-  border-color: color-mix(in srgb, var(--era) 40%, transparent);
-  color: color-mix(in srgb, var(--era) 70%, var(--fg));
-  background: color-mix(in srgb, var(--era) 14%, rgb(9 12 19 / 80%));
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-}
-
-body.theme-light .panel .badge {
-  color: color-mix(in srgb, var(--era) 60%, #111620);
-  background: color-mix(in srgb, var(--era) 12%, rgb(255 255 255 / 85%));
-}
-
-.panel h2 {
-  font-size: 27px;
-  font-weight: 700;
-  letter-spacing: -0.028em;
-}
-
-/* Year, origin, type and the counts: small tiles instead of ruled columns. */
-.panel .spec,
-.panel .stats {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: 6px;
-  margin: 4px 0 16px;
-  padding: 0;
-  border: 0;
-}
-
-.panel .spec__cell,
-.panel .stat,
-.panel .spec__cell:first-child,
-.panel .stat:first-child {
-  padding: 9px 11px 10px;
-  border: 1px solid var(--card-line);
-  border-radius: 10px;
-  background: var(--card);
-}
-
-.panel .spec dt,
-.panel .stat dt,
-.panel .people h3,
-.panel .extract h3,
-.panel .section h3 {
-  color: var(--fg-faint);
-  font-family: var(--mono);
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.panel .spec dd,
-.panel .stat dd {
-  margin-top: 4px;
-  color: var(--fg);
-  font-size: 15px;
-  font-weight: 640;
-  letter-spacing: -0.01em;
-}
-
-.panel .summary {
-  margin-bottom: 14px;
-  font-size: 14px;
-  line-height: 1.62;
-}
-
-.panel .facts li {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.panel .facts li::before {
-  background: var(--era);
-  opacity: 0.8;
-}
-
-/* People: a list of quiet cards. */
-.panel .people h3,
-.panel .extract h3,
-.panel .section h3 {
-  margin-bottom: 8px;
-}
-
-.panel .people__list {
-  display: grid;
-  gap: 1px;
-  margin: 0;
-}
-
-.panel .person {
-  padding: 6px 10px;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease;
-}
-
-.panel .person:hover {
-  border-color: var(--card-line);
-  background: var(--card-hover);
-}
-
-.panel .person__avatar {
-  width: 38px;
-  height: 38px;
-}
-
-/* From Wikipedia: a card of its own, with a rule in the era's colour. */
-.panel .extract:not([data-state='empty']) {
-  position: relative;
-  margin-bottom: 18px;
-  padding: 13px 14px 12px 16px;
-  border: 1px solid var(--card-line);
-  border-radius: 12px;
-  background: var(--card);
-}
-
-.panel .extract:not([data-state='empty'])::before {
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: -1px;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--era);
-  content: '';
-  opacity: 0.8;
-}
-
-.panel .extract p {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.panel .extract__link {
-  font-weight: 560;
-}
-
-.panel .extract__link::after {
-  margin-left: 5px;
-  content: '\2192';
-}
-
-.panel .section {
-  padding-top: 14px;
-  border-top-color: var(--card-line);
-}
-
-.panel .path button {
-  border: 1px solid var(--card-line);
-  background: var(--card);
-}
-
-.panel .rows {
-  display: grid;
-  gap: 2px;
-}
-
-.panel .rows li > button {
-  padding: 7px 10px;
-  border: 1px solid transparent;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease;
-}
-
-.panel .rows li > button:hover {
-  border-color: var(--card-line);
-  background: var(--card-hover);
+.rows .row__year {
+  font-size: 12.5px;
 }
 
 /* --- peek line (sheet only) -------------------------------------------- */
 
 .peek {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 9px;
+  align-items: baseline;
   min-width: 0;
+}
+
+.peek .dot {
+  align-self: center;
+  flex: 0 0 auto;
 }
 
 .peek__name {
   overflow: hidden;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .peek__meta {
-  color: var(--fg-faint);
-  font-size: 12px;
+  color: var(--fg-dim);
+  font-size: 13px;
   white-space: nowrap;
   flex: 0 0 auto;
 }
 
 .peek__hint {
-  color: var(--fg-faint);
-  font-size: 13px;
+  color: var(--fg-dim);
+  font-size: 14px;
 }
 
 /* --- timeline, legend, help -------------------------------------------- */
@@ -1481,7 +1267,6 @@ body.theme-light .panel .badge {
   border: 1px solid var(--ring);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  backdrop-filter: blur(14px) saturate(1.3);
 }
 
 .timeline label {
@@ -1516,7 +1301,6 @@ body.theme-light .panel .badge {
   border-radius: var(--radius-sm);
   background: var(--surface);
   list-style: none;
-  backdrop-filter: blur(14px) saturate(1.3);
   flex: 0 1 auto;
 }
 
@@ -1583,8 +1367,7 @@ body.theme-light .help kbd {
   display: none;
   padding-bottom: var(--safe-bottom);
   border-top: 1px solid var(--ring);
-  background: var(--surface-raised);
-  backdrop-filter: blur(20px);
+  background: var(--surface-solid);
 }
 
 .tabbar button {
@@ -1716,15 +1499,18 @@ body.theme-light .help kbd {
     height: auto;
   }
 
-  /* The sheet's own header already carries the name and the era, and at half
-     height there is room for very little, so the picture shrinks and the
-     heading steps aside for what the header does not say. */
-  .hero {
-    margin-bottom: 12px;
+  /* The sheet's own header already carries the name and the era, so the
+     heading inside the card steps aside. */
+  .hero__text {
+    display: none;
   }
 
-  /* A half open sheet shows about three rows. When and where it was made and
-     who made it go first; the picture follows. */
+  .hero {
+    margin: 0;
+  }
+
+  /* A half open sheet shows about three rows. When and where it was made come
+     first, then the picture, then everything else in reading order. */
   .panel__body {
     display: flex;
     flex-direction: column;
@@ -1735,37 +1521,25 @@ body.theme-light .help kbd {
   }
 
   .panel__body > .spec {
-    order: -2;
-    margin-bottom: 12px;
-    border-top: 0;
-    padding-top: 2px;
-  }
-
-  .panel__body > .people--own {
     order: -1;
-  }
-
-  .hero__text {
-    display: none;
   }
 
   .figure[data-state='loading'],
   .figure[data-state='ready'] {
-    height: 124px;
-    mask-image: linear-gradient(to bottom, #000 70%, transparent);
-  }
-
-  .figure[data-state='empty'] {
-    display: none;
+    aspect-ratio: 2 / 1;
   }
 
   .person {
-    padding: 8px;
+    padding: 10px 12px;
   }
 
   .person__avatar {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .people__list li + li::before {
+    left: 66px;
   }
 
   .person__note {
@@ -1784,7 +1558,6 @@ body.theme-light .help kbd {
     border: 0;
     background: none;
     box-shadow: none;
-    backdrop-filter: none;
   }
 
   .search__results li > button {
@@ -1797,43 +1570,52 @@ body.theme-light .help kbd {
   }
 
   /* Detail panel becomes a drag-to-expand bottom sheet. It is always at full
-     height and translated down, so expanding it never reflows the content. */
+     height and translated down, so expanding it never reflows the content.
+
+     Its height is what is left of the screen under the top bar, measured in
+     dynamic viewport units. A share of `vh` is a share of the screen with the
+     browser's own bars hidden, and with them showing it is taller than the
+     space there is: the sheet ran up underneath the top bar and the logo sat
+     on top of it. */
   .panel {
     top: auto;
     right: 0;
     bottom: 0;
     left: 0;
     width: auto;
-    height: min(88vh, 760px);
+    height: calc(100vh - 66px - var(--safe-top));
+    height: calc(100dvh - 66px - var(--safe-top));
     max-height: none;
     padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom));
     border: 0;
-    border-top: 1px solid var(--ring-strong);
-    border-radius: 20px 20px 0 0;
-    background: var(--surface-raised);
-    backdrop-filter: blur(24px);
+    border-radius: 22px 22px 0 0;
+    background: var(--surface-solid);
+    box-shadow:
+      0 -1px 0 var(--ring-strong),
+      var(--shadow-up);
   }
 
   .panel__grab {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 8px 16px 12px;
+    gap: 10px;
+    padding: 8px 18px 14px;
     cursor: grab;
     touch-action: none;
     flex: 0 0 auto;
   }
 
   .panel__handle {
-    width: 38px;
-    height: 4px;
+    width: 36px;
+    height: 5px;
     margin: 0 auto;
-    border-radius: 2px;
+    border-radius: 3px;
     background: var(--ring-strong);
   }
 
   .walk {
     display: flex;
+    margin: 0 18px 14px;
   }
 
   .panel[data-sheet='peek'] .walk {
@@ -1841,10 +1623,7 @@ body.theme-light .help kbd {
   }
 
   .panel__body {
-    --pad: 16px;
-    --pad-top: 0px;
-
-    padding: 0 16px 20px;
+    padding: 0 18px 28px;
     flex: 1 1 auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -1857,11 +1636,23 @@ body.theme-light .help kbd {
     opacity: 0.8;
   }
 
+  .summary {
+    font-size: 15px;
+  }
 
-  .rows li > button,
-  .path button {
-    padding: 10px 8px;
+  .facts li,
+  .extract p {
     font-size: 14px;
+  }
+
+  .rows li > button {
+    padding: 12px;
+    font-size: 14.5px;
+  }
+
+  .path button {
+    padding: 7px 12px;
+    font-size: 13.5px;
   }
 
   /* Bottom strip becomes a drawer above the tab bar. */
@@ -1869,11 +1660,11 @@ body.theme-light .help kbd {
     bottom: calc(var(--tabbar-h) + var(--safe-bottom));
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
-    padding: 12px;
+    gap: 14px;
+    padding: 16px 18px;
     border-top: 1px solid var(--ring);
-    background: var(--surface-raised);
-    backdrop-filter: blur(20px);
+    background: var(--surface-solid);
+    box-shadow: var(--shadow-up);
     transform: translateY(110%);
     transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 7;
@@ -1886,7 +1677,6 @@ body.theme-light .help kbd {
   .timeline {
     border: 0;
     background: none;
-    backdrop-filter: none;
     padding: 0;
   }
 
@@ -1897,7 +1687,6 @@ body.theme-light .help kbd {
     padding: 0;
     border: 0;
     background: none;
-    backdrop-filter: none;
   }
 
   .legend li {
@@ -1932,10 +1721,6 @@ body.theme-light .help kbd {
 @media (width <= 420px) {
   .brand__text span {
     display: none;
-  }
-
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -1993,8 +1778,6 @@ body.theme-light .help kbd {
   padding: calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom))
     calc(16px + var(--safe-left));
   background: var(--scrim);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
 }
 
 .agents__sheet {
@@ -2246,8 +2029,6 @@ body.theme-light .help kbd {
   text-align: left;
   cursor: pointer;
   pointer-events: auto;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   animation: toast-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
   transition:
     opacity 0.5s,
@@ -2458,16 +2239,14 @@ body.theme-light .help kbd {
 /* Blog: an editorial sheet, darker than the panels so the tree recedes. */
 
 .blog {
-  --blog-sheet: #090c13;
-  --blog-card: #0e121b;
-  --blog-card-hover: #121826;
-  --blog-line: rgb(255 255 255 / 7%);
-  --blog-line-strong: rgb(148 163 255 / 34%);
-  --blog-text: #d6deea;
+  --blog-sheet: var(--surface-solid);
+  --blog-card: #131315;
+  --blog-card-hover: #1a1a1d;
+  --blog-line: var(--ring);
+  --blog-line-strong: rgb(148 163 255 / 38%);
+  --blog-text: #dcdce1;
 
-  background: rgb(3 4 8 / 74%);
-  backdrop-filter: blur(14px) saturate(0.8);
-  -webkit-backdrop-filter: blur(14px) saturate(0.8);
+  background: rgb(0 0 0 / 78%);
 }
 
 body.theme-light .blog {
@@ -2485,12 +2264,8 @@ body.theme-light .blog {
   width: min(720px, 100%);
   border-color: var(--blog-line);
   border-radius: 18px;
-  background:
-    radial-gradient(120% 60% at 0% 0%, rgb(148 163 255 / 7%), transparent 60%),
-    var(--blog-sheet);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 5%) inset,
-    0 40px 120px rgb(0 0 0 / 65%);
+  background: var(--blog-sheet);
+  box-shadow: 0 40px 120px rgb(0 0 0 / 65%);
 }
 
 body.theme-light .blog .agents__sheet {

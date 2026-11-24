@@ -95,6 +95,16 @@ export class Sheet {
     this.height = Math.max(1, this.element.offsetHeight)
   }
 
+  /** Change the visible height of the peek state, in pixels. */
+  setPeek(pixels: number): void {
+    if (pixels === this.options.peek) return
+    this.options.peek = pixels
+    if (this.enabled && this.state === 'peek') {
+      this.measure()
+      this.apply(this.offsetFor('peek'), false)
+    }
+  }
+
   get current(): SheetState {
     return this.state
   }
@@ -153,9 +163,11 @@ export class Sheet {
     this.lastY = event.clientY
     this.lastTime = event.timeStamp
 
-    // Rubber band past the top so the sheet feels physical rather than clamped.
+    // Rubber band past the top so the sheet feels physical rather than clamped,
+    // but only by a few pixels: the top bar is right above a fully open sheet,
+    // and a sheet that follows the finger further slides underneath it.
     let offset = this.startOffset + dy
-    if (offset < 0) offset = offset * 0.28
+    if (offset < 0) offset = Math.max(-6, offset * 0.12)
     const max = this.offsetFor('peek')
     if (offset > max) offset = max + (offset - max) * 0.45
 
