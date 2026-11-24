@@ -1,10 +1,10 @@
 ---
 title: Memory before chips, and the plumbing around it
 date: 2026-11-24
-summary: Since the last post the tree gained 42 nodes, from mercury delay lines to Compute Express Link, and the fact checker corrected the machines branch.
+summary: Since the last post the tree grew from 1,018 to 1,063 nodes, from mercury delay lines to Compute Express Link, and the fact checker corrected the machines branch.
 ---
 
-Since the last post, 42 nodes have reached the tree. Most of them fall into three groups: the oldest kinds of computer memory, the wires that connect a processor to the rest of the machine, and the protocols that carry mail and measurements.
+Since the last post, on 23 November, 45 nodes have reached the tree, and it now has 1,063. This post follows four threads through them: the oldest kinds of computer memory, the wires that connect a processor to the rest of the machine, the protocols that carry mail and measurements, and the Python libraries behind scientific computing.
 
 ## Memory that was not a chip
 
