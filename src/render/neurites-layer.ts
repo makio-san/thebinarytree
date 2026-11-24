@@ -16,24 +16,32 @@
  * - **Space.** Filaments also taper by the conformal factor, so they thin into
  *   the boundary and the far tree becomes a haze of threads.
  *
- * Geometry is one merged, camera-facing ribbon with three vertices across: edge,
- * core, edge. Brightening the core is what makes a flat ribbon read as round and
- * what lets a spike travel inside the filament rather than over it. Indices are
- * built once, since visible filaments pack into fixed slots; only positions and
- * colours are rewritten.
+ * Geometry is one camera-facing ribbon with three vertices across (edge, core,
+ * edge), drawn once per filament by instancing. Brightening the core is what
+ * makes a flat ribbon read as round and what lets a spike travel inside the
+ * filament rather than over it.
+ *
+ * Everything that varies along a filament is worked out in the vertex shader:
+ * the geodesic between the two ends, the taper, the beads, the wander, the turn
+ * toward the eye and the passing spike. The processor only hands over the two
+ * end points of each filament, which is a few thousand numbers a frame however
+ * large the tree is. Sampling every filament on the processor instead costs more
+ * than everything else on the page put together once the tree passes a thousand
+ * nodes, and that cost is paid on every frame the signal is moving, which is all
+ * of them.
  */
 
 import {
   BufferAttribute,
-  BufferGeometry,
   Color,
   DoubleSide,
   DynamicDrawUsage,
-  MeshBasicMaterial,
+  InstancedBufferAttribute,
+  InstancedBufferGeometry,
   Mesh,
-  Vector3,
+  MeshBasicMaterial,
+  type Vector3,
 } from 'three'
-import { geodesicPoint, lengthSq } from '../math'
 import type { Tree, TreeNode } from '../model/types'
 import type { SpikeField } from './spikes'
 import type { Theme } from './theme'
@@ -92,6 +100,19 @@ export const defaultNeuritesOptions: NeuritesOptions = {
 /** Vertices across the ribbon: left edge, core, right edge. */
 const ACROSS = 3
 
+/**
+ * Below this squared length a filament is drawn as a straight thread.
+ *
+ * Two reasons, and they agree. A filament this short is a few pixels long, so
+ * its arc and its chord are the same picture. And it only gets this short by
+ * sitting against the boundary, which is exactly where single precision can no
+ * longer subtract two nearly equal points of the ball: the geodesic formula
+ * would return noise there, and noise in a vertex position is a stray line
+ * across the screen.
+ */
+const STRAIGHT_BELOW = 1e-4
+const CURVED_ABOVE = 4e-4
+
 /** Deterministic per-filament wander phase. */
 const phaseOf = (i: number): number => {
   const x = Math.sin(i * 53.1287) * 43758.5453
@@ -104,49 +125,191 @@ const unit = (i: number, salt: number): number => {
   return x - Math.floor(x)
 }
 
-/**
- * Varicosities: the small beads along a real axon where it releases signal. Two
- * or three per filament, at fixed places, each a narrow swelling. Without them a
- * thread is a perfectly even line, which is the single most synthetic thing left
- * once the shading is right.
- */
-const beads = (t: number, centres: readonly number[]): number => {
-  let swell = 0
-  for (const c of centres) {
-    const d = (t - c) * 9
-    swell += Math.exp(-d * d)
-  }
-  return swell
+const VERTEX_PARS = /* glsl */ `
+attribute vec3 iFrom;
+attribute vec3 iTo;
+attribute vec2 iLive;
+attribute vec3 iColorA;
+attribute vec3 iColorB;
+attribute vec3 iShape;
+attribute vec3 iBeads;
+attribute vec4 iSignal;
+uniform float btTime;
+uniform vec4 btSpike;
+uniform float btRefractory;
+uniform vec4 btRibbon;
+uniform vec3 btLook;
+uniform vec3 btRecede;
+uniform vec3 btHighlight;
+uniform vec3 btLimits;
+varying float vAcross;
+varying vec3 vSide;
+varying vec3 vBtColor;
+
+// Mobius addition, the translation of the ball. See math/hyperbolic.ts.
+vec3 btAdd(vec3 a, vec3 b) {
+  float a2 = dot(a, a);
+  float b2 = dot(b, b);
+  float ab = dot(a, b);
+  float den = max(1.0 + 2.0 * ab + a2 * b2, 1e-9);
+  return ((1.0 + 2.0 * ab + b2) * a + (1.0 - a2) * b) / den;
 }
+
+// Point at parameter t on the geodesic from a to b, even in hyperbolic length.
+// The step along it is tanh(t * atanh(n)), written here as a single power:
+// e^(2 atanh n) is (1 + n) / (1 - n), and some phone graphics drivers lose
+// precision in their own tanh and atanh.
+vec3 btGeodesic(vec3 a, vec3 b, float t) {
+  vec3 d = btAdd(-a, b);
+  float n = length(d);
+  if (n < 1e-6) return a;
+  float m = min(n, 0.999999);
+  float p = pow((1.0 + m) / (1.0 - m), t);
+  return btAdd(a, d * ((p - 1.0) / ((p + 1.0) * n)));
+}
+
+vec3 btPoint(float t, float curved) {
+  vec3 straight = mix(iFrom, iTo, t);
+  if (curved <= 0.0) return straight;
+  return mix(straight, btGeodesic(iFrom, iTo, t), curved);
+}
+
+// The action potential. Mirrors potential() in spikes.ts.
+float btPotential(float elapsed) {
+  float rise = btSpike.z;
+  float decay = btSpike.w;
+  if (elapsed < rise) {
+    float k = elapsed / rise;
+    return k * k * (3.0 - 2.0 * k);
+  }
+  float after = elapsed - rise;
+  float fall = exp(-after / decay);
+  float dip = -btRefractory * (1.0 - fall) * exp(-after / (decay * 3.0));
+  return fall + dip;
+}
+`
+
+const VERTEX_MAIN = /* glsl */ `
+float btT = position.x;
+float btAcross = position.y;
+float btGrow = iLive.x;
+float btState = iLive.y;
+vec3 btChord = iTo - iFrom;
+float btExtent = dot(btChord, btChord);
+float btHide = (btGrow <= 0.0 || btExtent < btLimits.x) ? 1.0 : 0.0;
+float btCurved = smoothstep(${STRAIGHT_BELOW.toExponential()}, ${CURVED_ABOVE.toExponential()}, btExtent);
+
+vec3 btHere = btPoint(btT, btCurved);
+vec3 btTangent = btPoint(min(1.0, btT + btLimits.y), btCurved) - btPoint(max(0.0, btT - btLimits.y), btCurved);
+
+// Billboard about the filament's own axis: the ribbon turns to face the eye but
+// keeps its direction, which is what a thread looks like.
+vec3 btSide = cross(btTangent, cameraPosition - btHere);
+if (dot(btSide, btSide) < 1e-18) {
+  btSide = vec3(btTangent.y, -btTangent.x, 0.0);
+  if (dot(btSide, btSide) < 1e-18) btSide = vec3(1.0, 0.0, 0.0);
+}
+btSide = normalize(btSide);
+
+// Membrane potential here, interpolating the jitter of the two ends so the
+// filament agrees with the somata it connects.
+float btArrival = mix(iSignal.x, iSignal.y, btT) / btSpike.y + mix(iSignal.z, iSignal.w, btT);
+float btFire = btPotential(mod(btTime - btArrival, btSpike.x));
+float btCrest = max(0.0, btFire);
+
+// Thickest where it leaves the parent body, in a short cone like the hillock a
+// real fibre grows out of, thinning toward the tip, with a small foot where it
+// lands on the child. Then the beads, then the swell of the passing spike.
+float btTaper = 1.35;
+float btForm = iShape.x * (btTaper + (1.0 - btTaper) * btT)
+  * (1.0 + 1.5 * exp(-btT * 11.0) + 0.6 * exp(-(1.0 - btT) * 14.0));
+float btWide = btRibbon.x * btForm * (1.0 - dot(btHere, btHere)) * btGrow;
+vec3 btBead = (vec3(btT) - iBeads) * 9.0;
+btWide *= 1.0 + iShape.z * (exp(-btBead.x * btBead.x) + exp(-btBead.y * btBead.y) + exp(-btBead.z * btBead.z));
+btWide *= 1.0 + btLook.z * btCrest;
+btWide = max(btWide, btRibbon.y);
+
+// Grown, not extruded. The wander is anchored at both ends so filaments still
+// meet their somata exactly, and it scales with the local width so a capillary
+// wobbles by a capillary's worth.
+float btAnchor = sin(btT * PI);
+float btWander = btRibbon.z * btWide * btAnchor
+  * (sin(iShape.y + btT * 5.4 + iShape.y * 0.31) + 0.45 * sin(iShape.y * 1.7 + btT * 12.6));
+
+vec3 transformed = btHere + btSide * (btWander + btAcross * btWide);
+
+// Colour ramps parent to child, each end faded by its own hyperbolic depth. The
+// fourth root matters: the conformal factor falls off exponentially, so a
+// linear ramp erases level three while level one is still at full strength.
+float btLitA = min(1.0, pow(max(0.0, 1.0 - dot(iFrom, iFrom)), 0.25) * 1.16) * btGrow;
+float btLitB = min(1.0, pow(max(0.0, 1.0 - dot(iTo, iTo)), 0.25) * 1.16) * btGrow;
+vec3 btA = mix(iColorA, btRecede, min(btLimits.z, 1.0 - btLitA));
+vec3 btB = mix(iColorB, btRecede, min(btLimits.z, 1.0 - btLitB));
+bool btDimmed = btState > 0.5 && btState < 1.5;
+if (btDimmed) {
+  btA = mix(btA, btRecede, 0.8);
+  btB = mix(btB, btRecede, 0.8);
+} else if (btState > 1.5) {
+  btA = mix(btA, btHighlight, 0.36);
+  btB = mix(btB, btHighlight, 0.36);
+}
+vec3 btBase = mix(btA, btB, btT);
+
+// The signal rides in the core and barely touches the walls, which is what
+// reads as charge inside a filament rather than a glowing outline. The
+// refractory dip is drawn as well as the spike: a filament that has just fired
+// goes quiet, which is what makes the arrival read as an event.
+float btShade = mix(1.0, btRibbon.w, abs(btAcross));
+float btBoost = btDimmed ? 0.0 : btFire * btLook.x;
+vec3 btTint = mix(btBase, btHighlight, btLook.y);
+vec3 btLit = btBase * btShade;
+btLit += (btTint - btLit) * (btBoost * btShade);
+vBtColor = max(btLit, vec3(0.0));
+
+vAcross = btAcross;
+vSide = normalize((modelViewMatrix * vec4(btSide, 0.0)).xyz);
+`
 
 export class NeuritesLayer {
   readonly mesh: Mesh
 
   private readonly options: NeuritesOptions
-  private readonly positionAttribute: BufferAttribute
-  private readonly colorAttribute: BufferAttribute
-  private readonly sideAttribute: BufferAttribute
-  private readonly positions: Float32Array
-  private readonly colors: Float32Array
-  private readonly sides: Float32Array
-  private readonly geometry: BufferGeometry
+  private readonly geometry: InstancedBufferGeometry
   private readonly material: MeshBasicMaterial
 
-  private readonly a = new Color()
-  private readonly b = new Color()
-  private readonly recede = new Color()
-  private readonly highlight = new Color()
-  private readonly tint = new Color()
-  private maxFade = 0.94
+  /** The two ends of each filament, rewritten every frame. */
+  private readonly fromAttribute: InstancedBufferAttribute
+  private readonly toAttribute: InstancedBufferAttribute
+  /** Growth and state (0 normal, 1 dimmed, 2 lit) per filament. */
+  private readonly liveAttribute: InstancedBufferAttribute
+  /** Everything below only changes with the theme or the layout. */
+  private readonly colorAAttribute: InstancedBufferAttribute
+  private readonly colorBAttribute: InstancedBufferAttribute
+  private readonly shapeAttribute: InstancedBufferAttribute
+  private readonly beadsAttribute: InstancedBufferAttribute
+  private readonly signalAttribute: InstancedBufferAttribute
 
-  private readonly samples: { x: number; y: number; z: number }[]
-  private readonly side = new Vector3()
-  private readonly tangent = new Vector3()
-  private readonly toEye = new Vector3()
-  private readonly fallback = new Vector3()
+  private readonly uniforms = {
+    time: { value: 0 },
+    /** period, speed, rise, decay */
+    spike: { value: [3.2, 5.5, 0.11, 0.34] as [number, number, number, number] },
+    refractory: { value: 0.3 },
+    /** width, minWidth, wander, edgeShade */
+    ribbon: { value: [0, 0, 0, 0] as [number, number, number, number] },
+    /** spikeGain, spikeTint, spikeSwell */
+    look: { value: [0, 0, 0] as [number, number, number] },
+    recede: { value: new Color() },
+    highlight: { value: new Color() },
+    /** minExtent squared, one step along the filament, maxFade */
+    limits: { value: [0, 0, 0.94] as [number, number, number] },
+  }
+
+  private readonly scratch = new Color()
+  /** Theme the static attributes were last written for. */
+  private staticFor: Theme | null = null
 
   /** Largest calibre in the tree, so widths are a fraction of the trunk. */
-  private readonly trunk: number
+  private trunk: number
 
   constructor(
     private readonly tree: Tree,
@@ -156,81 +319,100 @@ export class NeuritesLayer {
     this.options = { ...defaultNeuritesOptions, ...options }
     const { segments } = this.options
     this.trunk = Math.max(1e-6, tree.root.caliber)
-    this.samples = Array.from({ length: segments + 1 }, () => ({ x: 0, y: 0, z: 0 }))
+    const links = tree.links.length
 
-    const perLink = (segments + 1) * ACROSS
-    const vertices = tree.links.length * perLink
-
-    this.positionAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
-    this.colorAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
-    this.sideAttribute = new BufferAttribute(new Float32Array(vertices * 3), 3)
-    this.sideAttribute.setUsage(DynamicDrawUsage)
-    this.sides = this.sideAttribute.array as Float32Array
-    this.positionAttribute.setUsage(DynamicDrawUsage)
-    this.colorAttribute.setUsage(DynamicDrawUsage)
-    this.positions = this.positionAttribute.array as Float32Array
-    this.colors = this.colorAttribute.array as Float32Array
-
-    // Indices never change: a filament always occupies the same slot layout, and
-    // visible filaments are packed into slots from the front.
-    const indices = new Uint32Array(tree.links.length * segments * 12)
+    // One ribbon, in its own coordinates: x runs along it from 0 to 1 and y is
+    // -1 at one wall, 0 on the axis and 1 at the other. The vertex shader turns
+    // that into a place in the ball, per filament.
+    const strip = new Float32Array((segments + 1) * ACROSS * 3)
+    for (let s = 0; s <= segments; s++) {
+      for (let k = 0; k < ACROSS; k++) {
+        const at = (s * ACROSS + k) * 3
+        strip[at] = s / segments
+        strip[at + 1] = k - 1
+      }
+    }
+    const indices = new Uint16Array(segments * 12)
     let w = 0
-    for (let link = 0; link < tree.links.length; link++) {
-      const base = link * perLink
-      for (let s = 0; s < segments; s++) {
-        const row = base + s * ACROSS
-        const next = row + ACROSS
-        for (let k = 0; k < 2; k++) {
-          const l = row + k
-          const r = l + 1
-          const ln = next + k
-          const rn = ln + 1
-          indices[w++] = l
-          indices[w++] = r
-          indices[w++] = rn
-          indices[w++] = l
-          indices[w++] = rn
-          indices[w++] = ln
-        }
+    for (let s = 0; s < segments; s++) {
+      const row = s * ACROSS
+      const next = row + ACROSS
+      for (let k = 0; k < 2; k++) {
+        const l = row + k
+        const r = l + 1
+        const ln = next + k
+        const rn = ln + 1
+        indices[w++] = l
+        indices[w++] = r
+        indices[w++] = rn
+        indices[w++] = l
+        indices[w++] = rn
+        indices[w++] = ln
       }
     }
 
-    // Position across the ribbon, -1 at one wall, 0 on the axis, 1 at the other.
-    // The fragment shader turns it into the profile of a round filament.
-    const across = new Float32Array(vertices)
-    for (let v = 0; v < vertices; v++) across[v] = (v % ACROSS) - 1
+    const instanced = (size: number, dynamic: boolean): InstancedBufferAttribute => {
+      const attribute = new InstancedBufferAttribute(new Float32Array(links * size), size)
+      if (dynamic) attribute.setUsage(DynamicDrawUsage)
+      return attribute
+    }
+    this.fromAttribute = instanced(3, true)
+    this.toAttribute = instanced(3, true)
+    this.liveAttribute = instanced(2, true)
+    this.colorAAttribute = instanced(3, false)
+    this.colorBAttribute = instanced(3, false)
+    this.shapeAttribute = instanced(3, false)
+    this.beadsAttribute = instanced(3, false)
+    this.signalAttribute = instanced(4, false)
 
-    this.geometry = new BufferGeometry()
-    this.geometry.setAttribute('across', new BufferAttribute(across, 1))
-    this.geometry.setAttribute('position', this.positionAttribute)
-    this.geometry.setAttribute('color', this.colorAttribute)
-    this.geometry.setAttribute('side', this.sideAttribute)
+    this.geometry = new InstancedBufferGeometry()
+    this.geometry.setAttribute('position', new BufferAttribute(strip, 3))
     this.geometry.setIndex(new BufferAttribute(indices, 1))
-    this.geometry.setDrawRange(0, 0)
+    this.geometry.setAttribute('iFrom', this.fromAttribute)
+    this.geometry.setAttribute('iTo', this.toAttribute)
+    this.geometry.setAttribute('iLive', this.liveAttribute)
+    this.geometry.setAttribute('iColorA', this.colorAAttribute)
+    this.geometry.setAttribute('iColorB', this.colorBAttribute)
+    this.geometry.setAttribute('iShape', this.shapeAttribute)
+    this.geometry.setAttribute('iBeads', this.beadsAttribute)
+    this.geometry.setAttribute('iSignal', this.signalAttribute)
+    this.geometry.instanceCount = links
 
     // Solid, so a near fibre hides a far one. Fibres that add up as light are
     // the glowing-wire look; real ones occlude each other.
-    this.material = new MeshBasicMaterial({ vertexColors: true, side: DoubleSide })
+    this.material = new MeshBasicMaterial({ side: DoubleSide })
 
     // A flat ribbon lit as the front of a round fibre. The surface normal is
     // rebuilt from the position across the strip, then lit by the same key light
     // as the cell bodies, so a fibre has a lit side and a shadowed side that
     // agree with the bodies it joins. Matte: diffuse only, no highlight.
     this.material.onBeforeCompile = (shader) => {
+      shader.uniforms.btTime = this.uniforms.time
+      shader.uniforms.btSpike = this.uniforms.spike
+      shader.uniforms.btRefractory = this.uniforms.refractory
+      shader.uniforms.btRibbon = this.uniforms.ribbon
+      shader.uniforms.btLook = this.uniforms.look
+      shader.uniforms.btRecede = this.uniforms.recede
+      shader.uniforms.btHighlight = this.uniforms.highlight
+      shader.uniforms.btLimits = this.uniforms.limits
       shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', `#include <common>\n${VERTEX_PARS}`)
+        .replace('#include <begin_vertex>', VERTEX_MAIN)
+        // A filament that is hidden, or too short to see, is sent outside the
+        // clip volume in one piece, so it costs no pixels.
         .replace(
-          '#include <common>',
-          '#include <common>\nattribute float across;\nattribute vec3 side;\nvarying float vAcross;\nvarying vec3 vSide;',
-        )
-        .replace(
-          '#include <begin_vertex>',
-          '#include <begin_vertex>\nvAcross = across;\nvSide = normalize((modelViewMatrix * vec4(side, 0.0)).xyz);',
+          '#include <fog_vertex>',
+          '#include <fog_vertex>\nif (btHide > 0.5) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);',
         )
       shader.fragmentShader = shader.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying float vAcross;\nvarying vec3 vSide;')
+        .replace(
+          '#include <common>',
+          '#include <common>\nvarying float vAcross;\nvarying vec3 vSide;\nvarying vec3 vBtColor;',
+        )
         .replace(
           '#include <color_fragment>',
           `#include <color_fragment>
+diffuseColor.rgb *= vBtColor;
 {
   float a = clamp(vAcross, -1.0, 1.0);
   float height = sqrt(max(0.0, 1.0 - a * a));
@@ -244,7 +426,7 @@ export class NeuritesLayer {
 }`,
         )
     }
-    this.material.customProgramCacheKey = () => 'bt-neurite-v3'
+    this.material.customProgramCacheKey = () => 'bt-neurite-v4'
 
     this.mesh = new Mesh(this.geometry, this.material)
     this.mesh.frustumCulled = false
@@ -253,212 +435,154 @@ export class NeuritesLayer {
   }
 
   setTheme(theme: Theme): void {
-    this.recede.setHex(theme.recede)
-    this.highlight.setHex(theme.highlight)
-    this.maxFade = theme.maxFade
+    this.uniforms.recede.value.setHex(theme.recede)
+    this.uniforms.highlight.value.setHex(theme.highlight)
+    this.uniforms.limits.value[2] = theme.maxFade
+    this.staticFor = null
+  }
+
+  /**
+   * Forget what was written for the layout. Call after anything that changes a
+   * filament's calibre or its length along the tree, which a relayout does.
+   */
+  invalidate(): void {
+    this.trunk = Math.max(1e-6, this.tree.root.caliber)
+    this.staticFor = null
+  }
+
+  /**
+   * What a filament is, as opposed to where it is: its colours, calibre, beads,
+   * wander and the timing of the signal along it. None of it moves with the
+   * view, so it is written once per theme and layout.
+   */
+  private writeStatic(theme: Theme, spikes: SpikeField): void {
+    const { color } = this.options
+    const colorA = this.colorAAttribute.array as Float32Array
+    const colorB = this.colorBAttribute.array as Float32Array
+    const shape = this.shapeAttribute.array as Float32Array
+    const beads = this.beadsAttribute.array as Float32Array
+    const signal = this.signalAttribute.array as Float32Array
+
+    for (let li = 0; li < this.tree.links.length; li++) {
+      const { source, target } = this.tree.links[li]
+      const at3 = li * 3
+      const at4 = li * 4
+
+      this.scratch.setHex(color(source, theme))
+      colorA[at3] = this.scratch.r
+      colorA[at3 + 1] = this.scratch.g
+      colorA[at3 + 2] = this.scratch.b
+      this.scratch.setHex(color(target, theme))
+      colorB[at3] = this.scratch.r
+      colorB[at3 + 1] = this.scratch.g
+      colorB[at3 + 2] = this.scratch.b
+
+      // A filament carries its own calibre for its whole length, not a ramp from
+      // the parent's. The parent's calibre is the sum of its children's cubes and
+      // that sum is realised by the bundle, not by each branch separately;
+      // ramping every child up to the parent width stacks full-width trunks on a
+      // single point and the centre saturates.
+      shape[at3] = target.caliber / this.trunk
+      shape[at3 + 1] = phaseOf(li)
+      // Varicosities: the small beads along a real axon where it releases
+      // signal. Three per filament, at fixed places, each a narrow swelling.
+      // Without them a thread is a perfectly even line, which is the single most
+      // synthetic thing left once the shading is right.
+      shape[at3 + 2] = 0.14 + unit(li, 4) * 0.16
+      beads[at3] = 0.18 + unit(li, 1) * 0.2
+      beads[at3 + 1] = 0.46 + unit(li, 2) * 0.2
+      beads[at3 + 2] = 0.74 + unit(li, 3) * 0.16
+
+      signal[at4] = source.pathLength
+      signal[at4 + 1] = target.pathLength
+      signal[at4 + 2] = spikes.offsetOf(source)
+      signal[at4 + 3] = spikes.offsetOf(target)
+    }
+
+    this.colorAAttribute.needsUpdate = true
+    this.colorBAttribute.needsUpdate = true
+    this.shapeAttribute.needsUpdate = true
+    this.beadsAttribute.needsUpdate = true
+    this.signalAttribute.needsUpdate = true
+    this.staticFor = theme
   }
 
   /**
    * @param seconds monotonic clock
    * @param spikes  shared signal field; filaments read it along their length
-   * @param eye     camera position, for billboarding the ribbons
+   * @param _eye    camera position. Unused now that the shader billboards; kept
+   *                so callers written against the earlier layer still compile
    * @param reveal  growth front in depth units; Infinity means fully grown
    */
   update(
     theme: Theme,
     seconds: number,
     spikes: SpikeField,
-    eye: Vector3,
+    _eye?: Vector3,
     reveal = Number.POSITIVE_INFINITY,
   ): void {
-    const {
-      segments,
-      width,
-      minWidth,
-      minExtent,
-      edgeShade,
-      wander,
-      spikeGain,
-      spikeTint,
-      spikeSwell,
-      color,
-    } = this.options
+    const { segments, width, minWidth, minExtent, edgeShade, wander } = this.options
+    const { spikeGain, spikeTint, spikeSwell } = this.options
+    const signal = spikes.settings
 
-    const perLink = (segments + 1) * ACROSS
-    let slot = 0
+    if (this.staticFor !== theme) this.writeStatic(theme, spikes)
+
+    // The clock is folded into one period here, in double precision. Handed to
+    // the shader whole it would lose a millisecond of resolution within the
+    // hour, and the signal would start to stutter on a page left open.
+    this.uniforms.time.value = seconds % signal.period
+    const spike = this.uniforms.spike.value
+    spike[0] = signal.period
+    spike[1] = signal.speed
+    spike[2] = signal.rise
+    spike[3] = signal.decay
+    this.uniforms.refractory.value = signal.refractory
+    const ribbon = this.uniforms.ribbon.value
+    ribbon[0] = width
+    ribbon[1] = minWidth
+    ribbon[2] = wander
+    ribbon[3] = edgeShade
+    const look = this.uniforms.look.value
+    look[0] = spikeGain
+    look[1] = spikeTint
+    look[2] = spikeSwell
+    const limits = this.uniforms.limits.value
+    limits[0] = minExtent * minExtent
+    limits[1] = 1 / segments
+
+    const from = this.fromAttribute.array as Float32Array
+    const to = this.toAttribute.array as Float32Array
+    const live = this.liveAttribute.array as Float32Array
+    const growing = reveal !== Number.POSITIVE_INFINITY
 
     for (let li = 0; li < this.tree.links.length; li++) {
-      const link = this.tree.links[li]
-      const source = link.source
-      const target = link.target
-      if (!source.visible && !target.visible) continue
+      const { source, target } = this.tree.links[li]
+      const at2 = li * 2
 
-      let grow = 1
-      if (reveal !== Number.POSITIVE_INFINITY) {
-        grow = reveal - target.depth
-        if (grow <= 0) continue
-        grow = grow < 1 ? grow * grow * (3 - 2 * grow) : 1
+      let grow = source.visible || target.visible ? 1 : 0
+      if (grow > 0 && growing) {
+        const t = reveal - target.depth
+        grow = t <= 0 ? 0 : t < 1 ? t * t * (3 - 2 * t) : 1
       }
+      live[at2] = grow
+      const state = target.state
+      live[at2 + 1] = state.dimmed ? 1 : state.onPath || state.selected ? 2 : 0
+      if (grow <= 0) continue
 
-      const from = source.view
-      const to = target.view
-      const dx = to.x - from.x
-      const dy = to.y - from.y
-      const dz = to.z - from.z
-      if (dx * dx + dy * dy + dz * dz < minExtent * minExtent) continue
-
-      for (let i = 0; i <= segments; i++) {
-        const p = i === 0 ? from : i === segments ? to : geodesicPoint(from, to, i / segments)
-        const s = this.samples[i]
-        s.x = p.x
-        s.y = p.y
-        s.z = p.z
-      }
-
-      // Colour ramps parent to child, each end faded by its own hyperbolic
-      // depth. The fourth root matters: the conformal factor falls off
-      // exponentially, so a linear ramp erases level three while level one is
-      // still at full strength.
-      const litFrom = Math.min(1, Math.pow(1 - lengthSq(from), 0.25) * 1.16) * grow
-      const litTo = Math.min(1, Math.pow(1 - lengthSq(to), 0.25) * 1.16) * grow
-      this.a.setHex(color(source, theme))
-      this.b.setHex(color(target, theme))
-      this.a.lerp(this.recede, Math.min(this.maxFade, 1 - litFrom))
-      this.b.lerp(this.recede, Math.min(this.maxFade, 1 - litTo))
-
-      const dimmed = target.state.dimmed
-      const lit = target.state.onPath || target.state.selected
-      if (dimmed) {
-        this.a.lerp(this.recede, 0.8)
-        this.b.lerp(this.recede, 0.8)
-      } else if (lit) {
-        this.a.lerp(this.highlight, 0.36)
-        this.b.lerp(this.highlight, 0.36)
-      }
-
-      // A filament carries its own calibre for its whole length, not a ramp from
-      // the parent's. The parent's calibre is the sum of its children's cubes and
-      // that sum is realised by the bundle, not by each branch separately;
-      // ramping every child up to the parent width stacks full-width trunks on a
-      // single point and the centre saturates. The flare is the swelling where a
-      // neurite leaves the soma.
-      const caliber = target.caliber / this.trunk
-      const taper = 1.35
-
-      const wanderPhase = phaseOf(li)
-      const bead = [0.18 + unit(li, 1) * 0.2, 0.46 + unit(li, 2) * 0.2, 0.74 + unit(li, 3) * 0.16]
-      const beadSize = 0.14 + unit(li, 4) * 0.16
-      const sourceOffset = spikes.offsetOf(source)
-      const targetOffset = spikes.offsetOf(target)
-      const base = slot * perLink
-
-      for (let i = 0; i <= segments; i++) {
-        const t = i / segments
-        const p = this.samples[i]
-
-        const prev = this.samples[Math.max(0, i - 1)]
-        const next = this.samples[Math.min(segments, i + 1)]
-        this.tangent.set(next.x - prev.x, next.y - prev.y, next.z - prev.z)
-
-        // Billboard about the filament's own axis: the ribbon turns to face the
-        // eye but keeps its direction, which is what a thread looks like.
-        this.toEye.set(eye.x - p.x, eye.y - p.y, eye.z - p.z)
-        this.side.crossVectors(this.tangent, this.toEye)
-        if (this.side.lengthSq() < 1e-18) {
-          this.fallback.set(this.tangent.y, -this.tangent.x, 0)
-          if (this.fallback.lengthSq() < 1e-18) this.fallback.set(1, 0, 0)
-          this.side.copy(this.fallback)
-        }
-        this.side.normalize()
-
-        // Membrane potential at this point, interpolating the endpoints' jitter
-        // so the filament agrees with the somata it connects.
-        const here =
-          source.pathLength + (target.pathLength - source.pathLength) * t
-        const offset = sourceOffset + (targetOffset - sourceOffset) * t
-        const fire = spikes.at(here, seconds, offset)
-        const spike = Math.max(0, fire)
-
-        // Thickest where it leaves the parent body, in a short cone like the
-        // hillock a real fibre grows out of, thinning toward the tip, with a
-        // small foot where it lands on the child.
-        const shape =
-          caliber *
-          (taper + (1 - taper) * t) *
-          (1 + 1.5 * Math.exp(-t * 11) + 0.6 * Math.exp(-(1 - t) * 14))
-        const conformal = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
-        let half = width * shape * conformal * grow
-        half *= 1 + beadSize * beads(t, bead)
-        half *= 1 + spikeSwell * spike
-        if (half < minWidth) half = minWidth
-
-        // Grown, not extruded. The wander is anchored at both ends so filaments
-        // still meet their somata exactly, and it scales with the local width so
-        // a capillary wobbles by a capillary's worth.
-        const anchor = Math.sin(t * Math.PI)
-        const offsetAcross =
-          wander * half * anchor * Math.sin(wanderPhase + t * 5.4 + wanderPhase * 0.31) +
-          wander * 0.45 * half * anchor * Math.sin(wanderPhase * 1.7 + t * 12.6)
-
-        const r = this.a.r + (this.b.r - this.a.r) * t
-        const g = this.a.g + (this.b.g - this.a.g) * t
-        const bl = this.a.b + (this.b.b - this.a.b) * t
-
-        // The refractory dip is drawn as well as the spike: a filament that has
-        // just fired goes quiet, which is what makes the arrival read as an event.
-        const boost = dimmed ? 0 : fire * spikeGain
-        this.tint.setRGB(r, g, bl).lerp(this.highlight, spikeTint)
-
-        const core = base + i * ACROSS
-        this.writeVertex(core, p, offsetAcross - half, r, g, bl, edgeShade, boost)
-        this.writeVertex(core + 1, p, offsetAcross, r, g, bl, 1, boost)
-        this.writeVertex(core + 2, p, offsetAcross + half, r, g, bl, edgeShade, boost)
-      }
-
-      slot++
+      const at3 = li * 3
+      const a = source.view
+      const b = target.view
+      from[at3] = a.x
+      from[at3 + 1] = a.y
+      from[at3 + 2] = a.z
+      to[at3] = b.x
+      to[at3 + 1] = b.y
+      to[at3 + 2] = b.z
     }
 
-    this.geometry.setDrawRange(0, slot * segments * 12)
-    this.positionAttribute.needsUpdate = true
-    this.colorAttribute.needsUpdate = true
-    this.sideAttribute.needsUpdate = true
-  }
-
-  private writeVertex(
-    index: number,
-    p: { x: number; y: number; z: number },
-    offset: number,
-    r: number,
-    g: number,
-    b: number,
-    shade: number,
-    boost: number,
-  ): void {
-    const pos = this.positions
-    const col = this.colors
-    const at = index * 3
-    pos[at] = p.x + this.side.x * offset
-    pos[at + 1] = p.y + this.side.y * offset
-    pos[at + 2] = p.z + this.side.z * offset
-    const sd = this.sides
-    sd[at] = this.side.x
-    sd[at + 1] = this.side.y
-    sd[at + 2] = this.side.z
-
-    let cr = r * shade
-    let cg = g * shade
-    let cb = b * shade
-    if (boost !== 0) {
-      // The signal rides in the core and barely touches the walls, which is what
-      // reads as charge inside a filament rather than a glowing outline.
-      const amount = boost * shade
-      cr += (this.tint.r - cr) * amount
-      cg += (this.tint.g - cg) * amount
-      cb += (this.tint.b - cb) * amount
-    }
-    col[at] = Math.max(0, cr)
-    col[at + 1] = Math.max(0, cg)
-    col[at + 2] = Math.max(0, cb)
+    this.fromAttribute.needsUpdate = true
+    this.toAttribute.needsUpdate = true
+    this.liveAttribute.needsUpdate = true
   }
 
   dispose(): void {
