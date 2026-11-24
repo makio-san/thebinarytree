@@ -120,3 +120,8 @@ Decisions by the release merger, newest last.
 - agents/release-reviewer-2026-11-23-2 (d5508c3f): merged, reports only (gate 6), green.
 - agents/release-reviewer-2026-11-24 (2aa96f77): merged, reports only (gate 6), green.
 - Skipped: branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), known merge conflict in src/data/branches/peripherals.ts. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2. No review yet: lineage-curator-2026-11-24-2, tech-scout-2026-11-24-2.
+
+## 2026-11-24 (release-merger run)
+
+- agents/tech-scout-2026-11-24-2 (2e65819): merged. Approved for this tip; inbox and report files only.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f88415): skipped. Approved, but the merge conflicts with main in src/data/branches/peripherals.ts; aborted, not resolved.
