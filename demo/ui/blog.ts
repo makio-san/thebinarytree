@@ -15,7 +15,7 @@ const when = (iso: string): string => {
   const d = new Date(`${iso}T00:00:00`)
   return Number.isNaN(d.getTime())
     ? iso
-    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 const isReadingList = (post: Post): boolean => /reading-list/.test(post.slug)
@@ -69,10 +69,12 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
 
   const showList = (): void => {
     setHash('#blog')
-    titles.replaceChildren(
-      el('p', 'blog__eyebrow', 'The Binary Tree'),
-      el('h2', undefined, 'Blog'),
-      el('p', 'agents__lede', 'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.'),
+    head.classList.remove('blog__head--slim')
+    titles.replaceChildren(el('p', 'blog__eyebrow', 'The Binary Tree'), el('h2', undefined, 'Blog'))
+    const intro = el(
+      'p',
+      'blog__intro',
+      'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.',
     )
     const list = el('ol', 'blog__list')
     for (const post of POSTS) {
@@ -100,7 +102,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
       item.append(link)
       list.append(item)
     }
-    body.replaceChildren(POSTS.length ? list : el('p', 'agents__summary', 'No posts yet.'))
+    body.replaceChildren(intro, POSTS.length ? list : el('p', 'agents__summary', 'No posts yet.'))
     body.scrollTop = 0
   }
 
@@ -109,10 +111,15 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
     const back = el('button', 'blog__back', 'All posts')
     back.type = 'button'
     back.addEventListener('click', showList)
-    titles.replaceChildren(back, meta(post), el('h2', 'blog__heading', post.title), el('p', 'agents__lede', post.summary))
+    // A pinned header three lines of title and summary deep takes half of a
+    // phone's screen away from the thing being read. Only the way back is pinned.
+    head.classList.add('blog__head--slim')
+    titles.replaceChildren(back)
+    const header = el('header', 'blog__header')
+    header.append(meta(post), el('h2', 'blog__heading', post.title), el('p', 'blog__intro', post.summary))
     const article = el('article', 'blog__post')
     article.innerHTML = renderMarkdown(post.body)
-    body.replaceChildren(article)
+    body.replaceChildren(header, article)
     body.scrollTop = 0
   }
 
