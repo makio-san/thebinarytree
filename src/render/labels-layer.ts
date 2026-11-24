@@ -79,6 +79,47 @@ interface Rect {
   y1: number
 }
 
+/**
+ * One pooled label and what was last written to it.
+ *
+ * Every write to the page is compared against this first. A label that has not
+ * changed costs nothing, and during a flight the only things that change on
+ * most frames are its place, its scale and its opacity, all three of which the
+ * compositor applies without the page being laid out or painted again.
+ */
+interface Slot {
+  el: HTMLDivElement
+  nameEl: HTMLElement
+  detailEl: HTMLElement
+  metaEl: HTMLElement
+  bodyEl: HTMLElement
+  /** Font size the text is laid out at, in CSS pixels. 0 before the first use. */
+  font: number
+  width: number
+  tier: string
+  state: string
+  hidden: boolean
+}
+
+/**
+ * Font sizes a label is laid out at. A label's size follows its node and
+ * changes on every frame of a flight; setting that as the font size made the
+ * browser shape, lay out and repaint the text of every label on every frame,
+ * which cost more than drawing the whole tree. Instead the text is laid out at
+ * the nearest of these steps and the difference is made up by a scale on the
+ * element, which is free. The steps are close enough that the scale stays
+ * within a few percent, so the glyphs never look stretched.
+ */
+const FONT_STEP = 1.14
+/** How far the scale may drift before the label is laid out again at a new step. */
+const SCALE_MIN = 0.9
+const SCALE_MAX = 1.12
+
+const stepFont = (size: number): number => {
+  const k = Math.round(Math.log(size / 10) / Math.log(FONT_STEP))
+  return Math.round(10 * Math.pow(FONT_STEP, k) * 100) / 100
+}
+
 /** Region of the canvas labels may occupy, in CSS pixels from each edge. */
 export interface LabelInset {
   top: number
@@ -91,12 +132,13 @@ export class LabelsLayer {
   readonly element: HTMLDivElement
   private readonly options: LabelsOptions
   private inset: LabelInset = { top: 0, right: 0, bottom: 0, left: 0 }
-  private readonly pool: HTMLDivElement[] = []
+  private readonly pool: Slot[] = []
   private readonly world = new Vector3()
   private readonly placed: Rect[] = []
   private readonly projection = { x: 0, y: 0, depth: 0 }
   private onActivate: ((node: TreeNode) => void) | null = null
   private readonly bound = new Map<HTMLDivElement, TreeNode>()
+  private shown = 0
 
   constructor(container: HTMLElement, options: Partial<LabelsOptions> = {}) {
     this.options = { ...defaultLabelsOptions, ...options }
@@ -123,11 +165,12 @@ export class LabelsLayer {
     this.inset = { ...this.inset, ...inset }
   }
 
-  private acquire(index: number): HTMLDivElement {
-    let el = this.pool[index]
-    if (!el) {
-      el = document.createElement('div')
+  private acquire(index: number): Slot {
+    let slot = this.pool[index]
+    if (!slot) {
+      const el = document.createElement('div')
       el.className = 'bt-label'
+      el.hidden = true
       el.innerHTML =
         '<span class="bt-label__line">' +
         '<span class="bt-label__name"></span>' +
@@ -136,16 +179,29 @@ export class LabelsLayer {
         '<span class="bt-label__meta"></span>' +
         '<span class="bt-label__body"></span>'
       el.addEventListener('pointerdown', (event) => {
-        const node = this.bound.get(el!)
+        const node = this.bound.get(el)
         if (!node || !this.onActivate) return
         event.stopPropagation()
         event.preventDefault()
         this.onActivate(node)
       })
       this.element.appendChild(el)
-      this.pool[index] = el
+      const line = el.firstElementChild as HTMLElement
+      slot = {
+        el,
+        nameEl: line.firstElementChild as HTMLElement,
+        detailEl: line.lastElementChild as HTMLElement,
+        metaEl: line.nextElementSibling as HTMLElement,
+        bodyEl: el.lastElementChild as HTMLElement,
+        font: 0,
+        width: 0,
+        tier: '',
+        state: '',
+        hidden: true,
+      }
+      this.pool[index] = slot
     }
-    return el
+    return slot
   }
 
   update(nodes: TreeNode[], stage: Stage, radii: Float32Array): void {
@@ -268,39 +324,62 @@ export class LabelsLayer {
       // the budget of one that would have fitted.
       if (tier === 'card') cards++
 
-      const el = this.acquire(used++)
+      const slot = this.acquire(used++)
+      const el = slot.el
       this.bound.set(el, node)
-      const line = el.firstElementChild as HTMLElement
-      const nameEl = line.firstElementChild as HTMLElement
-      const detailEl = line.lastElementChild as HTMLElement
-      const metaEl = line.nextElementSibling as HTMLElement
-      const bodyEl = el.lastElementChild as HTMLElement
 
-      if (nameEl.textContent !== label) nameEl.textContent = label
-      if (detailEl.textContent !== sub) detailEl.textContent = sub
-      if (metaEl.textContent !== metaText) metaEl.textContent = metaText
-      if (bodyEl.textContent !== bodyText) bodyEl.textContent = bodyText
+      if (slot.nameEl.textContent !== label) slot.nameEl.textContent = label
+      if (slot.detailEl.textContent !== sub) slot.detailEl.textContent = sub
+      if (slot.metaEl.textContent !== metaText) slot.metaEl.textContent = metaText
+      if (slot.bodyEl.textContent !== bodyText) slot.bodyEl.textContent = bodyText
+
+      // Lay the text out at a step and scale the rest of the way. See FONT_STEP.
+      let scale = slot.font > 0 ? fontSize / slot.font : 0
+      if (scale < SCALE_MIN || scale > SCALE_MAX) {
+        slot.font = stepFont(fontSize)
+        el.style.fontSize = `${slot.font}px`
+        scale = fontSize / slot.font
+      }
+      const laidWidth = bodyWidth ? Math.round(Math.min(320, slot.font * 17)) : 0
+      if (laidWidth && laidWidth !== slot.width) {
+        slot.width = laidWidth
+        el.style.setProperty('--bt-label-width', `${laidWidth}px`)
+      }
 
       // Behind the ball's centre reads as further away.
       const behind = Math.max(0, Math.min(1, (cameraDistance - stage.distance) / 1.1))
-      el.style.transform = `translate(-50%,-50%) translate(${cx.toFixed(1)}px,${cy.toFixed(1)}px)`
-      el.style.fontSize = `${fontSize.toFixed(2)}px`
-      el.style.opacity = (1 - behind * 0.72).toFixed(3)
-      if (bodyWidth) el.style.setProperty('--bt-label-width', `${Math.round(bodyWidth)}px`)
-      el.dataset.tier = tier
-      el.dataset.state = node.state.selected
+      el.style.transform = `translate(-50%,-50%) translate(${cx.toFixed(1)}px,${cy.toFixed(1)}px) scale(${scale.toFixed(3)})`
+      el.style.opacity = (1 - behind * 0.72).toFixed(2)
+      if (slot.tier !== tier) {
+        slot.tier = tier
+        el.dataset.tier = tier
+      }
+      const state = node.state.selected
         ? 'selected'
         : node.state.hovered
           ? 'hovered'
           : node.state.onPath
             ? 'path'
             : 'normal'
-      el.hidden = false
+      if (slot.state !== state) {
+        slot.state = state
+        el.dataset.state = state
+      }
+      if (slot.hidden) {
+        slot.hidden = false
+        el.hidden = false
+      }
     }
 
-    for (let i = used; i < this.pool.length; i++) {
-      this.pool[i].hidden = true
+    // Only the slots that were showing a moment ago can need hiding.
+    for (let i = used; i < this.shown; i++) {
+      const slot = this.pool[i]
+      if (!slot.hidden) {
+        slot.hidden = true
+        slot.el.hidden = true
+      }
     }
+    this.shown = used
   }
 
   private collides(rect: Rect): boolean {

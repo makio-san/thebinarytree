@@ -13,10 +13,12 @@ import {
   AdditiveBlending,
   CanvasTexture,
   Color,
+  DynamicDrawUsage,
+  InstancedBufferAttribute,
   InstancedMesh,
+  Matrix4,
   MeshBasicMaterial,
   NormalBlending,
-  Object3D,
   PlaneGeometry,
   type Quaternion,
   type Texture,
@@ -63,9 +65,12 @@ export class GlowLayer {
   readonly mesh: InstancedMesh
 
   private readonly options: GlowOptions
-  private readonly dummy = new Object3D()
+  private readonly turn = new Matrix4()
   private readonly color = new Color()
   private readonly texture: Texture
+  /** Each node's colour for the current theme, in the renderer's working space. */
+  private readonly baseColors: Float32Array
+  private colorsFor: Theme | null = null
 
   /** `ink` mode dims rather than adds; see `setTheme`. */
   private mode: Theme['glow'] = 'additive'
@@ -88,10 +93,15 @@ export class GlowLayer {
       opacity: this.options.intensity,
     })
 
+    this.baseColors = new Float32Array(nodes.length * 3)
     this.mesh = new InstancedMesh(new PlaneGeometry(1, 1), material, nodes.length)
     this.mesh.frustumCulled = false
     // Behind the node spheres but in front of the filaments.
     this.mesh.renderOrder = 2
+    this.mesh.instanceMatrix.setUsage(DynamicDrawUsage)
+    this.mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(nodes.length * 3), 3)
+    this.mesh.instanceColor.setUsage(DynamicDrawUsage)
+    this.mesh.count = 0
     this.setTheme(theme)
   }
 
@@ -101,6 +111,7 @@ export class GlowLayer {
    * over the page at low opacity, which reads as depth rather than as haze.
    */
   setTheme(theme: Theme): void {
+    this.colorsFor = null
     this.mode = theme.glow
     const material = this.mesh.material as MeshBasicMaterial
     material.blending = theme.glow === 'additive' ? AdditiveBlending : NormalBlending
@@ -115,48 +126,70 @@ export class GlowLayer {
     const { scale, minScale, color, intensity } = this.options
     const ink = this.mode === 'ink'
 
+    const base = this.baseColors
+    if (this.colorsFor !== theme) {
+      for (let i = 0; i < this.nodes.length; i++) {
+        this.color.setHex(color(this.nodes[i], theme))
+        base[i * 3] = this.color.r
+        base[i * 3 + 1] = this.color.g
+        base[i * 3 + 2] = this.color.b
+      }
+      this.colorsFor = theme
+    }
+
+    // Every halo faces the eye the same way, so the rotation is worked out once
+    // and each instance is that rotation scaled, plus its place.
+    const e = this.turn.makeRotationFromQuaternion(faceCamera).elements
+    const matrix = this.mesh.instanceMatrix.array as Float32Array
+    const colors = this.mesh.instanceColor!.array as Float32Array
+    let count = 0
+
     for (let i = 0; i < this.nodes.length; i++) {
       const node = this.nodes[i]
+      const state = node.state
+      // A hidden halo is left out rather than drawn at no size.
+      if (!node.visible || state.dimmed) continue
       const p = node.view
       const fire = Math.max(0, node.fire)
 
-      if (!node.visible || node.state.dimmed) {
-        this.dummy.position.set(p.x, p.y, p.z)
-        this.dummy.scale.setScalar(1e-5)
-        this.dummy.quaternion.copy(faceCamera)
-        this.dummy.updateMatrix()
-        this.mesh.setMatrixAt(i, this.dummy.matrix)
-        continue
-      }
-
-      // The flare is the visible part of the spike arriving at the soma, so it
-      // is driven by the potential rather than by a decorative oscillation.
       let size = Math.max(radii[i] * scale, minScale) * (1 + fire * 0.26)
-      if (node.state.selected) size *= 1.75
-      else if (node.state.hovered) size *= 1.3
-      else if (node.state.onPath) size *= 1.16
+      if (state.selected) size *= 1.75
+      else if (state.hovered) size *= 1.3
+      else if (state.onPath) size *= 1.16
 
-      this.dummy.position.set(p.x, p.y, p.z)
-      this.dummy.quaternion.copy(faceCamera)
-      this.dummy.scale.setScalar(size)
-      this.dummy.updateMatrix()
-      this.mesh.setMatrixAt(i, this.dummy.matrix)
+      const m = count * 16
+      matrix[m] = e[0] * size
+      matrix[m + 1] = e[1] * size
+      matrix[m + 2] = e[2] * size
+      matrix[m + 3] = 0
+      matrix[m + 4] = e[4] * size
+      matrix[m + 5] = e[5] * size
+      matrix[m + 6] = e[6] * size
+      matrix[m + 7] = 0
+      matrix[m + 8] = e[8] * size
+      matrix[m + 9] = e[9] * size
+      matrix[m + 10] = e[10] * size
+      matrix[m + 11] = 0
+      matrix[m + 12] = p.x
+      matrix[m + 13] = p.y
+      matrix[m + 14] = p.z
+      matrix[m + 15] = 1
 
-      this.color.setHex(color(node, theme))
-      // Nodes near the centre are the ones being read; let them burn brighter
-      // and keep the rim quiet so it stays a backdrop.
       const focus = 1 - (p.x * p.x + p.y * p.y + p.z * p.z)
       let strength = 0.35 + focus * 0.65 + fire * 0.42
-      if (node.state.selected) strength = 1.1 + fire * 0.28
-      else if (node.state.hovered || node.state.onPath) strength *= 1.35
-      // In ink mode the alpha does the work and a scaled-up colour just washes
-      // out, so the colour stays saturated and only the opacity varies.
-      this.color.multiplyScalar(ink ? Math.min(1, 0.55 + strength * 0.25) : strength)
-      this.mesh.setColorAt(i, this.color)
+      if (state.selected) strength = 1.1 + fire * 0.28
+      else if (state.hovered || state.onPath) strength *= 1.35
+      const k = ink ? Math.min(1, 0.55 + strength * 0.25) : strength
+      const c = count * 3
+      colors[c] = base[i * 3] * k
+      colors[c + 1] = base[i * 3 + 1] * k
+      colors[c + 2] = base[i * 3 + 2] * k
+      count++
     }
 
+    this.mesh.count = count
     this.mesh.instanceMatrix.needsUpdate = true
-    if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true
+    this.mesh.instanceColor!.needsUpdate = true
     ;(this.mesh.material as MeshBasicMaterial).opacity = ink ? intensity * 0.26 : intensity
   }
 

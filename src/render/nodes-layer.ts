@@ -1,21 +1,27 @@
 /**
- * Node spheres, drawn as a single InstancedMesh.
+ * Node spheres, drawn by instancing at two levels of detail.
  *
  * The radius of every sphere is multiplied by the conformal factor of its
  * position, `1 - |p|^2`. That single term is what makes the picture read as
  * hyperbolic: whatever you navigate to the middle is big and legible, and the
  * rest of the tree tapers smoothly into the boundary instead of being clipped.
+ *
+ * It is also why there are two meshes. At any moment a couple of dozen nodes
+ * are large enough for their surface to be seen, and the other thousand are a
+ * few pixels across. Drawing every one of them as the same finely divided
+ * sphere spent three million triangles a frame on specks. The few that are
+ * large get the fine sphere, and the rest a coarse one that is the same disc on
+ * screen.
  */
 
 import {
   Color,
+  DynamicDrawUsage,
   InstancedBufferAttribute,
   InstancedMesh,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
-  Object3D,
   type PerspectiveCamera,
   type Quaternion,
   Raycaster,
@@ -49,6 +55,12 @@ export interface NodesOptions {
   style: NodeStyle
   /** Only nodes numerically pinned to the boundary are dropped. */
   cullRadius: number
+  /**
+   * Radius on screen, in CSS pixels, from which a node is drawn with the finely
+   * divided sphere. Below it the outline of the coarse one is within half a
+   * pixel of a circle.
+   */
+  detailRadius: number
 }
 
 const defaultRadius: NodeRadiusFn = (n) => Math.max(0.34, 1 - n.depth * 0.16)
@@ -62,9 +74,8 @@ export const defaultNodesOptions: NodesOptions = {
   minRadius: 0.0017,
   style: 'neuron',
   cullRadius: 0.999985,
+  detailRadius: 15,
 }
-
-const HIDDEN_SCALE = 1e-4
 
 /**
  * How a node's body is drawn.
@@ -91,7 +102,10 @@ const STYLE_SETTINGS: Record<
 }
 
 export class NodesLayer {
+  /** The nodes large enough on screen for their surface to be seen. */
   readonly mesh: InstancedMesh
+  /** Everything else, on a coarse sphere. */
+  readonly meshLow: InstancedMesh
   readonly selectionHalo: Mesh
   readonly hoverHalo: Mesh
 
@@ -99,8 +113,6 @@ export class NodesLayer {
   private readonly material: MeshPhysicalMaterial
   private readonly uniforms = { style: { value: 0 }, lump: { value: 1 }, dimple: { value: 0 } }
   private styleName: NodeStyle = 'neuron'
-  private readonly dummy = new Object3D()
-  private readonly matrix = new Matrix4()
   private readonly color = new Color()
   private readonly background = new Color()
   private readonly highlight = new Color()
@@ -108,23 +120,39 @@ export class NodesLayer {
   private readonly projected = new Vector3()
   /** Euclidean radius actually used per node, needed for hit testing and labels. */
   readonly radii: Float32Array
+  /** Each node's shape seed, copied into whichever slot draws it this frame. */
+  private readonly seeds: Float32Array
+  /**
+   * Each node's colour for the current theme, already in the renderer's working
+   * space. Converting a thousand colours from sRGB on every frame was a
+   * measurable share of a frame on a phone, for values that only change with
+   * the theme.
+   */
+  private readonly baseColors: Float32Array
+  private colorsFor: Theme | null = null
 
   constructor(private nodes: TreeNode[], theme: Theme, options: Partial<NodesOptions> = {}) {
     this.options = { ...defaultNodesOptions, ...options }
     this.radii = new Float32Array(nodes.length)
 
+    this.baseColors = new Float32Array(nodes.length * 3)
     // Dense enough that the displaced surface below stays smooth on the centred
     // node, which is the one being looked at.
     const geometry = new SphereGeometry(1, 48, 32)
+    const geometryLow = new SphereGeometry(1, 14, 10)
     // Every cell body gets its own seed, so no two are the same lump. It is an
     // instance attribute rather than something derived from position, because
     // positions move with every navigation and the shape must not.
-    const seeds = new Float32Array(nodes.length)
+    this.seeds = new Float32Array(nodes.length)
     for (let i = 0; i < nodes.length; i++) {
       const x = Math.sin((i + 1) * 91.3458) * 47453.5453
-      seeds[i] = x - Math.floor(x)
+      this.seeds[i] = x - Math.floor(x)
     }
-    geometry.setAttribute('seed', new InstancedBufferAttribute(seeds, 1))
+    for (const g of [geometry, geometryLow]) {
+      const seed = new InstancedBufferAttribute(new Float32Array(nodes.length), 1)
+      seed.setUsage(DynamicDrawUsage)
+      g.setAttribute('seed', seed)
+    }
 
     // One material, five looks, switched by uniforms so the choice can change
     // while the tree is on screen. Matte throughout: none of them rely on gloss.
@@ -302,7 +330,18 @@ ${noise}`,
     }
     material.customProgramCacheKey = () => 'bt-cell-v4'
     this.mesh = new InstancedMesh(geometry, material, nodes.length)
-    this.mesh.frustumCulled = false
+    this.meshLow = new InstancedMesh(geometryLow, material, nodes.length)
+    for (const mesh of [this.mesh, this.meshLow]) {
+      mesh.frustumCulled = false
+      mesh.instanceMatrix.setUsage(DynamicDrawUsage)
+      mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(nodes.length * 3), 3)
+      mesh.instanceColor.setUsage(DynamicDrawUsage)
+      mesh.count = 0
+    }
+    // Large bodies first. They are translucent but write depth, so a small node
+    // behind one stays hidden by it, as it was when both were one mesh drawn in
+    // tree order, and a small node in front is blended over it.
+    this.meshLow.renderOrder = 0.5
 
     // Rings rather than glowing shells: a translucent sphere around the centred
     // node reads as fog and hides the very thing it is pointing at.
@@ -336,6 +375,7 @@ ${noise}`,
   }
 
   setTheme(theme: Theme): void {
+    this.colorsFor = null
     this.background.setHex(theme.background)
     this.highlight.setHex(theme.highlight)
     ;(this.selectionHalo.material as MeshBasicMaterial).color.setHex(theme.highlight)
@@ -347,16 +387,49 @@ ${noise}`,
    *
    * @param faceCamera keeps the selection and hover rings square to the eye
    * @param reveal     growth front in depth units; Infinity means fully grown
+   * @param eye        camera position, for choosing each node's level of detail
+   * @param pixelsAtUnitDistance CSS pixels that one ball unit covers at a
+   *                   distance of one from the eye
    */
   update(
     theme: Theme,
     faceCamera?: Quaternion,
     reveal = Number.POSITIVE_INFINITY,
+    eye?: { x: number; y: number; z: number },
+    pixelsAtUnitDistance = 0,
   ): void {
-    const { baseRadius, radius, color, minRadius, cullRadius } = this.options
+    const { baseRadius, radius, color, minRadius, cullRadius, detailRadius } = this.options
     const cull2 = cullRadius * cullRadius
     let selected: TreeNode | null = null
     let hovered: TreeNode | null = null
+
+    const base = this.baseColors
+    if (this.colorsFor !== theme) {
+      for (let i = 0; i < this.nodes.length; i++) {
+        this.color.setHex(color(this.nodes[i], theme))
+        base[i * 3] = this.color.r
+        base[i * 3 + 1] = this.color.g
+        base[i * 3 + 2] = this.color.b
+      }
+      this.colorsFor = theme
+    }
+
+    const fine = this.mesh
+    const coarse = this.meshLow
+    const fineMatrix = fine.instanceMatrix.array as Float32Array
+    const coarseMatrix = coarse.instanceMatrix.array as Float32Array
+    const fineColor = fine.instanceColor!.array as Float32Array
+    const coarseColor = coarse.instanceColor!.array as Float32Array
+    const fineSeed = fine.geometry.getAttribute('seed') as InstancedBufferAttribute
+    const coarseSeed = coarse.geometry.getAttribute('seed') as InstancedBufferAttribute
+    const fineSeeds = fineSeed.array as Float32Array
+    const coarseSeeds = coarseSeed.array as Float32Array
+    let fineCount = 0
+    let coarseCount = 0
+
+    const bg = this.background
+    const hl = this.highlight
+    const growing = reveal !== Number.POSITIVE_INFINITY
 
     for (let i = 0; i < this.nodes.length; i++) {
       const node = this.nodes[i]
@@ -366,16 +439,12 @@ ${noise}`,
       // Growth: nodes swell into place as the front passes their depth, with an
       // overshoot so they arrive with a little weight instead of just fading in.
       let grow = 1
-      if (reveal !== Number.POSITIVE_INFINITY) {
+      if (growing) {
         const t = reveal - node.depth
         if (t <= 0) {
           node.visible = false
           node.screenSize = 0
           this.radii[i] = 0
-          this.dummy.position.set(p.x, p.y, p.z)
-          this.dummy.scale.setScalar(HIDDEN_SCALE)
-          this.dummy.updateMatrix()
-          this.mesh.setMatrixAt(i, this.dummy.matrix)
           continue
         }
         grow = t >= 1 ? 1 : 1 - Math.pow(1 - t, 3) * (1 - Math.sin(t * Math.PI) * 0.22)
@@ -388,9 +457,10 @@ ${noise}`,
       // glow layer carries the event, and a node that visibly inflates reads as
       // a bouncing ball rather than as a cell.
       const fire = Math.max(0, node.fire)
+      const state = node.state
       let r = baseRadius * radius(node) * conformal * grow * (1 + fire * 0.07)
-      if (node.state.selected) r *= 1.3
-      else if (node.state.hovered) r *= 1.16
+      if (state.selected) r *= 1.3
+      else if (state.hovered) r *= 1.16
 
       const dropped = r2 > cull2
       node.visible = !dropped
@@ -399,29 +469,95 @@ ${noise}`,
       node.screenSize = dropped ? 0 : r
       const drawRadius = dropped ? 0 : Math.max(r, minRadius)
       this.radii[i] = drawRadius
+      if (state.selected) selected = node
+      if (state.hovered) hovered = node
+      // A dropped node is simply not drawn, rather than drawn at no size: the
+      // vertex shader still runs for every vertex of a sphere scaled to nothing.
+      if (dropped) continue
 
-      this.dummy.position.set(p.x, p.y, p.z)
-      this.dummy.scale.setScalar(dropped ? HIDDEN_SCALE : drawRadius)
-      this.dummy.updateMatrix()
-      this.mesh.setMatrixAt(i, this.dummy.matrix)
-
-      this.color.setHex(color(node, theme))
-      if (node.state.dimmed) this.color.lerp(this.background, 0.82)
-      if (node.state.selected) this.color.lerp(this.highlight, 0.35)
-      else if (node.state.onPath) this.color.offsetHSL(0, 0.05, 0.12)
-      else if (node.state.hovered) this.color.offsetHSL(0, 0, 0.16)
+      let cr = base[i * 3]
+      let cg = base[i * 3 + 1]
+      let cb = base[i * 3 + 2]
+      if (state.dimmed) {
+        cr += (bg.r - cr) * 0.82
+        cg += (bg.g - cg) * 0.82
+        cb += (bg.b - cb) * 0.82
+      }
+      if (state.selected) {
+        cr += (hl.r - cr) * 0.35
+        cg += (hl.g - cg) * 0.35
+        cb += (hl.b - cb) * 0.35
+      } else if (state.onPath || state.hovered) {
+        this.color.setRGB(cr, cg, cb)
+        if (state.onPath) this.color.offsetHSL(0, 0.05, 0.12)
+        else this.color.offsetHSL(0, 0, 0.16)
+        cr = this.color.r
+        cg = this.color.g
+        cb = this.color.b
+      }
       // Firing brightens the soma itself, so the event is legible even with the
       // glow layer switched off.
-      if (fire > 0 && !node.state.dimmed) this.color.lerp(this.highlight, fire * 0.22)
-      this.mesh.setColorAt(i, this.color)
+      if (fire > 0 && !state.dimmed) {
+        const k = fire * 0.22
+        cr += (hl.r - cr) * k
+        cg += (hl.g - cg) * k
+        cb += (hl.b - cb) * k
+      }
 
-      if (node.state.selected) selected = node
-      if (node.state.hovered) hovered = node
+      // Level of detail by size on screen. The thing being looked at is always
+      // drawn finely, whatever its size.
+      let detailed = state.selected || state.hovered
+      if (!detailed) {
+        if (eye && pixelsAtUnitDistance > 0) {
+          const dx = eye.x - p.x
+          const dy = eye.y - p.y
+          const dz = eye.z - p.z
+          const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
+          detailed = drawRadius * pixelsAtUnitDistance >= detailRadius * Math.max(distance, 1e-3)
+        } else {
+          detailed = true
+        }
+      }
+
+      const slot = detailed ? fineCount++ : coarseCount++
+      const matrix = detailed ? fineMatrix : coarseMatrix
+      const colors = detailed ? fineColor : coarseColor
+      ;(detailed ? fineSeeds : coarseSeeds)[slot] = this.seeds[i]
+
+      // A uniform scale and a translation, written straight into the instance
+      // matrix (column major).
+      const m = slot * 16
+      matrix[m] = drawRadius
+      matrix[m + 1] = 0
+      matrix[m + 2] = 0
+      matrix[m + 3] = 0
+      matrix[m + 4] = 0
+      matrix[m + 5] = drawRadius
+      matrix[m + 6] = 0
+      matrix[m + 7] = 0
+      matrix[m + 8] = 0
+      matrix[m + 9] = 0
+      matrix[m + 10] = drawRadius
+      matrix[m + 11] = 0
+      matrix[m + 12] = p.x
+      matrix[m + 13] = p.y
+      matrix[m + 14] = p.z
+      matrix[m + 15] = 1
+
+      const c = slot * 3
+      colors[c] = cr
+      colors[c + 1] = cg
+      colors[c + 2] = cb
     }
 
-    this.mesh.instanceMatrix.needsUpdate = true
-    if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true
-    this.mesh.computeBoundingSphere()
+    fine.count = fineCount
+    coarse.count = coarseCount
+    fine.instanceMatrix.needsUpdate = true
+    coarse.instanceMatrix.needsUpdate = true
+    fine.instanceColor!.needsUpdate = true
+    coarse.instanceColor!.needsUpdate = true
+    fineSeed.needsUpdate = true
+    coarseSeed.needsUpdate = true
 
     this.placeRing(this.selectionHalo, selected, 1.62, faceCamera)
     this.placeRing(this.hoverHalo, hovered, 1.34, faceCamera)
@@ -459,14 +595,32 @@ ${noise}`,
     tolerance = 0,
     viewport?: { width: number; height: number },
   ): TreeNode | null {
+    // Each body is a sphere of known centre and radius, so the ray is tested
+    // against those directly. Asking the renderer instead meant testing the
+    // triangles of every instance, and no longer works once a node can be in
+    // either of two meshes.
     this.raycaster.setFromCamera(ndc, camera)
-    const hits = this.raycaster.intersectObject(this.mesh, false)
-    for (const hit of hits) {
-      const id = hit.instanceId
-      if (id == null) continue
-      const node = this.nodes[id]
-      if (node?.visible) return node
+    const { origin, direction } = this.raycaster.ray
+    let hit: TreeNode | null = null
+    let nearest = Number.POSITIVE_INFINITY
+    for (let i = 0; i < this.nodes.length; i++) {
+      const node = this.nodes[i]
+      if (!node.visible) continue
+      const r = this.radii[i]
+      const ox = node.view.x - origin.x
+      const oy = node.view.y - origin.y
+      const oz = node.view.z - origin.z
+      const along = ox * direction.x + oy * direction.y + oz * direction.z
+      if (along < 0) continue
+      const off2 = ox * ox + oy * oy + oz * oz - along * along
+      if (off2 > r * r) continue
+      const entry = along - Math.sqrt(r * r - off2)
+      if (entry < nearest) {
+        nearest = entry
+        hit = node
+      }
     }
+    if (hit) return hit
 
     if (tolerance <= 0 || !viewport) return null
 
@@ -505,16 +659,12 @@ ${noise}`,
     return out.set(node.view.x, node.view.y, node.view.z)
   }
 
-  /** Read back an instance's world matrix (used by tests and debugging). */
-  matrixAt(index: number): Matrix4 {
-    this.mesh.getMatrixAt(index, this.matrix)
-    return this.matrix
-  }
-
   dispose(): void {
     this.mesh.geometry.dispose()
+    this.meshLow.geometry.dispose()
     ;(this.mesh.material as MeshPhysicalMaterial).dispose()
     this.mesh.dispose()
+    this.meshLow.dispose()
     this.selectionHalo.geometry.dispose()
     ;(this.selectionHalo.material as MeshBasicMaterial).dispose()
     this.hoverHalo.geometry.dispose()

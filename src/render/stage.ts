@@ -113,6 +113,9 @@ export class Stage {
   private height = 1
   private focusOffsetX = 0
   private focusOffsetY = 0
+  /** Share of the device's pixel density the scene is drawn at. See setQuality. */
+  private resolution = 1
+  private bloomWanted = true
 
   constructor(container: HTMLElement, theme: Theme, options: Partial<StageOptions> = {}) {
     this.options = { ...defaultStageOptions, ...options }
@@ -125,9 +128,7 @@ export class Stage {
       alpha: false,
       powerPreference: 'high-performance',
     })
-    this.renderer.setPixelRatio(
-      Math.min(globalThis.devicePixelRatio ?? 1, this.options.maxPixelRatio),
-    )
+    this.renderer.setPixelRatio(this.pixelRatio())
     this.canvas = this.renderer.domElement
     this.canvas.className = 'bt-canvas'
     container.appendChild(this.canvas)
@@ -231,8 +232,40 @@ export class Stage {
     // Stars are a dark-ground device, and bloom on a light ground can only push
     // already-bright pixels to white. Both are theme facts, not options.
     this.starfield?.setVisible(theme.allowStars)
-    if (this.bloomPass) this.bloomPass.enabled = theme.allowBloom
+    if (this.bloomPass) this.bloomPass.enabled = theme.allowBloom && this.bloomWanted
     this.updateCamera()
+  }
+
+  /** Pixels drawn per CSS pixel: the device's density, capped, times the quality. */
+  private pixelRatio(): number {
+    const device = Math.min(globalThis.devicePixelRatio ?? 1, this.options.maxPixelRatio)
+    // Never below one drawn pixel per CSS pixel: under that the picture is not
+    // merely softer, the filaments break up.
+    return Math.max(Math.min(1, device), device * this.resolution)
+  }
+
+  /**
+   * Trade sharpness for speed, for a machine that cannot keep up.
+   *
+   * The cost of a frame is very nearly the number of pixels drawn, and on a
+   * dense screen that number is four times what the same window would be on an
+   * ordinary one. `resolution` is the share of the screen's density to draw at;
+   * the browser scales the result back up. Bloom is a second full pass over
+   * those pixels and can be dropped separately.
+   */
+  setQuality(resolution: number, bloom: boolean): void {
+    this.resolution = Math.max(0.3, Math.min(1, resolution))
+    this.bloomWanted = bloom
+    if (this.bloomPass) this.bloomPass.enabled = this.theme.allowBloom && bloom
+    this.resize(this.width, this.height)
+  }
+
+  get quality(): { resolution: number; bloom: boolean; pixelRatio: number } {
+    return {
+      resolution: this.resolution,
+      bloom: this.bloomPass?.enabled ?? false,
+      pixelRatio: this.renderer.getPixelRatio(),
+    }
   }
 
   get currentTheme(): Theme {
@@ -246,6 +279,11 @@ export class Stage {
   resize(width: number, height: number): void {
     this.width = Math.max(1, width)
     this.height = Math.max(1, height)
+    const ratio = this.pixelRatio()
+    if (ratio !== this.renderer.getPixelRatio()) {
+      this.renderer.setPixelRatio(ratio)
+      this.composer?.setPixelRatio(ratio)
+    }
     this.renderer.setSize(this.width, this.height, false)
     this.camera.aspect = this.width / this.height
     // Pull back on narrow viewports so the ball still fits.
@@ -389,7 +427,13 @@ export class Stage {
   }
 
   render(): void {
-    if (this.composer) this.composer.render()
+    // The composer exists for the bloom. Once a machine has had to give bloom
+    // up, going through the composer would still cost two extra passes over
+    // every pixel, which is the very thing it could not afford. A theme that
+    // merely switches bloom off keeps the composer, because translucent things
+    // blend a little differently without it and the picture should not change
+    // with the theme's bloom flag alone.
+    if (this.composer && this.bloomWanted) this.composer.render()
     else this.renderer.render(this.scene, this.camera)
   }
 

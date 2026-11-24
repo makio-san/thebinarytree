@@ -135,6 +135,14 @@ export interface BinaryTreeApi {
 
 const DEFAULT_THEME: ThemeName = 'dark'
 
+/** Share of the screen's pixel density to draw at, and whether to bloom. */
+const QUALITY_LEVELS: readonly (readonly [number, boolean])[] = [
+  [1, true],
+  [0.75, true],
+  [0.75, false],
+  [0.6, false],
+]
+
 export class BinaryTree {
   readonly element: HTMLDivElement
   readonly initPromise: Promise<void>
@@ -161,6 +169,18 @@ export class BinaryTree {
 
   private motion!: MotionConfig
   private dirty = true
+  /** Frames still to be treated as moved after the last real change. */
+  private settle = 0
+  /** Frame pacing, and what has been given up to keep it. See `pace`. */
+  private pacing = {
+    born: 0,
+    average: 16.7,
+    slowFor: 0,
+    level: 0,
+    /** Set while a step down is being judged: the average before it, and when to look. */
+    trial: null as { before: number; at: number } | null,
+    settled: false,
+  }
   private frame = 0
   private destroyed = false
   /** Monotonic seconds since the first frame; drives every ambient effect. */
@@ -228,6 +248,7 @@ export class BinaryTree {
 
     this.stage.world.add(this.neuritesLayer.mesh)
     if (this.glowLayer) this.stage.world.add(this.glowLayer.mesh)
+    this.stage.world.add(this.nodesLayer.meshLow)
     this.stage.world.add(this.nodesLayer.mesh)
     this.stage.world.add(this.nodesLayer.selectionHalo)
     this.stage.world.add(this.nodesLayer.hoverHalo)
@@ -325,18 +346,89 @@ export class BinaryTree {
     if (this.lastFrame === 0) this.lastFrame = now
     // Clamp the step: a backgrounded tab resumes with a huge gap, and letting
     // that through would teleport the flow and skip the whole growth animation.
-    const step = Math.min(0.1, (now - this.lastFrame) / 1000)
+    const elapsed = now - this.lastFrame
+    const step = Math.min(0.1, elapsed / 1000)
     this.clock += step
     this.lastFrame = now
+    this.pace(now, elapsed)
 
     const zooming = this.stage.tick(step)
 
     const flying = this.navigator.tick(now)
     const growing = this.advanceGrowth(now)
 
-    if (!flying && !growing && !zooming && !this.dirty && !this.motion.ambient) return
+    // "Moved" means the picture is laid out differently from the last frame:
+    // the tree, the camera, the selection or the size of the canvas changed.
+    // The signal travelling along the filaments is not a move. The frames after
+    // a move count too, because a flight reports that it has finished on the
+    // same tick that it writes its last positions.
+    const moving = flying || growing || zooming || this.dirty
+    if (moving) this.settle = 2
+    else if (this.settle > 0) this.settle--
+    const moved = moving || this.settle > 0
+
+    if (!moved && !this.motion.ambient) return
     this.dirty = false
-    this.draw()
+    this.draw(moved)
+  }
+
+  /**
+   * Keep the frame rate by giving up sharpness, on a machine that needs it.
+   *
+   * Nothing can be known in advance about the graphics hardware a page lands
+   * on, but the time between frames says everything that matters. If frames
+   * have been slow for a few seconds the scene is drawn at fewer pixels, and
+   * then without bloom, one step at a time.
+   *
+   * Each step is a trial. Some devices cap animation at thirty frames a second
+   * to save power, and there the frames stay slow whatever is drawn; a step that
+   * buys nothing is taken back and no further ones are tried, so a capped
+   * device keeps a sharp picture.
+   */
+  private pace(now: number, elapsed: number): void {
+    const pacing = this.pacing
+    if (pacing.settled || !this.motion?.ambient) return
+    if (pacing.born === 0) pacing.born = now
+    // A long gap is a hidden tab or a stall elsewhere, not a slow frame, and the
+    // first seconds are spent compiling shaders and growing the tree.
+    if (elapsed <= 0 || elapsed > 250 || now - pacing.born < 5000) return
+    if (typeof document !== 'undefined' && document.hidden) return
+
+    pacing.average += (elapsed - pacing.average) * 0.08
+
+    if (pacing.trial) {
+      if (now < pacing.trial.at) return
+      const helped = pacing.average < pacing.trial.before * 0.88
+      pacing.trial = null
+      pacing.slowFor = 0
+      if (!helped) {
+        pacing.level = Math.max(0, pacing.level - 1)
+        pacing.settled = true
+        this.applyQuality()
+      }
+      return
+    }
+
+    if (pacing.average < 22) {
+      pacing.slowFor = 0
+      return
+    }
+    pacing.slowFor += elapsed
+    if (pacing.slowFor < 3000) return
+    if (pacing.level >= QUALITY_LEVELS.length - 1) {
+      pacing.settled = true
+      return
+    }
+    pacing.level++
+    pacing.trial = { before: pacing.average, at: now + 2500 }
+    this.applyQuality()
+  }
+
+  private applyQuality(): void {
+    const [resolution, bloom] = QUALITY_LEVELS[this.pacing.level]
+    this.stage.setQuality(resolution, bloom)
+    this.applySafeArea()
+    this.dirty = true
   }
 
   /**
@@ -365,16 +457,29 @@ export class BinaryTree {
     return true
   }
 
-  private draw(): void {
+  /**
+   * @param moved false when only the signal has advanced since the last frame.
+   *              Labels and the centre node depend on where things are, not on
+   *              the signal, so they are left alone on those frames, which are
+   *              nearly all of them while the page is simply open.
+   */
+  private draw(moved = true): void {
     if (!this.tree) return
-    const quaternion = this.stage.camera.quaternion
+    const camera = this.stage.camera
+    const quaternion = camera.quaternion
 
     // The signal is computed once and read by every layer, which is what makes a
     // spike arriving at a soma light the soma, its halo and the filament feeding
     // it at the same instant instead of three effects running side by side.
     this.spikes.update(this.clock)
 
-    this.nodesLayer.update(this.theme, quaternion, this.reveal)
+    this.nodesLayer.update(
+      this.theme,
+      quaternion,
+      this.reveal,
+      camera.position,
+      this.stage.size.height / (2 * Math.tan((camera.fov * Math.PI) / 360)),
+    )
     this.glowLayer?.update(this.theme, this.nodesLayer.radii, quaternion)
     // Filaments billboard about their own axis, so they need the eye position
     // rather than just its orientation.
@@ -385,10 +490,10 @@ export class BinaryTree {
       this.stage.camera.position,
       this.reveal,
     )
-    this.labelsLayer.update(this.tree.nodes, this.stage, this.nodesLayer.radii)
+    if (moved) this.labelsLayer.update(this.tree.nodes, this.stage, this.nodesLayer.radii)
     this.stage.starfield?.update(this.clock)
     this.stage.render()
-    this.updateCenterNode()
+    if (moved) this.updateCenterNode()
   }
 
   // -- state ----------------------------------------------------------------
@@ -533,6 +638,7 @@ export class BinaryTree {
       relayout: (options) => {
         const tree = this.mustTree()
         coneLayout(tree, { ...this.config.layout, ...options })
+        this.neuritesLayer?.invalidate()
         this.dirty = true
       },
       setNodeStyle: (style) => {
