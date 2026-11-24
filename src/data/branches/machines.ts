@@ -41,8 +41,8 @@ export const machines: ComputerDatum = {
               kind: 'machine',
               origin: 'Germany',
               summary:
-                'The first reliable automatic computer: 2000 relays, program on tape. Destroyed in the bombing of Berlin.',
-              facts: ['22 bit floating point', 'About 5 additions per second', 'No conditional branching'],
+                'The first working programmable, fully automatic computer: 2600 relays, program on tape. Destroyed in the bombing of Berlin in 1943.',
+              facts: ['22 bit floating point', 'An addition took about 0.8 seconds', 'No conditional branching'],
               children: [
                 {
                   id: 'zuse-z4',
@@ -62,7 +62,7 @@ export const machines: ComputerDatum = {
                   kind: 'language',
                   origin: 'Germany',
                   summary:
-                    'Zuse’s high level language, with array and record types. Unpublished for decades, so it never got a compiler.',
+                    'Zuse’s high level language, with array and record types. Zuse never implemented it, it was only republished in full in 1972, and its first compiler came in 1975.',
                 },
               ],
             },
@@ -263,7 +263,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'The first computer to work in real time, at MIT. First serious use of magnetic core memory and of an interactive display.',
+            'One of the first computers to work in real time, at MIT. The second machine to use magnetic core memory, after MIT’s own Memory Test Computer.',
           facts: ['Magnetic core memory', 'Light pen input on the screen'],
           children: [
             {
@@ -291,12 +291,12 @@ export const machines: ComputerDatum = {
         {
           id: 'mesm',
           name: 'MESM',
-          year: 1951,
+          year: 1950,
           era: 'tube',
           kind: 'machine',
           origin: 'USSR',
           summary:
-            'Sergey Lebedev built it in Kyiv: continental Europe’s first working stored program computer.',
+            'Sergey Lebedev’s team built it near Kyiv: the first universally programmable electronic computer in the Soviet Union. First test run in November 1950, first useful calculations in January 1951.',
         },
         {
           id: 'leo-i',
@@ -306,7 +306,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'England',
           summary:
-            'The Lyons tea company adapted the EDSAC design to its own business. The first computer to run a commercial application: payroll and stock.',
+            'The Lyons catering company modelled it closely on EDSAC. The first computer used for business work: bakery valuations from September 1951, then payroll and stock.',
         },
         {
           id: 'univac-i',
@@ -335,7 +335,8 @@ export const machines: ComputerDatum = {
           era: 'tube',
           kind: 'machine',
           origin: 'USA',
-          summary: 'IBM’s first commercial scientific computer, and its exit from tabulating machines.',
+          summary:
+            'IBM’s first commercial scientific computer and its first mainframe built in series, based on the IAS machine. Announced in 1952.',
           children: [
             {
               id: 'ibm-704',
@@ -345,7 +346,7 @@ export const machines: ComputerDatum = {
               kind: 'machine',
               origin: 'USA',
               summary:
-                'Hardware floating point and an index register. Fortran and Lisp were both written for this machine.',
+                'The first mass produced computer with floating point hardware, plus core memory and three index registers. Fortran and Lisp were both first developed for this machine.',
               children: [
                 {
                   id: 'ibm-709',
@@ -380,7 +381,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'A mid range drum memory machine. Around 2000 installations made it the most widely deployed computer of its day and put computing into universities.',
+            'A mid range drum memory machine, announced in 1953 and first installed in late 1954. Almost 2000 were built, making it the first mass produced computer, and it put computing into universities.',
           children: [
             {
               id: 'turkey-first-computer',
@@ -434,7 +435,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'A family of machines sharing one instruction set. Software became independent of hardware, and compatibility became a product feature.',
+            'A family of machines sharing one instruction set, announced in 1964 and delivered from 1965. Software became independent of hardware, and compatibility became a product feature.',
           facts: ['Made the 8 bit byte standard', 'Development cost IBM close to 5 billion dollars'],
           children: [
             {
@@ -444,7 +445,8 @@ export const machines: ComputerDatum = {
               era: 'integrated',
               kind: 'machine',
               origin: 'USA',
-              summary: 'Virtual memory and multiprocessing arrived on the mainframe.',
+              summary:
+                'The successor to System/360, announced in 1970 without virtual memory. Dynamic address translation added it in 1972.',
               children: [
                 {
                   id: 'system-390',
@@ -453,7 +455,7 @@ export const machines: ComputerDatum = {
                   era: 'modern',
                   kind: 'machine',
                   origin: 'USA',
-                  summary: 'Fibre channel and clustering for the mainframe generation.',
+                  summary: 'ESA/390 brought fibre optic ESCON channels and Sysplex clustering to the mainframe.',
                   children: [
                     {
                       id: 'ibm-z',
@@ -480,7 +482,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'The first flight computer to use integrated circuits. It landed on the Moon with 2 KB of writable memory and a program woven into core rope.',
+            'The first computer based on silicon integrated circuits. It landed on the Moon with 2048 words of writable memory and a program woven into core rope.',
           facts: ['Software manufactured by weaving core memory', 'Written by Margaret Hamilton’s team'],
         },
       ],
@@ -511,7 +513,7 @@ export const machines: ComputerDatum = {
               kind: 'machine',
               origin: 'USA',
               summary:
-                'The first commercial computer with a display and keyboard that one person sat down at. A tenth of the price of a mainframe.',
+                'An interactive machine with a display and a typewriter that one person sat down at, sold for 120,000 dollars. Shown as a prototype in December 1959, first delivered in November 1960.',
               children: [
                 {
                   id: 'spacewar',
@@ -521,7 +523,7 @@ export const machines: ComputerDatum = {
                   kind: 'concept',
                   origin: 'USA',
                   summary:
-                    'A two player space game with gravity, written for the PDP-1. The starting point of computer games.',
+                    'A two player space game with gravity, written for the PDP-1. It spread to other PDP-1 sites and led directly to the first commercial arcade games.',
                 },
               ],
             },
@@ -535,7 +537,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'A 12 bit machine the size of a fridge at 18,000 dollars. The first commercially successful minicomputer, with over 50,000 sold.',
+            'A 12 bit machine the size of a small fridge at 18,500 dollars. The first minicomputer to sell for under 20,000 dollars, with over 50,000 sold.',
           facts: ['Only 8 basic instructions', 'Put computers into labs and factories'],
         },
         {
@@ -546,8 +548,8 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'Orthogonal instruction set, unified bus, memory mapped I/O. Unix and C matured on it, and its design shaped every processor that followed.',
-          facts: ['Over 600,000 sold', 'Home of the first portable Unix'],
+            'Orthogonal instruction set, unified bus, memory mapped I/O. Unix and C matured on it, and its design inspired the Intel x86 and the Motorola 68000.',
+          facts: ['About 600,000 sold', 'Home of the first portable Unix'],
           children: [
             {
               id: 'vax-11-780',
@@ -581,7 +583,7 @@ export const machines: ComputerDatum = {
           kind: 'machine',
           origin: 'USA',
           summary:
-            'A plain, cheap, single board 16 bit mini. It started the price war that put pressure on DEC.',
+            'A plain, cheap 16 bit mini whose processor fit on two large circuit boards. It started the price war that put pressure on DEC.',
         },
         {
           id: 'hp-2116a',
