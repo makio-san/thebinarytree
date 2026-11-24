@@ -256,6 +256,16 @@ export const security: ComputerDatum = {
       summary: 'The failures that keep recurring, and the defences that answer them.',
       children: [
         {
+          id: 'tor',
+          name: 'Tor',
+          year: 2002,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'Onion routing came from the US Naval Research Laboratory in the mid 1990s. Paul Syverson, Roger Dingledine and Nick Mathewson launched the alpha of Tor in September 2002: traffic crosses volunteer relays in layers of encryption, so no single point sees both ends.',
+        },
+        {
           id: 'creeper',
           name: 'Creeper',
           year: 1971,

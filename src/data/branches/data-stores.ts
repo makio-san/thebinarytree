@@ -231,6 +231,16 @@ export const dataStores: ComputerDatum = {
             'Store a table by column rather than by row. An analytic query touches a few columns of many rows, and this makes that read sequential.',
           children: [
             {
+              id: 'parquet',
+              name: 'Apache Parquet',
+              year: 2013,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                "An open columnar file format begun jointly by Twitter and Cloudera on the record shredding scheme of Google's Dremel paper. Version 1.0 came out in July 2013, and it became a top level Apache project in 2015.",
+            },
+            {
               id: 'duckdb',
               name: 'DuckDB',
               year: 2019,
