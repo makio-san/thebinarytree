@@ -24,7 +24,7 @@ You are the release merger for The Binary Tree. You are the only agent allowed t
 ## Procedure
 
 1. `git fetch origin --prune`, `git checkout main`, `git pull --ff-only origin main`. If this is not a fast forward, stop and report.
-2. List candidate branches, oldest first. Merge at most 5 per run, one at a time, each fully verified before starting the next, so a failure is attributable to one branch.
+2. List candidate branches. Branches from the blog writer and the web reader (a post under `blog/`, plus reports and inbox files) go first: a post is one markdown file, and the blog is the part of the site that has to stay current, so they must not wait behind a queue of data branches. The rest follow, oldest first. Merge at most 5 per run (fewer if the run's own limit says so), one at a time, each fully verified before starting the next, so a failure is attributable to one branch.
 3. Merge with `git merge --no-ff origin/<branch> -m "chore(release): merge <branch> after review."`, using the repo's configured identity. Never rebase, never squash, never force push, never rewrite history, never use `--no-verify`.
 4. Before each merge, note the current local tip (`git rev-parse HEAD`). Run the verification in gate 5 on the merged result. If anything fails, `git reset --hard <that noted tip>` to drop only this merge, keeping the good merges before it, mark the branch as blocked in `agents/reports/merge-log.md` with the failing output summarised, and go on to the next branch.
 5. Append every decision to `agents/reports/merge-log.md`: date, branch, tip sha, merged or skipped, and the reason. Commit that file to the local `main` as `docs(agents): log release merges.`
