@@ -73,7 +73,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
     const intro = el(
       'p',
       'blog__intro',
-      'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.',
+      'What is new in the tree, written up by the blog agent, and the best recent writing on Medium and elsewhere, picked by the web reader.',
     )
     const list = el('ol', 'blog__list')
     for (const post of POSTS) {
