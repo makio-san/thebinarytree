@@ -297,6 +297,16 @@ export const peripherals: ComputerDatum = {
           summary:
             'Combining cheap disks for both speed and durability. The basis of data centre storage.',
         },
+        {
+          id: 'drum-memory',
+          name: 'Drum Memory',
+          year: 1932,
+          era: 'mechanical',
+          kind: 'component',
+          origin: 'Austria',
+          summary:
+            'A rotating magnetic cylinder, invented by Gustav Tauschek in 1932. It was main memory for the cheaper, slower computers of the 1950s until core memory took over, then secondary storage until hard disks replaced it.',
+        },
       ],
     },
     {
@@ -354,6 +364,57 @@ export const peripherals: ComputerDatum = {
           kind: 'concept',
           summary:
             'Send text, get text back. Sixty years on it is still one of the most productive interfaces, because it composes.',
+        },
+      ],
+    },
+    {
+      id: 'buses',
+      name: 'Buses and Interconnects',
+      era: 'personal',
+      kind: 'group',
+      summary: 'The slots, lanes and cables that connect a processor to everything else.',
+      children: [
+        {
+          id: 'pci',
+          name: 'PCI',
+          year: 1992,
+          era: 'personal',
+          kind: 'component',
+          origin: 'USA',
+          summary:
+            'Intel’s local bus for expansion cards, independent of any one processor’s own bus. It displaced ISA and VESA Local Bus slots in PCs, replaced NuBus in the Power Macintosh, and stayed the standard card slot until PCI Express.',
+          children: [
+            {
+              id: 'pci-express',
+              name: 'PCI Express',
+              year: 2003,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'PCI rebuilt as serial point to point lanes instead of a shared parallel bus. PCI-SIG published version 1.0a in 2003; it replaced PCI, PCI-X and AGP and now connects graphics cards, network adapters and SSDs.',
+              children: [
+                {
+                  id: 'cxl',
+                  name: 'Compute Express Link',
+                  year: 2019,
+                  era: 'modern',
+                  kind: 'component',
+                  summary:
+                    'A cache coherent link built on the PCI Express physical layer, so processors can share memory with accelerators and reach memory beyond the DIMM slots. Version 1.0 came out in March 2019, the month nine companies including Intel, Google and Microsoft formed its consortium.',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'usb',
+          name: 'USB',
+          year: 1996,
+          era: 'modern',
+          kind: 'component',
+          origin: 'USA',
+          summary:
+            'One plug and one protocol for keyboards, mice, printers and drives, with power on the same cable. USB 1.0 came out in January 1996 from seven companies including Intel, Compaq and Microsoft, and replaced serial, parallel and game ports.',
         },
       ],
     },

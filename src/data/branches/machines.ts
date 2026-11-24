@@ -470,6 +470,16 @@ export const machines: ComputerDatum = {
                 },
               ],
             },
+            {
+              id: 'tomasulo-algorithm',
+              name: "Tomasulo's Algorithm",
+              year: 1967,
+              era: 'integrated',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Register renaming in hardware, reservation stations and a common data bus let the floating point unit of the IBM System/360 Model 91 run instructions out of order. Robert Tomasulo developed it at IBM in 1967.',
+            },
           ],
         },
         {

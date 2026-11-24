@@ -642,6 +642,15 @@ export const languages: ComputerDatum = {
               summary:
                 'Interactive notebooks that mix code, results and prose, spun off from IPython in 2014 and named for Julia, Python and R. The notebook became the standard working surface of data science.',
             },
+            {
+              id: 'free-threaded-cpython',
+              name: 'Free-threaded CPython',
+              year: 2024,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A build of CPython without the global interpreter lock, so Python threads can run on several cores at once. Sam Gross proposed it in PEP 703, and it shipped as an experimental build of Python 3.13 in October 2024.',
+            },
           ],
         },
         {

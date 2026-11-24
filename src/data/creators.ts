@@ -736,6 +736,20 @@ export const CREATORS: Record<string, string[]> = {
   mathematica: ['Stephen Wolfram'],
   'super-mario-bros': ['Shigeru Miyamoto', 'Takashi Tezuka'],
   tetris: ['Alexey Pajitnov'],
+
+  // Scout inboxes 2026-11-20 (second run) and 2026-11-23 (second run)
+  usb: ['Ajay Bhatt'],
+  'free-threaded-cpython': ['Sam Gross'],
+  'delay-line-memory': ['J. Presper Eckert'],
+  'williams-tube': ['Frederic Williams', 'Tom Kilburn'],
+  eprom: ['Dov Frohman'],
+  'drum-memory': ['Gustav Tauschek'],
+  'tomasulo-algorithm': ['Robert Tomasulo'],
+  bash: ['Brian Fox'],
+  zfs: ['Jeff Bonwick', 'Bill Moore', 'Matthew Ahrens'],
+  bravo: ['Butler Lampson', 'Charles Simonyi'],
+  'microsoft-word': ['Charles Simonyi', 'Richard Brodie'],
+  wordstar: ['Rob Barnaby'],
 }
 
 const NONE: readonly string[] = []
