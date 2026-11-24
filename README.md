@@ -227,6 +227,10 @@ The rest of the phone layout, below 860px:
   points. It sits at full height and is translated down, so expanding it never
   reflows its own content. Dragging is confined to the handle and header, because
   a whole-sheet drag surface fights the scroll of the content inside it.
+  Its height is what is left of the screen under the top bar, in dynamic viewport
+  units (`dvh`). A share of `vh` is a share of the screen with the browser's own
+  bars hidden, so with them showing the sheet was taller than the space there was
+  and ran up underneath the top bar.
 - Search becomes a **full screen overlay**. A phone keyboard covers about half
   the viewport, so an inline field at the top would put the results behind it.
   The input is 16px, below which iOS zooms the page on focus.
@@ -240,6 +244,9 @@ The rest of the phone layout, below 860px:
   anywhere else.
 - Bloom defaults off for coarse pointers, and labels get fewer slots, smaller
   type and one card at a time. Safe area insets are respected throughout.
+- Nothing over the canvas blurs what is behind it. The scene redraws on every
+  frame, so a blurred panel or label is blurred again on every frame, and on a
+  phone that costs more than the scene does.
 
 ## Architecture
 
@@ -307,9 +314,14 @@ significant digits. That mattered in two places:
 
 ### Rendering
 
-- Nodes are one `InstancedMesh`. The radius is `baseRadius · (1 - |p|²)`, the
+- Nodes are instanced spheres. The radius is `baseRadius · (1 - |p|²)`, the
   conformal factor of the position. That single term is what makes the picture
   hyperbolic.
+- It is also why there are two levels of detail. At any moment a couple of dozen
+  nodes are large enough for their surface to be seen and the other thousand are
+  a few pixels across, so the large ones get a finely divided sphere and the rest
+  a coarse one that is the same disc on screen. Drawing all of them finely was
+  three million triangles a frame.
 - `minRadius` is a **floor**, not a cull threshold. Bringing something to the
   centre pins the rest against the boundary, where the conformal factor takes it
   to a millionth of a pixel; clamping rather than dropping turns the boundary
@@ -317,8 +329,12 @@ significant digits. That mattered in two places:
 - Vessels follow geodesic arcs. A straight Euclidean line between two ball points
   is wrong; geodesics bow away from the boundary, and that is what gives the
   picture its woven look. See **Vessels** below for the thickness.
-- Labels are pooled HTML over the canvas, ranked by apparent size each frame,
-  largest placed first, colliding ones skipped.
+- Labels are pooled HTML over the canvas, ranked by apparent size, largest
+  placed first, colliding ones skipped. They are only worked out again on frames
+  where something moved, and a label's text is laid out at one of a few font
+  sizes and scaled the rest of the way, so a flight moves and scales labels on
+  the compositor instead of laying out and repainting every one of them on every
+  frame.
 
 ### Vessels
 
@@ -342,11 +358,19 @@ small flare at the parent end, which is the fillet where limbs meet.
 Vessels also taper by the conformal factor, so they thin into the boundary and
 the far tree becomes a dust of capillaries.
 
-Geometry is one merged, camera-facing ribbon with three vertices across: edge,
-core, edge. Shading the core brighter than the edges is what makes a flat ribbon
-read as a round tube, and it is what lets the pulse travel *inside* the vessel
-rather than over it. Indices are built once, since visible vessels are packed
-into fixed slots; only positions and colours are rewritten.
+Geometry is one camera-facing ribbon with three vertices across (edge, core,
+edge), drawn once per vessel by instancing. Shading the core brighter than the
+edges is what makes a flat ribbon read as a round tube, and it is what lets the
+pulse travel *inside* the vessel rather than over it.
+
+Everything that varies along a vessel is worked out in the vertex shader: the
+geodesic between its two ends, the taper, the wander, the turn toward the eye
+and the passing pulse. The processor hands over only the two end points of each
+vessel. Sampling every vessel on the processor instead cost more than everything
+else on the page put together once the tree passed a thousand nodes, and that
+cost was paid on every frame. A vessel only a few pixels long is drawn straight:
+it only gets that short against the boundary, which is exactly where single
+precision can no longer tell its two ends apart.
 
 ### Motion
 
@@ -365,7 +389,10 @@ Everything runs off one clock so it beats together rather than drifting apart:
   cannot teleport after a stall, but if the tab was hidden through the intro the
   right thing is to come back to a grown tree.
 - **Glow and stars.** An additive halo per node, scaled by its own conformal
-  radius, plus a bloom pass where the device can afford one. Two shells of stars
+  radius, plus a bloom pass where the device can afford one. If frames stay slow
+  for a few seconds the scene is drawn at fewer pixels, and then without bloom,
+  one step at a time; a step that buys nothing (a device that caps animation at
+  thirty frames a second) is taken back. Two shells of stars
   behind everything give a fixed frame of reference, without which a camera orbit
   reads as the tree spinning rather than as you moving around it. The stars opt
   out of scene fog: at a radius of 26 any usable fog density erases them.
