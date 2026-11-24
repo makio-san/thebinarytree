@@ -1005,6 +1005,21 @@ export const WIKI_TITLES: Record<string, string> = {
   claude: 'Claude (AI)',
   gemini: 'Gemini (language model)',
 
+  // Scout inbox 2026-11-22 (second run) and 2026-11-23 (second run), remainder
+  apl: 'APL (programming language)',
+  forth: 'Forth (programming language)',
+  fpga: 'Field-programmable gate array',
+  verilog: 'Verilog',
+  vhdl: 'VHDL',
+  numpy: 'NumPy',
+  pandas: 'Pandas (software)',
+  'scikit-learn': 'Scikit-learn',
+  parquet: 'Apache Parquet',
+  smb: 'Server Message Block',
+  markdown: 'Markdown',
+  webkit: 'WebKit',
+  tor: 'Tor (network)',
+
   // Scout inbox 2026-11-23
   'hamming-code': 'Hamming code',
   'reed-solomon': 'Reed-Solomon error correction',

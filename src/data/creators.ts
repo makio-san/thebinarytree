@@ -721,6 +721,18 @@ export const CREATORS: Record<string, string[]> = {
   systemd: ['Lennart Poettering', 'Kay Sievers'],
   wayland: ['Kristian Høgsberg'],
 
+  // Scout inbox 2026-11-22 (second run) and 2026-11-23 (second run), remainder
+  apl: ['Kenneth E. Iverson', 'Larry Breed', 'Dick Lathwell', 'Roger Moore'],
+  forth: ['Charles H. Moore'],
+  verilog: ['Prabhu Goel', 'Phil Moorby', 'Chi-Lai Huang'],
+  numpy: ['Travis Oliphant', 'Jim Hugunin'],
+  pandas: ['Wes McKinney'],
+  'scikit-learn': ['David Cournapeau'],
+  smb: ['Barry A. Feigenbaum'],
+  markdown: ['John Gruber', 'Aaron Swartz'],
+  webkit: ['Lisa Melton'],
+  tor: ['Paul Syverson', 'Roger Dingledine', 'Nick Mathewson'],
+
   // Scout inbox 2026-11-23
   'hamming-code': ['Richard Hamming'],
   'reed-solomon': ['Irving S. Reed', 'Gustave Solomon'],
