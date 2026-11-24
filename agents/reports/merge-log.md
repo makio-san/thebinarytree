@@ -113,3 +113,10 @@ Decisions by the release merger, newest last.
 - agents/tech-scout-2026-11-24 (49698e05): merged, approved and green.
 - Not reached (three merge limit): web-reader-2026-11-24 (9a643995), approved.
 - Rejected tips, not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2. No review for: lineage-curator-2026-11-24-2, tech-scout-2026-11-24-2.
+
+## 2026-11-24 (third run)
+
+- agents/web-reader-2026-11-24 (9a643995): merged, approved for this tip and green.
+- agents/release-reviewer-2026-11-23-2 (d5508c3f): merged, reports only (gate 6), green.
+- agents/release-reviewer-2026-11-24 (2aa96f77): merged, reports only (gate 6), green.
+- Skipped: branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), known merge conflict in src/data/branches/peripherals.ts. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2. No review yet: lineage-curator-2026-11-24-2, tech-scout-2026-11-24-2.
