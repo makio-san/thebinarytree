@@ -199,6 +199,10 @@ body {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='6.5' y='6.5' width='11' height='11' rx='2' fill='black'/%3E%3C/svg%3E");
 }
 
+.icon-article {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='3.5' width='14' height='17' rx='2.5'/%3E%3Cpath d='M8.5 8.5h7M8.5 12h7M8.5 15.5h4'/%3E%3C/svg%3E");
+}
+
 .icon-slider {
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 8h16M4 16h16'/%3E%3Ccircle cx='9' cy='8' r='2.4' fill='black'/%3E%3Ccircle cx='15' cy='16' r='2.4' fill='black'/%3E%3C/svg%3E");
 }
@@ -332,6 +336,11 @@ body {
 .tabbar button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* A tab is a flex box, which would otherwise ignore the hidden attribute. */
+.tabbar button[hidden] {
+  display: none;
 }
 
 .btn[aria-pressed='true'],
@@ -1433,8 +1442,7 @@ body.theme-light .help kbd {
     display: none;
   }
 
-  .tools .tools__agents,
-  .tools .tools__blog {
+  .tools .tools__agents {
     display: inline-flex;
     height: var(--control-h);
     padding: 0 12px;
@@ -2614,13 +2622,6 @@ body.theme-light .blog .agents__sheet {
 
   .blog__post {
     font-size: 15px;
-  }
-}
-
-/* No room for it on a phone's top bar; the Agents view links to it there. */
-@media (width <= 420px) {
-  .tools .tools__blog {
-    display: none;
   }
 }
 

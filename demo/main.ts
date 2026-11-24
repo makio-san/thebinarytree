@@ -474,9 +474,13 @@ const showAgents = (): void => void openAgents(blogLink)
 $('agents').addEventListener('click', showAgents)
 mountAgentsIndicator($<HTMLButtonElement>('agents'), showAgents)
 
-const blogButton = $<HTMLButtonElement>('blog')
-blogButton.hidden = !hasPosts()
-blogButton.addEventListener('click', () => openBlog(null, showNode))
+// The top bar button is for a desktop window; on a phone the same view is the
+// Blog tab. Both are hidden together when there is nothing to read.
+for (const id of ['blog', 'tab-blog']) {
+  const button = $<HTMLButtonElement>(id)
+  button.hidden = !hasPosts()
+  button.addEventListener('click', () => openBlog(null, showNode))
+}
 const routeBlog = (): void => {
   const slug = blogRoute()
   if (slug !== null && hasPosts()) openBlog(slug, showNode)
