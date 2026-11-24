@@ -22,6 +22,7 @@ const IDS = [
   'code-health',
   'lineage-architect',
   'blog-writer',
+  'web-reader',
   'preview-refresher',
   'branch-fixer',
   'release-reviewer',

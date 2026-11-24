@@ -59,7 +59,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
     setHash('#blog')
     titles.replaceChildren(
       el('h2', undefined, 'Blog'),
-      el('p', 'agents__lede', 'What is new in the tree, written by the blog agent from what reached the site.'),
+      el('p', 'agents__lede', 'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.'),
     )
     const list = el('ol', 'blog__list')
     for (const post of POSTS) {
