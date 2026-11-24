@@ -59,6 +59,27 @@ function inline(text: string): string {
   return out.replace(/\u0000(\d+)\u0000/g, (_, i: string) => codes[Number(i)])
 }
 
+/**
+ * Hosts a post may show a photo from. All of them serve freely licensed or
+ * public domain pictures, so a post never shows an image the site may not use.
+ */
+export const PHOTO_HOSTS = ['upload.wikimedia.org', 'thumb.wikimedia.org', 'images-assets.nasa.gov', 'ids.si.edu', 'tile.loc.gov'] as const
+
+/**
+ * A photo is a block of its own: `![alt](https://host/path "credit")`. The
+ * credit names the author and the licence and is required.
+ */
+const PHOTO = /^!\[([^\]]*)\]\((https:\/\/([^/\s"]+)\/[^\s"<>]+)\s+"([^"]+)"\)$/
+
+/** Photos in a post, for the tests. */
+export function photos(body: string): { alt: string; url: string; host: string; credit: string }[] {
+  return body
+    .split(/\r?\n/)
+    .map((line) => PHOTO.exec(line.trim()))
+    .filter((m): m is RegExpExecArray => m !== null)
+    .map((m) => ({ alt: m[1], url: m[2], host: m[3], credit: m[4] }))
+}
+
 /** The body of a post as HTML. */
 export function renderMarkdown(body: string): string {
   const html: string[] = []
@@ -66,7 +87,12 @@ export function renderMarkdown(body: string): string {
     const lines = block.split(/\r?\n/).filter((l) => l.trim() !== '')
     if (lines.length === 0) continue
     const heading = /^(#{2,3})\s+(.*)$/.exec(lines[0])
-    if (heading && lines.length === 1) {
+    const photo = lines.length === 1 ? PHOTO.exec(lines[0].trim()) : null
+    if (photo && (PHOTO_HOSTS as readonly string[]).includes(photo[3])) {
+      html.push(
+        `<figure><img src="${escape(photo[2])}" alt="${escape(photo[1])}" loading="lazy" decoding="async" referrerpolicy="no-referrer"><figcaption>${escape(photo[4])}</figcaption></figure>`,
+      )
+    } else if (heading && lines.length === 1) {
       const level = heading[1].length
       html.push(`<h${level + 1}>${inline(heading[2])}</h${level + 1}>`)
     } else if (lines.every((l) => /^\s*[-*]\s+/.test(l))) {

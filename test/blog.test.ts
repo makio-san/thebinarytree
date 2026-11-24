@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nodeLinks, parsePost, POSTS, renderMarkdown } from '../demo/blog'
+import { nodeLinks, parsePost, photos, PHOTO_HOSTS, POSTS, renderMarkdown } from '../demo/blog'
 import { computerHistory, flatten } from '../src/data'
 
 const ids = new Set(flatten(computerHistory).map((node) => node.id))
@@ -21,6 +21,15 @@ describe('the blog', () => {
     expect(renderMarkdown('<script>x</script> [x](javascript:alert)')).not.toMatch(/<script|javascript:/)
   })
 
+  it('shows credited photos only from freely licensed hosts', () => {
+    const ok = renderMarkdown('![ENIAC](https://upload.wikimedia.org/a/b.jpg "Photo: U.S. Army, public domain, via Wikimedia Commons")')
+    expect(ok).toContain('<figure><img src="https://upload.wikimedia.org/a/b.jpg" alt="ENIAC"')
+    expect(ok).toContain('<figcaption>Photo: U.S. Army, public domain, via Wikimedia Commons</figcaption>')
+    expect(renderMarkdown('![x](https://example.com/a.jpg "credit")')).not.toContain('<img')
+    expect(renderMarkdown('![x](https://upload.wikimedia.org/a.jpg)')).not.toContain('<img')
+    expect(renderMarkdown('![x](https://upload.wikimedia.org/a.jpg" onerror="x "c")')).not.toMatch(/<img|onerror="/)
+  })
+
   for (const post of POSTS) {
     describe(post.slug, () => {
       it('has a dated slug that matches its date', () => {
@@ -30,6 +39,14 @@ describe('the blog', () => {
 
       it('uses no em or en dashes', () => {
         expect(/[–—]/.test(`${post.title} ${post.summary} ${post.body}`)).toBe(false)
+      })
+
+      it('credits every photo, with a licence, from an allowed host', () => {
+        for (const photo of photos(post.body)) {
+          expect(PHOTO_HOSTS as readonly string[]).toContain(photo.host)
+          expect(photo.alt.trim()).not.toBe('')
+          expect(photo.credit).toMatch(/public domain|CC0|CC BY/i)
+        }
       })
 
       it('links only to nodes that exist', () => {
