@@ -104,3 +104,12 @@ Decisions by the release merger, newest last.
 - agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped, merge conflict with main.
 - agents/branch-fixer-2026-11-23-lineage-curator-2026-11-22 (82ff3b45): merged, approved and green.
 - Not reached (three merge limit): fact-checker-2026-11-24, lineage-curator-2026-11-24, tech-scout-2026-11-24, web-reader-2026-11-24.
+
+## 2026-11-24 (second run)
+
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped, merge conflict in src/data/branches/peripherals.ts.
+- agents/fact-checker-2026-11-24 (0c0c87ac): merged, approved and green.
+- agents/lineage-curator-2026-11-24 (ed542af5): merged, approved and green.
+- agents/tech-scout-2026-11-24 (49698e05): merged, approved and green.
+- Not reached (three merge limit): web-reader-2026-11-24 (9a643995), approved.
+- Rejected tips, not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2. No review for: lineage-curator-2026-11-24-2, tech-scout-2026-11-24-2.
