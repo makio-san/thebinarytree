@@ -101,6 +101,16 @@ export const networks: ComputerDatum = {
               summary:
                 'Multipurpose Internet Mail Extensions, RFC 1341 in June 1992, let an email carry attachments, images and text in any character set, not just ASCII. HTTP later borrowed its content types, so every web response still names its MIME type.',
             },
+            {
+              id: 'sendmail',
+              name: 'Sendmail',
+              year: 1983,
+              era: 'network',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A mail routing program Allman derived from his earlier delivermail at UC Berkeley. It shipped with 4.1c BSD in 1983, the first BSD with TCP/IP, and carried much of the early Internet\'s mail.',
+            },
           ],
         },
         {
@@ -219,6 +229,15 @@ export const networks: ComputerDatum = {
               kind: 'network',
               summary:
                 'The successor to IPv4, first specified in RFC 1883 in December 1995 with 128 bit addresses so the internet would not run out. It became a full Internet Standard in 2017.',
+            },
+            {
+              id: 'ospf',
+              name: 'Open Shortest Path First (OSPF)',
+              year: 1989,
+              era: 'network',
+              kind: 'network',
+              summary:
+                'A link state routing protocol for IP networks inside one autonomous system, first standardised in 1989 as RFC 1131. Each router builds a map of the network and computes shortest paths over it.',
             },
           ],
         },
@@ -471,6 +490,18 @@ export const networks: ComputerDatum = {
           origin: 'USA',
           summary:
             'Bulletin boards running on a single machine, reached by dialling in. Online life before the internet.',
+          children: [
+            {
+              id: 'irc',
+              name: 'Internet Relay Chat (IRC)',
+              year: 1988,
+              era: 'network',
+              kind: 'network',
+              origin: 'Finland',
+              summary:
+                'A text chat system built around channels, written at the University of Oulu in August 1988 to replace a chat program on a bulletin board system. It spread to other Finnish and then American universities.',
+            },
+          ],
         },
         {
           id: 'aws',

@@ -99,6 +99,16 @@ export const peripherals: ComputerDatum = {
           summary:
             'The first widespread way of tying a physical object to a database record. The first item scanned was a pack of chewing gum.',
         },
+        {
+          id: 'trackball',
+          name: 'Trackball',
+          year: 1946,
+          era: 'tube',
+          kind: 'device',
+          origin: 'England',
+          summary:
+            'A pointing device that is a ball turned in a socket, invented by Ralph Benjamin in 1946 for a Royal Navy radar plotting system. Ferranti Canada\'s DATAR system used one in 1952, built around a bowling ball.',
+        },
       ],
     },
     {
@@ -157,6 +167,16 @@ export const peripherals: ComputerDatum = {
                 'A language that describes a page as drawing commands. Device independent printing, and the ancestor of PDF.',
             },
           ],
+        },
+        {
+          id: 'oled',
+          name: 'OLED',
+          year: 1987,
+          era: 'micro',
+          kind: 'component',
+          origin: 'USA',
+          summary:
+            'A light emitting diode whose emissive layer is an organic film, first made practical at Eastman Kodak in 1987. Each pixel makes its own light, so OLED screens need no backlight, unlike LCDs.',
         },
       ],
     },

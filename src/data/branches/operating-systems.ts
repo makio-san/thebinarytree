@@ -421,6 +421,28 @@ export const operatingSystems: ComputerDatum = {
               summary:
                 'The people who wrote Unix trying again. Every resource is reached through a file system, and UTF-8 was designed in this project.',
             },
+            {
+              id: 'mach',
+              name: 'Mach',
+              year: 1985,
+              era: 'network',
+              kind: 'os',
+              origin: 'USA',
+              summary:
+                'A kernel built at Carnegie Mellon as a replacement for the BSD Unix kernel, and one of the earliest microkernels. Its descendants sit inside GNU Hurd and the XNU kernel of macOS and iOS.',
+              children: [
+                {
+                  id: 'sel4',
+                  name: 'seL4',
+                  year: 2009,
+                  era: 'modern',
+                  kind: 'os',
+                  origin: 'Australia',
+                  summary:
+                    'A small capability based microkernel of the L4 family whose C implementation was proved correct against its formal specification by machine checked proof in 2009. It was released as open source in 2014.',
+                },
+              ],
+            },
           ],
         },
       ],

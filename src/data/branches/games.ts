@@ -399,6 +399,16 @@ export const games: ComputerDatum = {
               summary:
                 'A deliberately low level replacement: more work for the programmer, in exchange for the driver not guessing.',
             },
+            {
+              id: 'directx',
+              name: 'DirectX',
+              year: 1995,
+              era: 'network',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Microsoft\'s set of multimedia and game APIs for Windows, first released in September 1995 as the Windows Game SDK. It gave games direct access to graphics hardware and lent the Xbox its name.',
+            },
           ],
         },
         {

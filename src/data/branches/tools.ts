@@ -123,6 +123,18 @@ export const tools: ComputerDatum = {
           origin: 'USA',
           summary:
             'A line editor for a teletype, where showing the file cost paper. Its command language survives in sed, grep and vi.',
+          children: [
+            {
+              id: 'grep',
+              name: 'grep',
+              year: 1973,
+              era: 'network',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A command that prints lines matching a regular expression. Thompson took the regular expression code out of ed to make it, and it first shipped in Version 4 Unix. McIlroy called it the prototypical software tool.',
+            },
+          ],
         },
         {
           id: 'vi',

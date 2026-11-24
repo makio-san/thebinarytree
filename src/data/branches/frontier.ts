@@ -107,6 +107,18 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'Building a supercomputer at NASA out of ordinary PCs on a network. It made high performance computing cheap, and it is the logic of today’s data centres.',
+          children: [
+            {
+              id: 'seti-at-home',
+              name: 'SETI@home',
+              year: 1999,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A volunteer computing project that let home computers analyse radio telescope data in the search for extraterrestrial intelligence, released to the public on 17 May 1999. It made volunteer computing widely known and later ran on BOINC.',
+            },
+          ],
         },
         {
           id: 'asci-red',
@@ -601,6 +613,18 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'The first computer to beat a reigning world chess champion in match conditions, evaluating 200 million positions a second on custom hardware.',
+          children: [
+            {
+              id: 'ibm-watson',
+              name: 'IBM Watson',
+              year: 2011,
+              era: 'modern',
+              kind: 'machine',
+              origin: 'USA',
+              summary:
+                'A question answering system from IBM\'s DeepQA project that beat Jeopardy! champions Ken Jennings and Brad Rutter in 2011. It answered questions posed in natural language.',
+            },
+          ],
         },
         {
           id: 'alphago',
@@ -632,6 +656,26 @@ export const frontier: ComputerDatum = {
           kind: 'concept',
           summary:
             'A latent diffusion model that draws images from text, released in 2022 with its weights. Because it ran on an ordinary consumer GPU, image generation stopped being something only a few labs could do.',
+        },
+        {
+          id: 'shrdlu',
+          name: 'SHRDLU',
+          year: 1968,
+          era: 'integrated',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'An early natural language understanding program written at MIT between 1968 and 1970, in which a user talked to the computer about moving blocks in a simple virtual world. It ran in Micro Planner and Lisp on a PDP-6.',
+        },
+        {
+          id: 'imagenet',
+          name: 'ImageNet',
+          year: 2009,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'A database of millions of hand labelled images, first shown at CVPR in 2009, whose yearly recognition challenge from 2010 became the benchmark that deep learning broke open.',
         },
       ],
     },

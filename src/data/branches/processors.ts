@@ -368,6 +368,16 @@ export const processors: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'itanium',
+          name: 'Itanium',
+          year: 2001,
+          era: 'modern',
+          kind: 'processor',
+          origin: 'USA',
+          summary:
+            'A 64 bit processor family for the IA-64 architecture, which began at HP and was developed jointly with Intel. It launched in June 2001 to replace x86 and RISC in servers but was overtaken by AMD64 and later discontinued.',
+        },
       ],
     },
     {
