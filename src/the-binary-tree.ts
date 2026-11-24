@@ -163,6 +163,7 @@ export class BinaryTree {
   private resizeObserver?: ResizeObserver
 
   private tree: Tree | null = null
+  private searchIndex: { node: TreeNode; name: string; summary: string }[] | null = null
   private selected: TreeNode | null = null
   private hovered: TreeNode | null = null
   private center: TreeNode | null = null
@@ -692,12 +693,19 @@ export class BinaryTree {
     const needle = fold(query)
     if (!needle) return []
 
+    // Names and summaries are folded once. Folding all of them again on every
+    // keystroke is a thousand strings through seven replacements each, which is
+    // a visible pause between letters on a phone.
+    this.searchIndex ??= tree.nodes.map((node) => ({
+      node,
+      name: fold(node.data.name),
+      summary: node.data.summary ? fold(node.data.summary) : '',
+    }))
+
     const scored: { node: TreeNode; score: number }[] = []
-    for (const node of tree.nodes) {
-      const name = fold(node.data.name)
+    for (const { node, name, summary } of this.searchIndex) {
       const at = name.indexOf(needle)
       if (at < 0) {
-        const summary = node.data.summary ? fold(node.data.summary) : ''
         if (summary.includes(needle)) scored.push({ node, score: 400 + node.depth })
         continue
       }
