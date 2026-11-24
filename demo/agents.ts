@@ -88,7 +88,7 @@ export const AGENTS: readonly AgentInfo[] = [
     name: 'Web reader',
     job: 'Reads Medium, tech magazines and openly licensed sites like Wikipedia, NASA and The Conversation. Once four new pieces are worth reading it posts them as short notes with a link and a free photo, and it queues the technologies they mention that the tree lacks.',
     schedule: 'Every morning',
-    cron: '30 9 * * *',
+    cron: '0 8 * * *',
     leaves: 'A reading list and candidates',
   },
   {
