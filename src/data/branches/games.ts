@@ -267,6 +267,18 @@ export const games: ComputerDatum = {
           origin: 'USA',
           summary:
             'Essentially a PC in a box: x86, an NVIDIA chip, and a hard disk. It brought online play with it as standard.',
+          children: [
+            {
+              id: 'kinect',
+              name: 'Kinect',
+              year: 2010,
+              era: 'modern',
+              kind: 'device',
+              origin: 'USA',
+              summary:
+                'A depth-sensing camera for the Xbox 360 that tracked a player’s body with no controller in hand. Built on technology from the Israeli company PrimeSense, shown as Project Natal in 2009 and released on 4 November 2010, it sold eight million units in sixty days.',
+            },
+          ],
         },
         {
           id: 'switch',
@@ -418,6 +430,18 @@ export const games: ComputerDatum = {
           kind: 'concept',
           summary:
             'Unreal and its successors separated the engine from the game, so most studios stopped writing renderers. Now used for film and architecture too.',
+          children: [
+            {
+              id: 'godot',
+              name: 'Godot',
+              year: 2014,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'Argentina',
+              summary:
+                'An open source game engine under the MIT License. Juan Linietsky and Ariel Manzur developed it in Buenos Aires for several companies in Latin America before its public release in 2014.',
+            },
+          ],
         },
       ],
     },

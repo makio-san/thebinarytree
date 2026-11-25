@@ -1070,6 +1070,26 @@ export const WIKI_TITLES: Record<string, string> = {
   bravo: 'Bravo (editor)',
   'microsoft-word': 'Microsoft Word',
   wordstar: 'WordStar',
+  // Scout inboxes 2026-11-22, 2026-11-24 (second run) and 2026-11-25, web reader inbox 2026-11-24
+  'b-tree': 'B-tree',
+  'lsm-tree': 'Log-structured merge-tree',
+  crdt: 'Conflict-free replicated data type',
+  cgroups: 'Cgroups',
+  btrfs: 'Btrfs',
+  'io-uring': 'Io uring',
+  flutter: 'Flutter (software)',
+  godot: 'Godot (game engine)',
+  kinect: 'Kinect',
+  'cerebras-wse': 'Cerebras Systems',
+  alphazero: 'AlphaZero',
+  word2vec: 'Word2Vec',
+  whisper: 'Whisper (speech recognition system)',
+  rlhf: 'Reinforcement learning from human feedback',
+  'exchange-server': 'Microsoft Exchange Server',
+  'web-2-0': 'Web 2.0',
+  ladybird: 'Ladybird (web browser)',
+  log4shell: 'Log4Shell',
+  usb4: 'USB4',
 }
 
 /**
