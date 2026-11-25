@@ -132,3 +132,11 @@ Decisions by the release merger, newest last.
 - agents/release-reviewer-2026-11-24-2 (d9509400): merged, reports only (gate 6), green.
 - agents/release-reviewer-2026-11-24-3 (5db1bac4): merged, reports only (gate 6), green.
 - Skipped: lineage-curator-2026-11-24-2 (632d7fc1), rejected, add/add conflict in agents/inbox/2026-11-24.md. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2. branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): known conflict in src/data/branches/peripherals.ts, not retried.
+
+## 2026-11-25 (release-merger run)
+
+- agents/web-reader-2026-11-25 (48b13576): merged. Approved for this tip; inbox and report files only (gate 6).
+- agents/preview-refresher-2026-11-24 (56f5a1f6): merged. Approved for this tip; only the preview image, its json, two og-image.png lines in index.html and a report; type check, 148 tests and demo build green on the merged result.
+- agents/tech-scout-2026-11-25 (ca7a6c7a): merged. Approved for this tip; inbox and report files only (gate 6).
+- Not reached (three merge limit), approved for their current tips: lineage-curator-2026-11-25 (aa300a14), branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b), release-reviewer-2026-11-25 (88ba57c4, reports only).
+- Skipped: portrait-finder-2026-11-25 (029fe891), no review yet. branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), approved but known conflict in src/data/branches/peripherals.ts, not retried. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
