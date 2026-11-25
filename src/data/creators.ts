@@ -742,6 +742,18 @@ export const CREATORS: Record<string, string[]> = {
   webkit: ['Lisa Melton'],
   tor: ['Paul Syverson', 'Roger Dingledine', 'Nick Mathewson'],
 
+  // Scout inbox 2026-11-25 (second run) and web reader inbox 2026-11-25
+  alohanet: ['Norman Abramson', 'Franklin Kuo'],
+  'actor-model': ['Carl Hewitt', 'Peter Bishop', 'Richard Steiger'],
+  csp: ['Tony Hoare'],
+  dbase: ['Wayne Ratliff'],
+  hypercard: ['Bill Atkinson', 'Dan Winkler'],
+  'perlin-noise': ['Ken Perlin'],
+  'support-vector-machine': ['Bernhard Boser', 'Isabelle Guyon', 'Vladimir Vapnik'],
+  'signal-protocol': ['Trevor Perrin', 'Moxie Marlinspike'],
+  ext4: ["Theodore Ts'o"],
+  tsmc: ['Morris Chang'],
+
   // Scout inbox 2026-11-23
   'hamming-code': ['Richard Hamming'],
   'reed-solomon': ['Irving S. Reed', 'Gustave Solomon'],

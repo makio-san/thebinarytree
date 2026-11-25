@@ -1031,6 +1031,24 @@ export const WIKI_TITLES: Record<string, string> = {
   webkit: 'WebKit',
   tor: 'Tor (network)',
 
+  // Scout inbox 2026-11-25 (second run) and web reader inbox 2026-11-25
+  alohanet: 'ALOHAnet',
+  'x-25': 'X.25',
+  minitel: 'Minitel',
+  nfs: 'Network File System',
+  chroot: 'Chroot',
+  infiniband: 'InfiniBand',
+  'actor-model': 'Actor model',
+  csp: 'Communicating sequential processes',
+  dbase: 'DBase',
+  hypercard: 'HyperCard',
+  'perlin-noise': 'Perlin noise',
+  'support-vector-machine': 'Support vector machine',
+  webrtc: 'WebRTC',
+  'signal-protocol': 'Signal Protocol',
+  ext4: 'Ext4',
+  tsmc: 'TSMC',
+
   // Scout inbox 2026-11-23
   'hamming-code': 'Hamming code',
   'reed-solomon': 'Reed-Solomon error correction',
