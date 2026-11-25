@@ -48,6 +48,26 @@ export const languages: ComputerDatum = {
           origin: 'England',
           summary: 'One of the first attempts at a high level language, written for the Manchester machines.',
         },
+        {
+          id: 'apl',
+          name: 'APL',
+          year: 1966,
+          era: 'integrated',
+          kind: 'language',
+          origin: 'USA',
+          summary:
+            "Kenneth Iverson's mathematical notation, named after his 1962 book A Programming Language, running as a time-sharing system at IBM by November 1966. The whole array is the basic value, written with a set of special symbols.",
+        },
+        {
+          id: 'forth',
+          name: 'Forth',
+          year: 1970,
+          era: 'integrated',
+          kind: 'language',
+          origin: 'USA',
+          summary:
+            "Chuck Moore's stack language and interactive system, grown from the personal programming system he had kept since 1968 and first used by others in 1970, starting with Elizabeth Rather at the National Radio Astronomy Observatory. A whole development environment could fit in the memory of an 8-bit machine.",
+        },
       ],
     },
     {
@@ -215,6 +235,16 @@ export const languages: ComputerDatum = {
                             'Dennis Ritchie added a type system to B. Unix was rewritten in it, and it became the common language of systems programming and still is.',
                           facts: ['Close to the hardware but portable', 'Most kernels today are written in C'],
                           children: [
+                              {
+                                id: 'verilog',
+                                name: 'Verilog',
+                                year: 1984,
+                                era: 'micro',
+                                kind: 'language',
+                                origin: 'USA',
+                                summary:
+                                  'A hardware description language written by Prabhu Goel, Phil Moorby and Chi-Lai Huang between late 1983 and early 1984 to simulate digital circuits, with a syntax deliberately close to C. Standardised as IEEE 1364 and merged into SystemVerilog in 2009.',
+                              },
                             {
                               id: 'cpp',
                               name: 'C++',
@@ -399,6 +429,18 @@ export const languages: ComputerDatum = {
               kind: 'language',
               summary:
                 'Designed for the US Department of Defense: strongly typed, with concurrency in the language. Still used in avionics and rail software.',
+              children: [
+                {
+                  id: 'vhdl',
+                  name: 'VHDL',
+                  year: 1987,
+                  era: 'micro',
+                  kind: 'language',
+                  origin: 'USA',
+                  summary:
+                    "A hardware description language begun in 1983 under a US Air Force contract for the Defense Department's VHSIC program, so that suppliers could document the behaviour of their chips. It borrows heavily from Ada in concept and syntax and became the standard IEEE 1076 in 1987.",
+                },
+              ],
             },
           ],
         },
@@ -633,6 +675,38 @@ export const languages: ComputerDatum = {
             'Guido van Rossum’s language, putting readability first. Indentation is part of the syntax; today it is the common language of data and machine learning.',
           facts: ['Indentation defines blocks', 'Became the default for scientific computing'],
           children: [
+            {
+              id: 'numpy',
+              name: 'NumPy',
+              year: 2006,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                "Travis Oliphant merged the competing Numarray into Jim Hugunin's Numeric, begun in 1995, and released the result as NumPy in 2006. Large multi-dimensional arrays with fast whole-array operations, under nearly all scientific Python.",
+              children: [
+                {
+                  id: 'pandas',
+                  name: 'pandas',
+                  year: 2009,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Wes McKinney started it at AQR Capital in 2008 for quantitative work on financial data and got it open sourced in 2009. Tables and time series on top of NumPy, bringing R style data frames to Python.',
+                },
+                {
+                  id: 'scikit-learn',
+                  name: 'scikit-learn',
+                  year: 2010,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'France',
+                  summary:
+                    "Began as David Cournapeau's Google Summer of Code project in 2007. Researchers at INRIA took it over and published the first public release in early 2010; it is the standard library for classical machine learning in Python.",
+                },
+              ],
+            },
             {
               id: 'project-jupyter',
               name: 'Project Jupyter',

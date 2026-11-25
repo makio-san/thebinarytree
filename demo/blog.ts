@@ -80,6 +80,47 @@ export function photos(body: string): { alt: string; url: string; host: string; 
     .map((m) => ({ alt: m[1], url: m[2], host: m[3], credit: m[4] }))
 }
 
+/** A reading list is the web reader's post of recent writing from elsewhere. */
+export const isReadingList = (post: Pick<Post, 'slug'>): boolean => /reading-list/.test(post.slug)
+
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+
+/**
+ * The pieces a reading list links to, for the tests. Each is a `##` heading
+ * followed by a byline in italics that ends with the day the piece was
+ * published, such as `*Jane Doe, on The Conversation, 18 November*`.
+ * `published` is that day as `YYYY-MM-DD`, in the list's own year (or the year
+ * before, when the day would otherwise fall after the list), and null when the
+ * byline names no day.
+ */
+export function readingItems(post: Pick<Post, 'date' | 'body'>): { title: string; published: string | null }[] {
+  const items: { title: string; published: string | null }[] = []
+  const listed = Date.parse(`${post.date}T00:00:00Z`)
+  let waiting = false
+  for (const raw of post.body.split(/\r?\n/)) {
+    const line = raw.trim()
+    const heading = /^##\s+(.*)$/.exec(line)
+    if (heading) {
+      items.push({ title: heading[1], published: null })
+      waiting = true
+      continue
+    }
+    if (!waiting || line === '') continue
+    waiting = false
+    const day = /^\*.+,\s*(\d{1,2}) ([A-Za-z]+)\*$/.exec(line)
+    const month = day ? MONTHS.indexOf(day[2].toLowerCase()) : -1
+    if (!day || month < 0) continue
+    let year = Number(post.date.slice(0, 4))
+    // A day a little after the list's date is a time zone, a day far after it is last year's.
+    if (Date.UTC(year, month, Number(day[1])) - listed > 86_400_000) year -= 1
+    const at = new Date(Date.UTC(year, month, Number(day[1])))
+    if (at.getUTCMonth() === month && at.getUTCDate() === Number(day[1])) {
+      items[items.length - 1].published = at.toISOString().slice(0, 10)
+    }
+  }
+  return items
+}
+
 /** The body of a post as HTML. */
 export function renderMarkdown(body: string): string {
   const html: string[] = []

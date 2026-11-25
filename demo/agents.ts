@@ -78,17 +78,17 @@ export const AGENTS: readonly AgentInfo[] = [
   {
     id: 'blog-writer',
     name: 'Blog writer',
-    job: 'Writes a short post on what reached the tree since the last one, linking every node it names.',
-    schedule: 'Mondays and Thursdays',
-    cron: '30 18 * * 1,4',
+    job: 'Writes a short post on what reached the tree since the last one, as soon as enough has changed, linking every node it names.',
+    schedule: 'Every evening',
+    cron: '30 18 * * *',
     leaves: 'A blog post',
   },
   {
     id: 'web-reader',
     name: 'Web reader',
-    job: 'Reads Medium, tech magazines and openly licensed sites like Wikipedia, NASA and The Conversation, posts the best pieces as short notes with a link and a free photo, and queues the technologies they mention that the tree lacks.',
-    schedule: 'Sundays, before the curator',
-    cron: '30 9 * * 0',
+    job: 'Reads Medium, tech magazines and openly licensed sites like Wikipedia, NASA and The Conversation. Once four new pieces are worth reading it posts them as short notes with a link and a free photo, and it queues the technologies they mention that the tree lacks.',
+    schedule: 'Every morning',
+    cron: '0 8 * * *',
     leaves: 'A reading list and candidates',
   },
   {

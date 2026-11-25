@@ -1,4 +1,4 @@
-import { photos, POSTS, renderMarkdown, type Post } from '../blog'
+import { isReadingList, photos, POSTS, renderMarkdown, type Post } from '../blog'
 
 const el = <K extends keyof HTMLElementTagNameMap>(
   tag: K,
@@ -18,7 +18,6 @@ const when = (iso: string): string => {
     : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-const isReadingList = (post: Post): boolean => /reading-list/.test(post.slug)
 const kind = (post: Post): string => (isReadingList(post) ? 'Reading list' : 'Tree update')
 const minutes = (post: Post): string => `${Math.max(1, Math.round(post.body.split(/\s+/).length / 220))} min read`
 
@@ -74,7 +73,7 @@ export function openBlog(slug: string | null, onNode: (id: string) => void): voi
     const intro = el(
       'p',
       'blog__intro',
-      'What is new in the tree, from the blog agent, and a weekly reading list of the best writing on Medium and elsewhere, picked by the web reader.',
+      'What is new in the tree, written up by the blog agent, and the best recent writing on Medium and elsewhere, picked by the web reader.',
     )
     const list = el('ol', 'blog__list')
     for (const post of POSTS) {
