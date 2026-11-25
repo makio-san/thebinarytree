@@ -771,6 +771,19 @@ export const CREATORS: Record<string, string[]> = {
   bravo: ['Butler Lampson', 'Charles Simonyi'],
   'microsoft-word': ['Charles Simonyi', 'Richard Brodie'],
   wordstar: ['Rob Barnaby'],
+  // Scout inboxes 2026-11-22, 2026-11-24 (second run) and 2026-11-25, web reader inbox 2026-11-24
+  'b-tree': ['Rudolf Bayer', 'Edward McCreight'],
+  'lsm-tree': ['Patrick O’Neil', 'Edward Cheng', 'Dieter Gawlick', 'Elizabeth O’Neil'],
+  crdt: ['Marc Shapiro', 'Nuno Preguiça', 'Carlos Baquero', 'Marek Zawirski'],
+  cgroups: ['Paul Menage', 'Rohit Seth'],
+  btrfs: ['Chris Mason'],
+  'io-uring': ['Jens Axboe'],
+  godot: ['Juan Linietsky', 'Ariel Manzur'],
+  'cerebras-wse': ['Andrew Feldman', 'Gary Lauterbach', 'Michael James', 'Sean Lie', 'Jean-Philippe Fricker'],
+  word2vec: ['Tomáš Mikolov', 'Kai Chen', 'Greg Corrado', 'Ilya Sutskever', 'Jeff Dean'],
+  'web-2-0': ['Darcy DiNucci', 'Tim O’Reilly', 'Dale Dougherty'],
+  ladybird: ['Andreas Kling'],
+  log4shell: ['Chen Zhaojun'],
 }
 
 const NONE: readonly string[] = []
