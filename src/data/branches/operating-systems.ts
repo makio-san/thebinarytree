@@ -191,6 +191,17 @@ export const operatingSystems: ComputerDatum = {
                               origin: 'USA',
                               summary:
                                 'A file system and volume manager in one, designed at Sun by a team led by Jeff Bonwick, Bill Moore and Matthew Ahrens. It was published as open source with OpenSolaris in 2005, reached Solaris 10 in 2006, and lives on as OpenZFS.',
+                              children: [
+                                {
+                                  id: 'btrfs',
+                                  name: 'Btrfs',
+                                  year: 2007,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'A copy-on-write file system and volume manager in one, created by Chris Mason in 2007 to give Linux pooling, snapshots and integrity checking. Its on-disk format was declared stable in Linux 3.13 in November 2013.',
+                                },
+                              ],
                             },
                           ],
                         },
@@ -338,6 +349,18 @@ export const operatingSystems: ComputerDatum = {
                           summary:
                             'A mobile system on the Linux kernel, and now the most used operating system in the world.',
                           facts: ['First device: HTC Dream, 2008'],
+                          children: [
+                            {
+                              id: 'flutter',
+                              name: 'Flutter',
+                              year: 2017,
+                              era: 'modern',
+                              kind: 'concept',
+                              origin: 'USA',
+                              summary:
+                                'Google’s open source toolkit for building apps for Android, iOS, the web and the desktop from one codebase, with apps written in Dart. First described in 2015 and released in May 2017, it draws every pixel with its own rendering engine.',
+                            },
+                          ],
                         },
                         {
                           id: 'ebpf',
@@ -365,6 +388,25 @@ export const operatingSystems: ComputerDatum = {
                           kind: 'os',
                           summary:
                             'The init system and service manager that runs as process 1 on nearly every Linux distribution since about 2015. It replaced shell script startup and brought logging, devices and logins under one suite.',
+                        },
+                        {
+                          id: 'cgroups',
+                          name: 'cgroups',
+                          year: 2007,
+                          era: 'modern',
+                          kind: 'component',
+                          origin: 'USA',
+                          summary:
+                            'The Linux kernel feature that limits, accounts for and isolates the CPU, memory and disk I/O of a group of processes. Engineers at Google began it in 2006 as process containers; it was renamed control groups in late 2007 and merged into kernel 2.6.24, released in January 2008.',
+                        },
+                        {
+                          id: 'io-uring',
+                          name: 'io_uring',
+                          year: 2019,
+                          era: 'modern',
+                          kind: 'component',
+                          summary:
+                            'A Linux interface for asynchronous I/O built on two ring buffers shared between the program and the kernel, one for requests and one for completions. Jens Axboe wrote the design, and it was merged in Linux 5.1 in May 2019 after earlier attempts to fix asynchronous I/O had failed.',
                         },
                       ],
                     },

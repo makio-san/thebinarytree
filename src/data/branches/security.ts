@@ -357,6 +357,15 @@ export const security: ComputerDatum = {
           summary:
             'Speculative execution leaks data through timing. A bug in the performance idea itself rather than in any one chip, and it cost every processor real speed to mitigate.',
         },
+        {
+          id: 'log4shell',
+          name: 'Log4Shell',
+          year: 2021,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A flaw in the Java logging library Log4j that let attackers run their own code on a server through its lookups to LDAP and JNDI servers. It had gone unnoticed since 2013 until Chen Zhaojun of Alibaba Cloud reported it on 24 November 2021, and Apache gave it the highest severity score, 10.',
+        },
       ],
     },
   ],
