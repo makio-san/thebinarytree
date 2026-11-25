@@ -485,6 +485,24 @@ export const foundations: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'actor-model',
+          name: 'Actor Model',
+          year: 1973,
+          era: 'theory',
+          kind: 'concept',
+          summary:
+            'A mathematical model of concurrent computation in which actors hold private state and affect each other only by sending messages. Carl Hewitt, Peter Bishop and Richard Steiger published it in 1973, and several practical concurrent systems are built on it.',
+        },
+        {
+          id: 'csp',
+          name: 'Communicating Sequential Processes',
+          year: 1978,
+          era: 'theory',
+          kind: 'concept',
+          summary:
+            'A formal language for describing how concurrent processes interact by passing messages over channels, first described by Tony Hoare in a 1978 article. It shaped occam and influenced Erlang and Go.',
+        },
       ],
     },
   ],

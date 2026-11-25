@@ -107,6 +107,17 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'Building a supercomputer at NASA out of ordinary PCs on a network. It made high performance computing cheap, and it is the logic of today’s data centres.',
+          children: [
+            {
+              id: 'infiniband',
+              name: 'InfiniBand',
+              year: 1999,
+              era: 'modern',
+              kind: 'network',
+              summary:
+                'A switched fabric networking standard with very high throughput and very low latency, used to connect the nodes of supercomputers and their storage. It came from the 1999 merger of two competing designs, Future I/O and Next Generation I/O, and from 2014 to June 2016 it was the most used interconnect on the TOP500 list.',
+            },
+          ],
         },
         {
           id: 'asci-red',
@@ -579,6 +590,16 @@ export const frontier: ComputerDatum = {
                     'Two networks trained against each other, one generating samples and one judging whether they look real. Ian Goodfellow’s group at Montréal proposed it in 2014, and it was the first generative model to produce convincing synthetic photographs.',
                 },
               ],
+            },
+            {
+              id: 'support-vector-machine',
+              name: 'Support Vector Machine',
+              year: 1992,
+              era: 'micro',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A supervised learning model that separates classes with the widest possible margin, developed at AT&T Bell Laboratories. In 1992 Bernhard Boser, Isabelle Guyon and Vladimir Vapnik applied the kernel trick so it could classify nonlinear data, and Corinna Cortes and Vapnik published the soft margin form in 1995.',
             },
           ],
         },

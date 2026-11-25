@@ -450,6 +450,18 @@ export const webPlatform = group(
           'modern',
           'network',
           'Standardised as RFC 6455: a persistent two way connection between a browser and a server.',
+          {
+            children: [
+              item(
+                'webrtc',
+                'WebRTC',
+                2011,
+                'modern',
+                'network',
+                'An open source project that gives browsers real time audio, video and data directly between peers, with no plugin. Google released the source code in 2011, built on technology from Global IP Solutions, which it had bought in 2010, and WebRTC 1.0 became a W3C Recommendation in January 2021.',
+              ),
+            ],
+          },
         ),
         item(
           'pwa',

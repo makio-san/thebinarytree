@@ -366,9 +366,28 @@ export const operatingSystems: ComputerDatum = {
                           summary:
                             'The init system and service manager that runs as process 1 on nearly every Linux distribution since about 2015. It replaced shell script startup and brought logging, devices and logins under one suite.',
                         },
+                        {
+                          id: 'ext4',
+                          name: 'ext4',
+                          year: 2008,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'A journaling file system for Linux, developed as the successor to ext3 after Theodore Ts’o announced the plan in June 2006. It was marked stable in Linux 2.6.28, released on 25 December 2008, and Google chose it for Android 2.3.',
+                        },
                       ],
                     },
                   ],
+                },
+                {
+                  id: 'chroot',
+                  name: 'chroot',
+                  year: 1979,
+                  era: 'network',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'A Unix system call that changes the apparent root directory of a process, so a program cannot name files outside a chosen directory tree. It was introduced during the development of Version 7 Unix in 1979, and FreeBSD expanded the idea into the jail in 2000.',
                 },
               ],
             },

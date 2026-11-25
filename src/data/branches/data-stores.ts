@@ -195,6 +195,15 @@ export const dataStores: ComputerDatum = {
             'A relational database as a library writing to one file, with no server. Probably the most widely deployed database engine in existence: it ships inside phones, browsers and aircraft.',
           facts: ['Public domain', 'Tested to a level closer to avionics than to typical software'],
         },
+        {
+          id: 'dbase',
+          name: 'dBase',
+          year: 1978,
+          era: 'personal',
+          kind: 'concept',
+          summary:
+            'One of the first database management systems for microcomputers and the most successful of its day. Wayne Ratliff released it as Vulcan in 1978, and Ashton-Tate licensed it in 1980 and sold it as dBASE II.',
+        },
       ],
     },
     {

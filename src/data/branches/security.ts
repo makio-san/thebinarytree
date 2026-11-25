@@ -139,6 +139,17 @@ export const security: ComputerDatum = {
           origin: 'USA',
           summary:
             'Two parties agree a shared secret over a channel anyone can read. Published openly, which was itself a break with how cryptography had always been done.',
+          children: [
+            {
+              id: 'signal-protocol',
+              name: 'Signal Protocol',
+              year: 2013,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A cryptographic protocol for end to end encrypted messaging and calls. Trevor Perrin and Moxie Marlinspike started it at Open Whisper Systems in 2013 for the TextSecure app, which became Signal, and WhatsApp later adopted it. Its handshake is built on elliptic curve Diffie-Hellman.',
+            },
+          ],
         },
         {
           id: 'rsa',

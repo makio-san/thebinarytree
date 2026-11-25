@@ -355,6 +355,18 @@ export const peripherals: ComputerDatum = {
           origin: 'USA',
           summary:
             'Ted Nelson’s name for non linear text, and the basic mechanism of the web.',
+          children: [
+            {
+              id: 'hypercard',
+              name: 'HyperCard',
+              year: 1987,
+              era: 'personal',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'An Apple application that joined a flat file database, a graphical interface anyone could modify and the HyperTalk language. Bill Atkinson created it, Dan Winkler wrote HyperTalk, and it was released on 11 August 1987 and included free with new Macs. Among the first successful hypermedia systems before the web.',
+            },
+          ],
         },
         {
           id: 'command-line',

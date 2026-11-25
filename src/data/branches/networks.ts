@@ -38,6 +38,25 @@ export const networks: ComputerDatum = {
           summary:
             'Leonard Kleinrock modelled delay and queueing in data networks, giving packet networks their mathematical basis.',
         },
+        {
+          id: 'alohanet',
+          name: 'ALOHAnet',
+          year: 1971,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'A packet radio network at the University of Hawaii, begun in 1968 under Norman Abramson and Franklin Kuo and operational in June 1971, the first public demonstration of a wireless packet data network. A station sent without waiting and sent again if no acknowledgement came back, a random access method later used in Ethernet and Wi-Fi.',
+        },
+        {
+          id: 'x-25',
+          name: 'X.25',
+          year: 1976,
+          era: 'network',
+          kind: 'network',
+          summary:
+            'A protocol suite for packet switched wide area networks, finalised by the CCITT in 1976. Telephone companies ran public data networks on it from the late 1970s to the 1990s, and cash machines and card payments used it.',
+        },
       ],
     },
     {
@@ -279,6 +298,16 @@ export const networks: ComputerDatum = {
           kind: 'network',
           origin: 'Sweden',
           summary: 'A short range personal area standard, named after a Danish king.',
+        },
+        {
+          id: 'nfs',
+          name: 'Network File System',
+          year: 1984,
+          era: 'network',
+          kind: 'network',
+          origin: 'USA',
+          summary:
+            'A distributed file system protocol developed at Sun Microsystems in 1984, which lets a client use files over a network much as it uses local storage. Every version after the first is published as an RFC, so anyone can implement it.',
         },
       ],
     },
@@ -524,6 +553,16 @@ export const networks: ComputerDatum = {
               ],
             },
           ],
+        },
+        {
+          id: 'minitel',
+          name: 'Minitel',
+          year: 1980,
+          era: 'network',
+          kind: 'network',
+          origin: 'France',
+          summary:
+            'A French videotex service reached over telephone lines, launched as an experiment in Saint-Malo in July 1980 and sold across France from 1982. It offered shopping, train tickets, a telephone directory and chat years before the web, and ran until 30 June 2012.',
         },
       ],
     },

@@ -136,6 +136,16 @@ export const processors: ComputerDatum = {
               summary:
                 'Chip patterning with 13.5 nm extreme ultraviolet light, in high volume manufacturing from 2019. As of 2025 ASML is the only company selling the machines, which leading 5 nm and 3 nm chips depend on.',
             },
+            {
+              id: 'tsmc',
+              name: 'TSMC and the Foundry Model',
+              year: 1987,
+              era: 'micro',
+              kind: 'concept',
+              origin: 'Taiwan',
+              summary:
+                'Morris Chang founded the Taiwan Semiconductor Manufacturing Company in 1987 as the first dedicated semiconductor foundry, making chips that other companies design. Splitting design from manufacture is what lets fabless companies such as Nvidia and Qualcomm exist.',
+            },
           ],
         },
         {
