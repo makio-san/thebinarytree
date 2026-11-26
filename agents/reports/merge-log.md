@@ -150,3 +150,16 @@ Decisions by the release merger, newest last.
 - agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped. Approved, but the merge still conflicts with main; aborted, not resolved.
 - Not reached (three merge limit), approved for their current tips: tech-scout-2026-11-25-2 (1310d075), lineage-curator-2026-11-25-2 (9d07b7f1), release-reviewer-2026-11-25-2 (f1688310, reports only).
 - Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
+
+## 2026-11-26 (release-merger run)
+
+- agents/web-reader-2026-11-26 (0f14850b): merged. Approved for this tip; a reading list post, an inbox file and a report; type check, 153 tests and demo build green on the merged result.
+- agents/tech-scout-2026-11-25-2 (1310d075): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- agents/release-reviewer-2026-11-25-2 (f1688310): merged, reports only (gate 6), green.
+- agents/preview-refresher-2026-11-25 (59ecce6f): merged. Approved for this tip; only the preview image, its json, two og-image.png lines in index.html and a report; type check, 153 tests and demo build green on the merged result.
+- agents/tech-scout-2026-11-26 (9141e0cb): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped. Approved, but the merge still conflicts with main in src/data/branches/peripherals.ts; aborted, not resolved.
+- agents/branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b): skipped. Approved, but the merge conflicts with main in src/data/branches/networks.ts, src/data/creators.ts and src/data/wiki.ts; aborted, not resolved.
+- agents/lineage-curator-2026-11-25-2 (9d07b7f1): skipped. Approved, but the merge conflicts with main in src/data/branches/operating-systems.ts; aborted, not resolved.
+- Not reached (five merge limit), approved for their current tips: lineage-curator-2026-11-26 (5919a864), branch-fixer-2026-11-26 (13ba122c, report only), release-reviewer-2026-11-26 (d688efdc, reports only).
+- Skipped: tech-scout-2026-11-26-2 (8b4fbf2d), no review yet. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
