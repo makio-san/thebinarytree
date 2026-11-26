@@ -1090,6 +1090,27 @@ export const WIKI_TITLES: Record<string, string> = {
   ladybird: 'Ladybird (web browser)',
   log4shell: 'Log4Shell',
   usb4: 'USB4',
+
+  // Scout inboxes 2026-11-25 (remainder) and 2026-11-26
+  rowhammer: 'Row hammer',
+  'homomorphic-encryption': 'Homomorphic encryption',
+  'wifi-7': 'Wi-Fi 7',
+  nerf: 'Neural radiance field',
+  'gaussian-splatting': 'Gaussian splatting',
+  'xpoint-3d': '3D XPoint',
+  harmonyos: 'HarmonyOS',
+  fuchsia: 'Fuchsia (operating system)',
+  h266: 'Versatile Video Coding',
+  'amd-zen-6': 'Zen 6',
+  tpm: 'Trusted Platform Module',
+  'intel-sgx': 'Software Guard Extensions',
+  xfs: 'XFS',
+  apfs: 'Apple File System',
+  zsh: 'Z shell',
+  rpm: 'RPM Package Manager',
+  docsis: 'DOCSIS',
+  'turbo-code': 'Turbo code',
+  ldpc: 'Low-density parity-check code',
 }
 
 /**

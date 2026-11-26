@@ -784,6 +784,14 @@ export const CREATORS: Record<string, string[]> = {
   'web-2-0': ['Darcy DiNucci', 'Tim O’Reilly', 'Dale Dougherty'],
   ladybird: ['Andreas Kling'],
   log4shell: ['Chen Zhaojun'],
+
+  // Scout inboxes 2026-11-25 (remainder) and 2026-11-26
+  'homomorphic-encryption': ['Craig Gentry'],
+  'gaussian-splatting': ['Bernhard Kerbl', 'Georgios Kopanas'],
+  zsh: ['Paul Falstad'],
+  rpm: ['Erik Troan', 'Marc Ewing'],
+  'turbo-code': ['Claude Berrou'],
+  ldpc: ['Robert G. Gallager'],
 }
 
 const NONE: readonly string[] = []

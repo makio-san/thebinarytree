@@ -160,6 +160,15 @@ export const security: ComputerDatum = {
               summary:
                 'The ITU standard format for public key certificates, first issued in July 1988 alongside the X.500 directory. Every TLS certificate behind HTTPS is an X.509 certificate.',
             },
+            {
+              id: 'homomorphic-encryption',
+              name: 'Fully Homomorphic Encryption',
+              year: 2009,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Encryption that lets a computer calculate on data without decrypting it. The problem was posed in 1978, within a year of RSA, and Craig Gentry described the first plausible fully homomorphic scheme in 2009 using lattice-based cryptography.',
+            },
           ],
         },
         {
@@ -365,6 +374,15 @@ export const security: ComputerDatum = {
           kind: 'concept',
           summary:
             'A flaw in the Java logging library Log4j that let attackers run their own code on a server through its lookups to LDAP and JNDI servers. It had gone unnoticed since 2013 until Chen Zhaojun of Alibaba Cloud reported it on 24 November 2021, and Apache gave it the highest severity score, 10.',
+        },
+        {
+          id: 'tpm',
+          name: 'Trusted Platform Module',
+          year: 2003,
+          era: 'modern',
+          kind: 'component',
+          summary:
+            'A secure cryptoprocessor that checks a computer boots from trusted hardware and software and that stores disk encryption keys. The Trusted Computing Group conceived it, version 1.1b was the first deployed in 2003, and it became ISO/IEC 11889 in 2009.',
         },
       ],
     },

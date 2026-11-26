@@ -120,7 +120,19 @@ export const telecom = group(
                 'transistor',
                 'device',
                 'Bell’s early data sets turned bits into audio tones that survived a phone line. Dial up networking, bulletin boards and the early internet all rode on descendants of it.',
-                { origin: 'USA' },
+                {
+                  origin: 'USA',
+                  children: [
+                    item(
+                      'docsis',
+                      'DOCSIS',
+                      1997,
+                      'network',
+                      'network',
+                      'The standard that carries internet data over cable television networks. CableLabs and contributing companies released version 1.0 in March 1997, drawing on earlier proprietary cable modems, and many cable operators use it to provide broadband.',
+                    ),
+                  ],
+                },
               ),
               item(
                 'dsl',

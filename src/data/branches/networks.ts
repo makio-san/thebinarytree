@@ -280,6 +280,17 @@ export const networks: ComputerDatum = {
           kind: 'network',
           summary:
             'The 802.11 standard made wireless local networking uniform. Laptops and phones being genuinely portable depends on it.',
+          children: [
+            {
+              id: 'wifi-7',
+              name: 'Wi-Fi 7',
+              year: 2024,
+              era: 'modern',
+              kind: 'network',
+              summary:
+                'IEEE 802.11be, built upon Wi-Fi 6 and working in the 2.4, 5 and 6 GHz bands. The Wi-Fi Alliance opened its Wi-Fi Certified 7 program on 8 January 2024, after draft based products had reached shops in early 2023.',
+            },
+          ],
         },
         {
           id: 'bluetooth',
