@@ -530,6 +530,7 @@ export const WIKI_TITLES: Record<string, string> = {
   assembler: 'Assembly language',
   linker: 'Linker (computing)',
   yacc: 'Yacc',
+  'tree-sitter': 'Tree-sitter (parser generator)',
   make: "Stuart Feldman",
   gcc: 'GNU Compiler Collection',
   llvm: "Chris Lattner",
@@ -945,6 +946,7 @@ export const WIKI_TITLES: Record<string, string> = {
   opus: 'Opus (audio format)',
   napster: 'Napster',
   bittorrent: 'BitTorrent',
+  ipfs: 'InterPlanetary File System',
   itunes: 'ITunes',
   'itunes-store': 'ITunes Store',
   ipod: 'IPod',
@@ -1060,6 +1062,7 @@ export const WIKI_TITLES: Record<string, string> = {
   // Scout inboxes 2026-11-20 (second run) and 2026-11-23 (second run)
   pci: 'Peripheral Component Interconnect',
   'pci-express': 'PCI Express',
+  ucie: 'UCIe',
   cxl: 'Compute Express Link',
   usb: 'USB',
   gaafet: 'Multigate device',
