@@ -778,6 +778,8 @@ export const CREATORS: Record<string, string[]> = {
   // Scout inboxes 2026-11-22, 2026-11-24 (second run) and 2026-11-25, web reader inbox 2026-11-24
   'b-tree': ['Rudolf Bayer', 'Edward McCreight'],
   'lsm-tree': ['Patrick O’Neil', 'Edward Cheng', 'Dieter Gawlick', 'Elizabeth O’Neil'],
+  leveldb: ['Jeff Dean', 'Sanjay Ghemawat'],
+  'google-file-system': ['Sanjay Ghemawat', 'Howard Gobioff', 'Shun-Tak Leung'],
   crdt: ['Marc Shapiro', 'Nuno Preguiça', 'Carlos Baquero', 'Marek Zawirski'],
   cgroups: ['Paul Menage', 'Rohit Seth'],
   btrfs: ['Chris Mason'],
