@@ -157,6 +157,15 @@ export const processors: ComputerDatum = {
               summary:
                 'DRAM dies stacked on top of each other and set beside the processor, for far more bandwidth than memory on a board. JEDEC adopted it in October 2013, AMD’s Fiji GPUs shipped it first in 2015, and it now feeds the large AI accelerators.',
             },
+            {
+              id: 'rowhammer',
+              name: 'Rowhammer',
+              year: 2014,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A flaw of dense DRAM in which reading the same memory rows many times flips bits in neighbouring rows. A 2014 analysis named the effect, and in March 2015 Google’s Project Zero showed two working privilege escalation exploits based on it.',
+            },
           ],
         },
         {
@@ -168,6 +177,17 @@ export const processors: ComputerDatum = {
           origin: 'Japan',
           summary:
             'Fujio Masuoka developed erasable non volatile memory at Toshiba. The basis of the phone and the SSD.',
+          children: [
+            {
+              id: 'xpoint-3d',
+              name: '3D XPoint',
+              year: 2015,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'A non-volatile memory developed jointly by Intel and Micron that stores bits as a change of resistance in a stackable cross grid. Announced in July 2015, it was sold as Intel Optane from April 2017 to July 2022 and then discontinued.',
+            },
+          ],
         },
         {
           id: 'delay-line-memory',
@@ -345,6 +365,17 @@ export const processors: ComputerDatum = {
                                                       origin: 'USA',
                                                       summary:
                                                         'The memory controller and the graphics core moved inside the processor.',
+                                                      children: [
+                                                        {
+                                                          id: 'intel-sgx',
+                                                          name: 'Intel SGX',
+                                                          year: 2015,
+                                                          era: 'modern',
+                                                          kind: 'concept',
+                                                          summary:
+                                                            'Processor instructions that let a program keep code and data in an encrypted region of memory, an enclave, that even the operating system cannot read. Intel introduced it in 2015 with the sixth generation Core processors based on Skylake.',
+                                                        },
+                                                      ],
                                                     },
                                                   ],
                                                 },
@@ -718,6 +749,17 @@ export const processors: ComputerDatum = {
                   origin: 'USA',
                   summary:
                     'A chiplet approach that made high core counts cheap, and restored the balance in the server market.',
+                  children: [
+                    {
+                      id: 'amd-zen-6',
+                      name: 'AMD Zen 6',
+                      year: 2026,
+                      era: 'modern',
+                      kind: 'processor',
+                      summary:
+                        'The sixth generation of AMD’s Zen microarchitecture. AMD announced the first chips to use it, the Epyc 9006 server processors codenamed Venice, on 23 July 2026, along with a dense variant of up to 256 cores.',
+                    },
+                  ],
                 },
               ],
             },

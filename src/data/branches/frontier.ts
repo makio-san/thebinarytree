@@ -595,6 +595,26 @@ export const frontier: ComputerDatum = {
                           summary:
                             'A deep learning library for Python from Facebook’s AI lab, now Meta’s, built around eager tensors and automatic differentiation and first released in September 2016. It became the default framework for research and for most large language models.',
                         },
+                        {
+                          id: 'nerf',
+                          name: 'Neural Radiance Field',
+                          year: 2020,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'A neural network that learns a three-dimensional scene from ordinary two-dimensional photos and can then render it from new viewpoints. The original paper appeared in 2020 and many variants have followed.',
+                          children: [
+                            {
+                              id: 'gaussian-splatting',
+                              name: '3D Gaussian Splatting',
+                              year: 2023,
+                              era: 'modern',
+                              kind: 'concept',
+                              summary:
+                                'A radiance field method that turns a set of photos into a three-dimensional scene and renders it in real time. Splatting dates from Lee Westover’s work in the early 1990s, and Bernhard Kerbl and Georgios Kopanas at Inria proposed the 3D Gaussian version in 2023.',
+                            },
+                          ],
+                        },
                       ],
                     },
                   ],

@@ -113,6 +113,16 @@ export const operatingSystems: ComputerDatum = {
                       summary:
                         'Brian Fox’s free replacement for the Bourne shell, written for the GNU Project in 1989. Its syntax is a superset of the Bourne shell’s, and it is the default login shell of many Linux distributions.',
                     },
+                    {
+                      id: 'zsh',
+                      name: 'Z Shell',
+                      year: 1990,
+                      era: 'network',
+                      kind: 'language',
+                      origin: 'USA',
+                      summary:
+                        'A Unix shell that keeps most of the Bourne shell’s syntax and adds features from ksh and tcsh, such as programmable completion and extended globbing. Paul Falstad wrote it in 1990 as a student at Princeton, and it is now the default interactive shell of macOS.',
+                    },
                   ],
                 },
                 {
@@ -234,6 +244,17 @@ export const operatingSystems: ComputerDatum = {
                               era: 'modern',
                               kind: 'os',
                               summary: 'The same system under its current name.',
+                              children: [
+                                {
+                                  id: 'apfs',
+                                  name: 'Apple File System',
+                                  year: 2017,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'Apple’s replacement for HFS+, built for solid state storage with encryption and snapshots. It arrived on iOS 10.3 on 27 March 2017 and on the Mac with macOS 10.13 on 25 September 2017.',
+                                },
+                              ],
                             },
                             {
                               id: 'ios',
@@ -304,6 +325,15 @@ export const operatingSystems: ComputerDatum = {
                       ],
                       children: [
                         {
+                          id: 'rpm',
+                          name: 'RPM Package Manager',
+                          year: 1995,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'The package format and package manager that Erik Troan and Marc Ewing wrote for Red Hat Linux in 1995. It became the baseline package format of the Linux Standard Base and is used by Fedora, openSUSE, CentOS and many other distributions.',
+                        },
+                        {
                           id: 'slackware',
                           name: 'Slackware',
                           year: 1993,
@@ -359,6 +389,15 @@ export const operatingSystems: ComputerDatum = {
                               origin: 'USA',
                               summary:
                                 'Google’s open source toolkit for building apps for Android, iOS, the web and the desktop from one codebase, with apps written in Dart. First described in 2015 and released in May 2017, it draws every pixel with its own rendering engine.',
+                            },
+                            {
+                              id: 'harmonyos',
+                              name: 'HarmonyOS',
+                              year: 2019,
+                              era: 'modern',
+                              kind: 'os',
+                              summary:
+                                'Huawei’s operating system for phones, tablets, watches, televisions and personal computers. From 2019 to 2024 it was built on the Android Open Source Project together with OpenHarmony, and HarmonyOS NEXT then removed all Android code.',
                             },
                           ],
                         },
@@ -450,6 +489,17 @@ export const operatingSystems: ComputerDatum = {
                   kind: 'os',
                   origin: 'USA',
                   summary: 'SGI’s Unix for graphics workstations.',
+                  children: [
+                    {
+                      id: 'xfs',
+                      name: 'XFS',
+                      year: 1994,
+                      era: 'network',
+                      kind: 'concept',
+                      summary:
+                        'A 64-bit journaling file system that Silicon Graphics created in 1993 and introduced with IRIX 5.3 in 1994. It was released under the GPL in 1999, ported to Linux in 2001, and is the default file system of Red Hat Enterprise Linux.',
+                    },
+                  ],
                 },
               ],
             },
@@ -708,6 +758,15 @@ export const operatingSystems: ComputerDatum = {
           origin: 'Canada',
           summary:
             'A real time microkernel, widely used in car infotainment systems and medical devices.',
+        },
+        {
+          id: 'fuchsia',
+          name: 'Fuchsia',
+          year: 2016,
+          era: 'modern',
+          kind: 'os',
+          summary:
+            'Google’s open source, capability-based operating system on its own Zircon kernel instead of Linux. The code appeared publicly in August 2016 and it first shipped in 2021 on the first-generation Nest Hub.',
         },
       ],
     },
