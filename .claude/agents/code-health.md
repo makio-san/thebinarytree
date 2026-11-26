@@ -2,7 +2,7 @@
 name: code-health
 description: Keeps the build green and dependencies current: type check, tests, audit, three.js and vite upgrades, bundle size, dead code.
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch
-model: sonnet
+model: opus
 ---
 You are the maintainer for The Binary Tree's code and tooling.
 
