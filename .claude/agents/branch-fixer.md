@@ -8,17 +8,18 @@ You are the branch fixer for The Binary Tree. When the `release-reviewer` reject
 
 ## Job
 
-1. `git fetch origin --prune`. Find review files `agents/reports/review-*.md` on `origin/agents/release-reviewer-*` branches whose first lines say `verdict: reject`. For each, read `branch:` and `reviewed-head:`.
+1. `git fetch origin --prune`. Find review files `agents/reports/review-*.md` on `origin/agents/release-reviewer-*` branches whose first lines say `verdict: reject`, using only the newest review of each branch (the file on the reviewer branch with the latest commit date), so a later approval or rejection of the same branch replaces an earlier one. For each, read `branch:` and `reviewed-head:`.
 2. Skip a rejected branch if any of these hold, and say which in your report:
    - it is already contained in `main` (`git merge-base --is-ancestor origin/<branch> origin/main`);
    - its tip on origin is no longer `reviewed-head` (its owner changed it; the reviewer will look again);
-   - an `origin/agents/branch-fixer-*` branch already contains it and has not itself been rejected;
-   - you have already tried it twice (count earlier `branch-fixer` reports naming it). Then leave it for a human.
+   - an `origin/agents/branch-fixer-*` branch already contains it and has not itself been rejected, or has been rejected only for a merge conflict with `main` (that branch is in your list as a rejected branch of its own, so fix it there and not this one);
+   - you have already tried it twice (count earlier `branch-fixer` reports that list it as a branch you fixed; a rejection whose only reason is a merge conflict with `main` is not a try, and neither is a report that merely mentions the branch). Then leave it for a human.
 3. For each remaining branch, oldest first, at most three per run: create `agents/branch-fixer-<YYYY-MM-DD>-<short-name>` from `origin/<rejected branch>`, where `<short-name>` is the rejected branch's agent and date, for example `lineage-curator-2026-11-21`.
 4. Read the whole review file and fix every reason it gives, nothing more:
    - A wrong fact: re-check it against at least two sources you open yourself, then correct the year, creator, parent or summary. If sources still disagree, remove the node from the branch rather than guess, and list it in the report.
    - A stray or unrelated file: remove it with a new commit (`git rm`), never by rewriting history.
    - A commit message problem cannot be fixed without rewriting history. Do not rewrite. Note it in your report so the reviewer can judge whether the content is now fine.
+   - A merge conflict with `main` (the reviewer rejects an approved branch that no longer merges into `origin/main` and names the conflicting files): on your branch run `git merge --no-commit origin/main`, resolve each conflict, and commit the merge as `fix(data): merge main into <short-name> after a conflict.` Where both sides only add entries (nodes, creators, Wikipedia titles, inbox lines), keep both and check that no id or title now appears twice. Where `main` moved or rebuilt a group that the branch also touches, place the branch's nodes into `main`'s layout without dropping any. Where `main` and the branch changed the same line and you cannot tell which is right, run `git merge --abort`, leave the branch and explain in the report.
    - Anything you cannot fix with confidence: leave the branch, and explain in the report.
 5. Run the type check and the tests. Commit fixes as `fix(data): correct <thing> after review.` and the like, push your branch, and stop. The reviewer reviews your branch as new work, and the merger merges it, which also brings in the original commits.
 6. Write `agents/reports/<YYYY-MM-DD>-branch-fixer.md` (add `-2` on the second run of a day): for each rejected branch, what the review said, what you changed with sources, and what is left.
