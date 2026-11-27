@@ -54,6 +54,18 @@ export const tools: ComputerDatum = {
           origin: 'USA',
           summary:
             'Generate a parser from a grammar rather than writing one. A domain specific language for making languages.',
+          children: [
+            {
+              id: 'tree-sitter',
+              name: 'Tree-sitter',
+              year: 2018,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A parser generator whose parsers update the syntax tree incrementally while the code is being edited, which is what editors need for highlighting and navigation. Max Brunsfeld wrote it at GitHub for the Atom editor, where it shipped in 2018.',
+            },
+          ],
         },
         {
           id: 'make',

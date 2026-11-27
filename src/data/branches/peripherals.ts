@@ -402,6 +402,16 @@ export const peripherals: ComputerDatum = {
                   summary:
                     'A cache coherent link built on the PCI Express physical layer, so processors can share memory with accelerators and reach memory beyond the DIMM slots. Version 1.0 came out in March 2019, the month nine companies including Intel, Google and Microsoft formed its consortium.',
                 },
+                {
+                  id: 'ucie',
+                  name: 'Universal Chiplet Interconnect Express',
+                  year: 2022,
+                  era: 'modern',
+                  kind: 'component',
+                  origin: 'International',
+                  summary:
+                    'An open standard for connecting chiplets from different makers inside one package, with a protocol layer that carries PCI Express and CXL. Version 1.0 came out on 2 March 2022 from a group that includes AMD, Arm, Intel, Qualcomm, Samsung and TSMC; version 4.0 followed on 12 November 2026.',
+                },
               ],
             },
           ],

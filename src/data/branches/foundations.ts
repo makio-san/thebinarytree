@@ -456,6 +456,46 @@ export const foundations: ComputerDatum = {
             'Norbert Wiener put feedback and control in one framework covering both animals and machines.',
         },
         {
+          id: 'simplex-algorithm',
+          name: 'Simplex Algorithm',
+          year: 1947,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'George Dantzig’s method for linear programming: walk the corners of the feasible region until none is better. It grew out of his planning work for the US Army Air Force and took shape in mid-1947, once he added an objective function to the problem.',
+        },
+        {
+          id: 'hash-table',
+          name: 'Hash Table',
+          year: 1953,
+          era: 'theory',
+          kind: 'concept',
+          summary:
+            'Compute an index from the key and look there, so finding an item takes about as long with a million entries as with ten. Hans Peter Luhn described hashing with chaining in an internal IBM memorandum in January 1953.',
+        },
+        {
+          id: 'linked-list',
+          name: 'Linked List',
+          year: 1956,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Each element points to the next, so items go in or out without moving the rest. Allen Newell, Cliff Shaw and Herbert Simon built it in 1955 and 1956 at RAND and Carnegie Mellon as the main structure of their Information Processing Language.',
+          children: [
+            {
+              id: 'skip-list',
+              name: 'Skip List',
+              year: 1989,
+              era: 'personal',
+              kind: 'concept',
+              summary:
+                'A sorted linked list with extra layers of shortcut links chosen at random, which gives logarithmic search and insertion on average with no rebalancing. William Pugh invented it in 1989 and published it in 1990 as a probabilistic alternative to balanced trees.',
+            },
+          ],
+        },
+        {
           id: 'dijkstra-algorithm',
           name: "Dijkstra's Algorithm",
           year: 1956,

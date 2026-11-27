@@ -136,7 +136,20 @@ export const media = group(
                 'personal',
                 'concept',
                 'Lossy compression tuned to what the eye does not miss. Digital photography stands on it.',
-                { origin: 'International' },
+                {
+                  origin: 'International',
+                  children: [
+                    item(
+                      'jpeg-xl',
+                      'JPEG XL',
+                      2021,
+                      'modern',
+                      'concept',
+                      'An image format with lossy and lossless modes, built by the Joint Photographic Experts Group with Google and Cloudinary from their PIK and FUIF proposals. It can repack an old JPEG file losslessly into a smaller one. The file format was standardized on 13 October 2021.',
+                      { origin: 'International' },
+                    ),
+                  ],
+                },
               ),
               item(
                 'h261',
@@ -354,7 +367,19 @@ export const media = group(
           'modern',
           'network',
           'Bram Cohen’s protocol in which everyone who downloads also uploads, so popular files get faster instead of slower.',
-          { origin: 'USA' },
+          {
+            origin: 'USA',
+            children: [
+              item(
+                'ipfs',
+                'InterPlanetary File System',
+                2015,
+                'modern',
+                'network',
+                'A peer-to-peer network that finds a file by a hash of its content rather than by the server that holds it, using a distributed hash table. Juan Benet created it, founded Protocol Labs to build it, and an alpha launched in February 2015.',
+              ),
+            ],
+          },
         ),
         item(
           'itunes',
