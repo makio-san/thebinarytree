@@ -197,6 +197,16 @@ export const languages: ComputerDatum = {
           facts: ['Syntax defined in BNF', 'An improvement on almost all of its successors'],
           children: [
             {
+              id: 'pl-i',
+              name: 'PL/I',
+              year: 1964,
+              era: 'integrated',
+              kind: 'language',
+              origin: 'USA',
+              summary:
+                'IBM and its SHARE user group set out to extend Fortran for business work, found they could not, and designed a new language based loosely on ALGOL instead. The first definition appeared in 1964 and the first compiler in 1966; it is still in use on mainframes.',
+            },
+            {
               id: 'cpl',
               name: 'CPL',
               year: 1963,
@@ -418,6 +428,18 @@ export const languages: ComputerDatum = {
                   kind: 'language',
                   origin: 'Switzerland',
                   summary: 'Wirth’s successor, focused on modules and separate compilation.',
+                  children: [
+                    {
+                      id: 'oberon',
+                      name: 'Oberon',
+                      year: 1987,
+                      era: 'personal',
+                      kind: 'language',
+                      origin: 'Switzerland',
+                      summary:
+                        'Wirth’s successor to Modula-2, more powerful and at the same time simpler. Its main new idea was extending record types, and it was written together with an operating system of the same name at ETH Zurich.',
+                    },
+                  ],
                 },
               ],
             },

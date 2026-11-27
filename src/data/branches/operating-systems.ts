@@ -51,6 +51,18 @@ export const operatingSystems: ComputerDatum = {
           origin: 'USA',
           summary:
             'The operating system for System/360. Its delays and complexity made Fred Brooks write "The Mythical Man-Month".',
+          children: [
+            {
+              id: 'mvs',
+              name: 'MVS',
+              year: 1974,
+              era: 'micro',
+              kind: 'os',
+              origin: 'USA',
+              summary:
+                'Multiple Virtual Storage, IBM’s successor to OS/360 for the System/370, first released in 1974. It became the most used system on IBM mainframes, and by design its programs still run unchanged on z/OS, its descendant through OS/390.',
+            },
+          ],
         },
         {
           id: 'multics',

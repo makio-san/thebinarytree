@@ -1081,6 +1081,17 @@ export const WIKI_TITLES: Record<string, string> = {
   bravo: 'Bravo (editor)',
   'microsoft-word': 'Microsoft Word',
   wordstar: 'WordStar',
+  // Scout inbox 2026-11-27 (second run)
+  mvs: 'MVS',
+  'pl-i': 'PL/I',
+  oberon: 'Oberon (programming language)',
+  hack: 'Hack (video game)',
+  nethack: 'NetHack',
+  'google-search': 'Google Search',
+  mpls: 'Multiprotocol Label Switching',
+  neovim: 'Neovim',
+  mamba: 'Mamba (deep learning architecture)',
+
   // Scout inboxes 2026-11-22, 2026-11-24 (second run) and 2026-11-25, web reader inbox 2026-11-24
   'b-tree': 'B-tree',
   'lsm-tree': 'Log-structured merge-tree',

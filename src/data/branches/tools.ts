@@ -154,6 +154,17 @@ export const tools: ComputerDatum = {
               kind: 'concept',
               origin: 'Netherlands',
               summary: 'vi extended, and the modal editing model that refuses to die.',
+              children: [
+                {
+                  id: 'neovim',
+                  name: 'Neovim',
+                  year: 2014,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A fork of Vim started in 2014 by Thiago de Arruda to rework its old code. It added Lua scripting, asynchronous I/O, a built in terminal and Language Server Protocol support.',
+                },
+              ],
             },
           ],
         },

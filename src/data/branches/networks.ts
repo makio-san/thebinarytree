@@ -135,6 +135,15 @@ export const networks: ComputerDatum = {
           facts: ['ARPANET moved fully to TCP/IP in 1983', 'The end to end principle'],
           children: [
             {
+              id: 'mpls',
+              name: 'MPLS',
+              year: 2001,
+              era: 'network',
+              kind: 'network',
+              summary:
+                'Multiprotocol Label Switching forwards packets along set paths by short labels instead of looking up the address at every router. It grew out of Ipsilon’s IP Switching and Cisco’s Tag Switching, was standardised in RFC 3031 in 2001, and is now used mostly for traffic engineering and VPNs.',
+            },
+            {
               id: 'dns',
               name: 'DNS',
               year: 1983,
@@ -472,6 +481,18 @@ export const networks: ComputerDatum = {
               origin: 'USA',
               summary:
                 'Larry Page and Sergey Brin ranked a page by the number and weight of the links pointing at it. Developed at Stanford in 1996, it was the first ranking algorithm Google used.',
+              children: [
+                {
+                  id: 'google-search',
+                  name: 'Google Search',
+                  year: 1998,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Google’s first product, launched in 1998 and mostly built by Larry Page and Sergey Brin, ranking its results with PageRank. Google.com became the most visited website in the world.',
+                },
+              ],
             },
             {
               id: 'chrome',
