@@ -1123,6 +1123,25 @@ export const WIKI_TITLES: Record<string, string> = {
   docsis: 'DOCSIS',
   'turbo-code': 'Turbo code',
   ldpc: 'Low-density parity-check code',
+
+  // Scout inboxes 2026-11-26 (remainder) and 2026-11-27, web reader inbox 2026-11-26
+  opencl: 'OpenCL',
+  nvlink: 'NVLink',
+  'red-black-tree': 'Red-black tree',
+  cockroachdb: 'CockroachDB',
+  icq: 'ICQ',
+  nat: 'Network address translation',
+  lean: 'Lean (proof assistant)',
+  cpan: 'CPAN',
+  'strassen-algorithm': 'Strassen algorithm',
+  'kolmogorov-complexity': 'Kolmogorov complexity',
+  cmake: 'CMake',
+  bazel: 'Bazel (software)',
+  'quantum-error-correction': 'Quantum error correction',
+  'trapped-ion-quantum': 'Trapped-ion quantum computer',
+  'ray-tracing': 'Ray tracing (graphics)',
+  roff: 'Roff (software)',
+  'cpu-cache': 'CPU cache',
 }
 
 /**

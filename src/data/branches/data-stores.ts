@@ -48,6 +48,17 @@ export const dataStores: ComputerDatum = {
               origin: 'USA',
               summary:
                 'A balanced tree whose nodes hold many keys each, so a large sorted index stays shallow and a key is found in a few disk reads. Rudolf Bayer and Edward McCreight invented it at Boeing Research Labs and first circulated the paper in July 1970.',
+              children: [
+                {
+                  id: 'red-black-tree',
+                  name: 'Red-Black Tree',
+                  year: 1978,
+                  era: 'micro',
+                  kind: 'concept',
+                  summary:
+                    'A self-balancing binary search tree in which one extra bit per node, its color, keeps search, insertion and deletion logarithmic. Rudolf Bayer invented its forerunner in 1972 as a special case of the B-tree, and Guibas and Sedgewick described the red and black form in 1978.',
+                },
+              ],
             },
             {
               id: 'lsm-tree',
@@ -492,6 +503,17 @@ export const dataStores: ComputerDatum = {
           kind: 'concept',
           summary:
             'Google Spanner and its successors took the guarantees back, using synchronised clocks to get global transactions. The relational model returning at scale.',
+          children: [
+            {
+              id: 'cockroachdb',
+              name: 'CockroachDB',
+              year: 2017,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A distributed SQL database from three former Google engineers who had used Bigtable and Spanner and wanted to build something similar. Spencer Kimball began the open source project in February 2014, the first release came in 2017, and it speaks the PostgreSQL wire protocol.',
+            },
+          ],
         },
       ],
     },

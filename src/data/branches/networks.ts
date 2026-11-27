@@ -230,6 +230,15 @@ export const networks: ComputerDatum = {
               summary:
                 'The successor to IPv4, first specified in RFC 1883 in December 1995 with 128 bit addresses so the internet would not run out. It became a full Internet Standard in 2017.',
             },
+            {
+              id: 'nat',
+              name: 'Network Address Translation',
+              year: 1994,
+              era: 'network',
+              kind: 'concept',
+              summary:
+                'Rewriting the addresses in packets as they pass a router, so a whole private network can share one public IPv4 address. RFC 1631 called it a short-term solution to address depletion in 1994, and by 2004 it was widespread.',
+            },
           ],
         },
       ],
@@ -563,6 +572,16 @@ export const networks: ComputerDatum = {
               ],
             },
           ],
+        },
+        {
+          id: 'icq',
+          name: 'ICQ',
+          year: 1996,
+          era: 'network',
+          kind: 'network',
+          origin: 'Israel',
+          summary:
+            'The first widely adopted instant messenger, released in November 1996 by the Israeli company Mirabilis. A central service with personal accounts and one to one chats set the pattern for later messengers. It passed 100 million registered accounts around 2001 and shut down in June 2024.',
         },
       ],
     },

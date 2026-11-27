@@ -800,6 +800,19 @@ export const CREATORS: Record<string, string[]> = {
   rpm: ['Erik Troan', 'Marc Ewing'],
   'turbo-code': ['Claude Berrou'],
   ldpc: ['Robert G. Gallager'],
+
+  // Scout inboxes 2026-11-26 (remainder) and 2026-11-27, web reader inbox 2026-11-26
+  'red-black-tree': ['Leonidas J. Guibas', 'Robert Sedgewick'],
+  cockroachdb: ['Spencer Kimball', 'Peter Mattis', 'Ben Darnell'],
+  icq: ['Yair Goldfinger', 'Sefi Vigiser', 'Amnon Amir', 'Arik Vardi', 'Yossi Vardi'],
+  lean: ['Leonardo de Moura'],
+  'strassen-algorithm': ['Volker Strassen'],
+  'kolmogorov-complexity': ['Andrey Kolmogorov'],
+  cmake: ['Andy Cedilnik', 'Bill Hoffman', 'Brad King', 'Ken Martin', 'Alexander Neundorf'],
+  'quantum-error-correction': ['Peter Shor'],
+  'trapped-ion-quantum': ['Ignacio Cirac', 'Peter Zoller'],
+  'ray-tracing': ['Arthur Appel'],
+  roff: ['Ken Thompson'],
 }
 
 const NONE: readonly string[] = []

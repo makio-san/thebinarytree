@@ -422,6 +422,15 @@ export const foundations: ComputerDatum = {
                 },
               ],
             },
+            {
+              id: 'kolmogorov-complexity',
+              name: 'Kolmogorov Complexity',
+              year: 1963,
+              era: 'theory',
+              kind: 'concept',
+              summary:
+                'The information in a string measured as the length of the shortest program that prints it. Andrey Kolmogorov first published on it in 1963, it also carries the names of Ray Solomonoff and Gregory Chaitin, and no single program can compute it exactly for infinitely many strings.',
+            },
           ],
         },
         {
@@ -542,6 +551,15 @@ export const foundations: ComputerDatum = {
               kind: 'concept',
               summary:
                 'Stephen Cook showed satisfiability to be among the hardest problems in NP. Whether P equals NP is still open.',
+            },
+            {
+              id: 'strassen-algorithm',
+              name: 'Strassen Algorithm',
+              year: 1969,
+              era: 'theory',
+              kind: 'concept',
+              summary:
+                'Volker Strassen showed in 1969 that two matrices can be multiplied in fewer steps than the schoolbook method needs, proving the obvious algorithm was not optimal. It set off the long search for the true cost of matrix multiplication.',
             },
           ],
         },

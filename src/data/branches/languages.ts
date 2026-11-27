@@ -589,6 +589,15 @@ export const languages: ComputerDatum = {
               kind: 'language',
               summary: 'The ML tradition carried onto .NET.',
             },
+            {
+              id: 'lean',
+              name: 'Lean',
+              year: 2013,
+              era: 'modern',
+              kind: 'language',
+              summary:
+                'A proof assistant and functional programming language, developed mainly by Leonardo de Moura at Microsoft Research from 2013. A proof written in it is checked by the machine, and de Moura and Sebastian Ullrich described Lean 4 in 2021.',
+            },
           ],
         },
         {
@@ -659,6 +668,15 @@ export const languages: ComputerDatum = {
                   origin: 'Japan',
                   summary:
                     'A language that treats programmer happiness as a design criterion. Rails made web development fast.',
+                },
+                {
+                  id: 'cpan',
+                  name: 'CPAN',
+                  year: 1995,
+                  era: 'network',
+                  kind: 'concept',
+                  summary:
+                    'The Comprehensive Perl Archive Network, conceived in 1993 and online since October 1995 to unify scattered Perl archives. It was modelled on the CTAN archive for TeX, and later package indexes such as PyPI are described by comparison with it.',
                 },
               ],
             },
