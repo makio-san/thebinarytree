@@ -23,8 +23,8 @@ Thirteen agents keep the tree growing, correct, written about and deployed. Thei
 1. `tech-scout` writes the inbox. Once a week `lineage-architect` adds a planned new lineage to it, and every morning `web-reader` adds what it found while reading Medium and other sites (feeds in `agents/sources.md`).
 2. `lineage-curator` turns confirmed entries into nodes, oldest inbox file first.
 3. `fact-checker`, `portrait-finder`, `ui-qa` and `code-health` improve what is already there.
-4. `release-reviewer` reviews each branch and records `verdict: approve` or `reject` for its exact commit.
-5. `branch-fixer` takes rejected branches, fixes what the review found on a branch of its own, and the reviewer looks again.
+4. `release-reviewer` reviews each branch and records `verdict: approve` or `reject` for its exact commit. It also tests the approved branches that are still waiting: one that no longer merges into `main` is rejected for the conflict, so the fixer can take it.
+5. `branch-fixer` takes rejected branches, fixes what the review found on a branch of its own (for a conflict it merges `main` into the branch), and the reviewer looks again.
 6. `release-merger` merges only approved, unchanged branches that stay green on the merged result, then pushes `main`.
 7. `preview-refresher` redraws the link preview when the counts changed, and `blog-writer` writes up what reached `main` every evening once at least ten nodes have changed (five after three quiet days), and `web-reader` reads its sources every morning and posts a reading list as soon as four new pieces are worth linking. Every piece in a list carries its publication day, and a test rejects any that is more than a week older than the list. Both go through review like everything else, and the `release-merger` takes their branches first so the blog stays current.
 

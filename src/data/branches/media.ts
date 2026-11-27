@@ -183,6 +183,18 @@ export const media = group(
                                         'modern',
                                         'concept',
                                         'About half the bitrate at the same quality, though patent licensing slowed its adoption.',
+                                        {
+                                          children: [
+                                            item(
+                                              'h266',
+                                              'H.266',
+                                              2020,
+                                              'modern',
+                                              'concept',
+                                              'Versatile Video Coding, finalized on 6 July 2020 by the Joint Video Experts Team of ITU-T and MPEG as the successor to H.265.',
+                                            ),
+                                          ],
+                                        },
                                       ),
                                     ],
                                   },

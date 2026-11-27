@@ -427,6 +427,17 @@ export const peripherals: ComputerDatum = {
           origin: 'USA',
           summary:
             'One plug and one protocol for keyboards, mice, printers and drives, with power on the same cable. USB 1.0 came out in January 1996 from seven companies including Intel, Compaq and Microsoft, and replaced serial, parallel and game ports.',
+          children: [
+            {
+              id: 'usb4',
+              name: 'USB4',
+              year: 2019,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'The USB specification announced in 2019, based on the Thunderbolt 3 protocol and defined only for USB-C connectors. It shares one link of 20, 40 or 80 Gbit/s by tunnelling USB 3, DisplayPort and PCI Express inside it.',
+            },
+          ],
         },
       ],
     },

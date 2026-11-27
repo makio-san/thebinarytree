@@ -400,6 +400,26 @@ export const foundations: ComputerDatum = {
                   summary:
                     'Irving Reed and Gustave Solomon built codes on symbols rather than single bits, so a whole burst of damage can be repaired. They sit inside CDs, DVDs, Blu-ray, QR codes, DSL and RAID 6.',
                 },
+                {
+                  id: 'ldpc',
+                  name: 'LDPC Codes',
+                  year: 1960,
+                  era: 'theory',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Low-density parity-check codes, which Robert Gallager devised in his 1960 doctoral dissertation at MIT. They were ignored for decades because decoding was too costly, came back in the mid 1990s, and are now used from wireless links to flash storage.',
+                },
+                {
+                  id: 'turbo-code',
+                  name: 'Turbo Codes',
+                  year: 1993,
+                  era: 'network',
+                  kind: 'concept',
+                  origin: 'France',
+                  summary:
+                    'Error correcting codes that were the first practical ones to come close to the Shannon limit. The patent was filed in 1991 with Claude Berrou as sole inventor, the paper by Berrou, Alain Glavieux and Punya Thitimajshima followed in 1993, and 3G and 4G mobile networks use them.',
+                },
               ],
             },
           ],

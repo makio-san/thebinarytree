@@ -363,6 +363,18 @@ export const frontier: ComputerDatum = {
           origin: 'USA',
           summary:
             'A chip designed for nothing but neural network arithmetic: giving up generality to buy efficiency.',
+          children: [
+            {
+              id: 'cerebras-wse',
+              name: 'Cerebras Wafer Scale Engine',
+              year: 2019,
+              era: 'modern',
+              kind: 'processor',
+              origin: 'USA',
+              summary:
+                'An AI processor that takes up an entire silicon wafer. Cerebras, founded in 2015, announced the first generation and its CS-1 system in August 2019.',
+            },
+          ],
         },
       ],
     },
@@ -542,7 +554,26 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'Alibaba Cloud’s family of mostly open weight language models, first released as a beta in April 2023. Permissive licences and small sizes made it a common base for fine tuned models.',
                                 },
+                                {
+                                  id: 'rlhf',
+                                  name: 'Reinforcement Learning from Human Feedback',
+                                  year: 2017,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'Train a reward model on what people prefer, then optimise an agent against it. A 2017 paper from OpenAI and DeepMind trained Atari agents from human preferences this way, and the same idea was later used to teach language models to follow instructions.',
+                                },
                               ],
+                            },
+                            {
+                              id: 'whisper',
+                              name: 'Whisper',
+                              year: 2022,
+                              era: 'modern',
+                              kind: 'concept',
+                              origin: 'USA',
+                              summary:
+                                'OpenAI’s speech recognition and transcription model, released as open source in September 2022. An encoder-decoder transformer that transcribes many languages and translates several of them into English.',
                             },
                           ],
                         },
@@ -575,6 +606,26 @@ export const frontier: ComputerDatum = {
                           summary:
                             'A deep learning library for Python from Facebook’s AI lab, now Meta’s, built around eager tensors and automatic differentiation and first released in September 2016. It became the default framework for research and for most large language models.',
                         },
+                        {
+                          id: 'nerf',
+                          name: 'Neural Radiance Field',
+                          year: 2020,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'A neural network that learns a three-dimensional scene from ordinary two-dimensional photos and can then render it from new viewpoints. The original paper appeared in 2020 and many variants have followed.',
+                          children: [
+                            {
+                              id: 'gaussian-splatting',
+                              name: '3D Gaussian Splatting',
+                              year: 2023,
+                              era: 'modern',
+                              kind: 'concept',
+                              summary:
+                                'A radiance field method that turns a set of photos into a three-dimensional scene and renders it in real time. Splatting dates from Lee Westover’s work in the early 1990s, and Bernhard Kerbl and Georgios Kopanas at Inria proposed the 3D Gaussian version in 2023.',
+                            },
+                          ],
+                        },
                       ],
                     },
                   ],
@@ -588,6 +639,16 @@ export const frontier: ComputerDatum = {
                   origin: 'Canada',
                   summary:
                     'Two networks trained against each other, one generating samples and one judging whether they look real. Ian Goodfellow’s group at Montréal proposed it in 2014, and it was the first generative model to produce convincing synthetic photographs.',
+                },
+                {
+                  id: 'word2vec',
+                  name: 'Word2Vec',
+                  year: 2013,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'A technique from Google that learns a vector for each word from the words around it, so that words used alike land close together. It was cheap enough to train on very large text corpora, which made word embeddings common in language processing.',
                 },
               ],
             },
@@ -642,6 +703,16 @@ export const frontier: ComputerDatum = {
               origin: 'England',
               summary:
                 'DeepMind’s protein structure predictor, which won the CASP14 assessment in 2020 with accuracy far above every other entry. Hassabis and Jumper shared the 2024 Nobel Prize in Chemistry for it.',
+            },
+            {
+              id: 'alphazero',
+              name: 'AlphaZero',
+              year: 2017,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'England',
+              summary:
+                'DeepMind’s program that learned chess, shogi and Go by playing only against itself, with no opening books or endgame tables. The preprint of 5 December 2017 reported wins over the engines Stockfish and Elmo.',
             },
           ],
         },

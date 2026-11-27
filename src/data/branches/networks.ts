@@ -120,6 +120,16 @@ export const networks: ComputerDatum = {
               summary:
                 'Multipurpose Internet Mail Extensions, RFC 1341 in June 1992, let an email carry attachments, images and text in any character set, not just ASCII. HTTP later borrowed its content types, so every web response still names its MIME type.',
             },
+            {
+              id: 'exchange-server',
+              name: 'Microsoft Exchange Server',
+              year: 1996,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Microsoft’s mail and calendar server, first released on 2 April 1996 as Exchange Server 4.0, the successor to Microsoft Mail 3.5. It speaks its own MAPI protocol to clients and SMTP to other mail servers.',
+            },
           ],
         },
         {
@@ -289,6 +299,17 @@ export const networks: ComputerDatum = {
           kind: 'network',
           summary:
             'The 802.11 standard made wireless local networking uniform. Laptops and phones being genuinely portable depends on it.',
+          children: [
+            {
+              id: 'wifi-7',
+              name: 'Wi-Fi 7',
+              year: 2024,
+              era: 'modern',
+              kind: 'network',
+              summary:
+                'IEEE 802.11be, built upon Wi-Fi 6 and working in the 2.4, 5 and 6 GHz bands. The Wi-Fi Alliance opened its Wi-Fi Certified 7 program on 8 January 2024, after draft based products had reached shops in early 2023.',
+            },
+          ],
         },
         {
           id: 'bluetooth',
@@ -491,6 +512,24 @@ export const networks: ComputerDatum = {
                 'A browser running each tab in its own process, with the fast V8 JavaScript engine. It made web applications competitive with desktop software.',
             },
           ],
+        },
+        {
+          id: 'web-2-0',
+          name: 'Web 2.0',
+          year: 2004,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'The name for websites built on what their users contribute. Darcy DiNucci coined it in 1999, and Tim O’Reilly and Dale Dougherty made it common at the first Web 2.0 Conference in 2004.',
+        },
+        {
+          id: 'ladybird',
+          name: 'Ladybird',
+          year: 2022,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'An open source browser whose engine is not based on Chromium, Gecko or WebKit. It began in 2019 as part of SerenityOS, Andreas Kling made it a separate project in September 2022, and a first alpha came out in 2026.',
         },
       ],
     },

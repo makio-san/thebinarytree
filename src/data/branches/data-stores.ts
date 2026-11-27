@@ -38,6 +38,27 @@ export const dataStores: ComputerDatum = {
           origin: 'USA',
           summary:
             'Indexed sequential access on disk: read a record by key without scanning. The first practical random access to business data.',
+          children: [
+            {
+              id: 'b-tree',
+              name: 'B-tree',
+              year: 1970,
+              era: 'integrated',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A balanced tree whose nodes hold many keys each, so a large sorted index stays shallow and a key is found in a few disk reads. Rudolf Bayer and Edward McCreight invented it at Boeing Research Labs and first circulated the paper in July 1970.',
+            },
+            {
+              id: 'lsm-tree',
+              name: 'Log-Structured Merge-Tree',
+              year: 1996,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'An index that takes new records in memory and merges them to disk in batches, written sequentially. Patrick O’Neil and three colleagues described it in 1996 for files with a very high volume of inserts.',
+            },
+          ],
         },
         {
           id: 'ims',
@@ -366,6 +387,15 @@ export const dataStores: ComputerDatum = {
               era: 'modern',
               kind: 'concept',
               summary: 'The managed service version, sold by the request rather than the server.',
+            },
+            {
+              id: 'crdt',
+              name: 'Conflict-Free Replicated Data Types',
+              year: 2011,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Data structures that every replica can update on its own and that merge without coordination, so all copies end up the same. Formally defined in 2011 by Marc Shapiro, Nuno Preguiça, Carlos Baquero and Marek Zawirski, with collaborative text editing as an early motive.',
             },
           ],
         },

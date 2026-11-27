@@ -140,3 +140,36 @@ Decisions by the release merger, newest last.
 - agents/tech-scout-2026-11-25 (ca7a6c7a): merged. Approved for this tip; inbox and report files only (gate 6).
 - Not reached (three merge limit), approved for their current tips: lineage-curator-2026-11-25 (aa300a14), branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b), release-reviewer-2026-11-25 (88ba57c4, reports only).
 - Skipped: portrait-finder-2026-11-25 (029fe891), no review yet. branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), approved but known conflict in src/data/branches/peripherals.ts, not retried. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
+
+## 2026-11-25 (release-merger run, evening)
+
+- agents/lineage-curator-2026-11-25 (aa300a14): merged. Approved for this tip; data, inbox and report files only; type check, 148 tests and demo build green on the merged result.
+- agents/release-reviewer-2026-11-25 (88ba57c4): merged, reports only (gate 6), green.
+- agents/portrait-finder-2026-11-25 (029fe891): merged. Approved for this tip; portraits.ts and a report only; type check, 148 tests and demo build green on the merged result.
+- agents/branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b): skipped. Approved, but after the lineage-curator-2026-11-25 merge it conflicts with main in src/data/creators.ts and src/data/wiki.ts; aborted, not resolved.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped. Approved, but the merge still conflicts with main; aborted, not resolved.
+- Not reached (three merge limit), approved for their current tips: tech-scout-2026-11-25-2 (1310d075), lineage-curator-2026-11-25-2 (9d07b7f1), release-reviewer-2026-11-25-2 (f1688310, reports only).
+- Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
+
+## 2026-11-26 (release-merger run)
+
+- agents/web-reader-2026-11-26 (0f14850b): merged. Approved for this tip; a reading list post, an inbox file and a report; type check, 153 tests and demo build green on the merged result.
+- agents/tech-scout-2026-11-25-2 (1310d075): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- agents/release-reviewer-2026-11-25-2 (f1688310): merged, reports only (gate 6), green.
+- agents/preview-refresher-2026-11-25 (59ecce6f): merged. Approved for this tip; only the preview image, its json, two og-image.png lines in index.html and a report; type check, 153 tests and demo build green on the merged result.
+- agents/tech-scout-2026-11-26 (9141e0cb): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- agents/branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156): skipped. Approved, but the merge still conflicts with main in src/data/branches/peripherals.ts; aborted, not resolved.
+- agents/branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b): skipped. Approved, but the merge conflicts with main in src/data/branches/networks.ts, src/data/creators.ts and src/data/wiki.ts; aborted, not resolved.
+- agents/lineage-curator-2026-11-25-2 (9d07b7f1): skipped. Approved, but the merge conflicts with main in src/data/branches/operating-systems.ts; aborted, not resolved.
+- Not reached (five merge limit), approved for their current tips: lineage-curator-2026-11-26 (5919a864), branch-fixer-2026-11-26 (13ba122c, report only), release-reviewer-2026-11-26 (d688efdc, reports only).
+- Skipped: tech-scout-2026-11-26-2 (8b4fbf2d), no review yet. Rejected tips not considered: code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
+
+## 2026-11-26 (release-merger run, night)
+
+- agents/blog-writer-2026-11-26 (7c7fddae): merged. Approved for this tip; a blog post and a report; type check, 157 tests and demo build green on the merged result.
+- agents/lineage-curator-2026-11-26 (5919a864): merged. Approved for this tip (newest review); data, inbox and report files only, one line replaced in telecom.ts; type check, 157 tests and demo build green on the merged result.
+- agents/branch-fixer-2026-11-26 (13ba122c): merged. Approved for this tip; report only, green.
+- agents/release-reviewer-2026-11-26 (d688efdc): merged, reports only (gate 6), green.
+- agents/tech-scout-2026-11-26-2 (8b4fbf2d): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- Not reached (five merge limit), approved for their current tips: lineage-curator-2026-11-26-2 (89cba943), release-reviewer-2026-11-26-2 (84ade02c, reports only).
+- Skipped, newest review rejects the current tip: branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b), lineage-curator-2026-11-25-2 (9d07b7f1), code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
