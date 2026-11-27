@@ -337,6 +337,24 @@ export const frontier: ComputerDatum = {
                         },
                       ],
                     },
+                    {
+                      id: 'opencl',
+                      name: 'OpenCL',
+                      year: 2009,
+                      era: 'modern',
+                      kind: 'concept',
+                      summary:
+                        'An open standard for programs that run across CPUs, GPUs and other accelerators from any vendor. Apple wrote the initial proposal, the Khronos Group approved version 1.0 in December 2008, and it first shipped with Mac OS X Snow Leopard in August 2009.',
+                    },
+                    {
+                      id: 'nvlink',
+                      name: 'NVLink',
+                      year: 2016,
+                      era: 'modern',
+                      kind: 'component',
+                      summary:
+                        'Nvidia’s short range link between GPUs, and between GPUs and CPUs. Unlike PCI Express, one device can use several links and form a mesh instead of going through a hub. Announced in March 2014 and first built into the Pascal P100 in 2016; since 2018 a switch lets many GPUs share it.',
+                    },
                   ],
                 },
               ],
@@ -364,6 +382,15 @@ export const frontier: ComputerDatum = {
                 'An AI processor that takes up an entire silicon wafer. Cerebras, founded in 2015, announced the first generation and its CS-1 system in August 2019.',
             },
           ],
+        },
+        {
+          id: 'ray-tracing',
+          name: 'Ray Tracing',
+          year: 1968,
+          era: 'integrated',
+          kind: 'concept',
+          summary:
+            'Making an image by modelling the paths light takes through a scene. Arthur Appel published the first use of a computer to trace rays for shaded pictures in 1968, and since 2018 graphics cards accelerate it in real time.',
         },
       ],
     },
@@ -792,6 +819,24 @@ export const frontier: ComputerDatum = {
           kind: 'machine',
           summary:
             'A trapped-ion quantum computer launched in November 2025, its 98 qubits single barium ions held above a chip. Quantinuum reports the highest gate fidelities of any commercial machine.',
+        },
+        {
+          id: 'quantum-error-correction',
+          name: 'Quantum Error Correction',
+          year: 1995,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Protecting quantum information from noise by spreading one logical qubit across several physical ones, so errors can be found and undone. Peter Shor’s nine qubit code of 1995 was the first quantum code.',
+        },
+        {
+          id: 'trapped-ion-quantum',
+          name: 'Trapped-Ion Quantum Computer',
+          year: 1995,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'Qubits stored in single charged atoms, held in place by electromagnetic fields and coupled with lasers. Ignacio Cirac and Peter Zoller proposed the first scheme for a controlled-NOT gate with trapped ions in 1995, and the basic operations of a quantum computer have been shown with the highest accuracy on this platform.',
         },
       ],
     },

@@ -64,6 +64,26 @@ export const tools: ComputerDatum = {
           origin: 'USA',
           summary:
             'Rebuild only what changed, decided by file timestamps. Nearly fifty years on, most build systems are still arguing with its model rather than replacing it.',
+          children: [
+            {
+              id: 'cmake',
+              name: 'CMake',
+              year: 2000,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A meta build tool that writes the build files for Make, Ninja, Xcode or Visual Studio from one description. Work began at Kitware in 1999 to build the Insight Toolkit, a medical imaging library, on many platforms, and it was first released in 2000.',
+            },
+            {
+              id: 'bazel',
+              name: 'Bazel',
+              year: 2015,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'An open source port of Blaze, the build tool Google began in 2006 for speed and correctness in one very large monorepo. First released in March 2015, with rules written in Starlark, a dialect of Python.',
+            },
+          ],
         },
         {
           id: 'gcc',

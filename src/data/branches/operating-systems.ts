@@ -513,6 +513,15 @@ export const operatingSystems: ComputerDatum = {
               summary:
                 'The people who wrote Unix trying again. Every resource is reached through a file system, and UTF-8 was designed in this project.',
             },
+            {
+              id: 'roff',
+              name: 'roff',
+              year: 1970,
+              era: 'network',
+              kind: 'concept',
+              summary:
+                'The first Unix text formatter, a descendant of RUNOFF from CTSS and Multics. Ken Thompson brought it to Unix around 1970 and again to the PDP-11 in 1971; it printed the manuals of the first Unix versions and led to nroff and troff.',
+            },
           ],
         },
       ],
