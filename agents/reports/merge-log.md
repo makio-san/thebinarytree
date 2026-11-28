@@ -194,3 +194,13 @@ Decisions by the release merger, newest last.
 - agents/tech-scout-2026-11-27-2 (e0874d0a): merged. Approved for this tip; inbox and report files only (gate 6), green.
 - Not reached (five merge limit), approved for their current tips: lineage-curator-2026-11-27-2 (16c70823), release-reviewer-2026-11-27-2 (e4480f78, reports only).
 - Skipped, newest review rejects the current tip: branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b), lineage-curator-2026-11-25-2 (9d07b7f1), code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
+
+## 2026-11-28 (release-merger run)
+
+- agents/web-reader-2026-11-28 (d6ad3843): merged. Approved for this tip; an inbox file and a report only (gate 6); type check, 161 tests and demo build green on the merged result.
+- agents/lineage-curator-2026-11-27-2 (16c70823): merged. Approved for this tip; data, inbox and report files only, additions only in src/data; type check, 161 tests and demo build green on the merged result.
+- agents/preview-refresher-2026-11-27 (577368ff): merged. Approved for this tip; the preview image, its json, two og-image.png lines in index.html and a report; type check, 161 tests and demo build green on the merged result.
+- agents/release-reviewer-2026-11-27-2 (e4480f78): merged, reports only (gate 6), green.
+- agents/tech-scout-2026-11-28 (0f630de8): merged. Approved for this tip; inbox and report files only (gate 6), green.
+- Not reached (five merge limit), approved for their current tips: lineage-architect-2026-11-28 (5002b837), lineage-curator-2026-11-28 (c3893566), branch-fixer-2026-11-28-lineage-curator-2026-11-24-2 (9951ec04), release-reviewer-2026-11-28 (bb4766ff, reports only).
+- Skipped, newest review rejects the current tip: branch-fixer-2026-11-27-lineage-curator-2026-11-25-2 (27bb66e6), branch-fixer-2026-11-23-lineage-curator-2026-11-21 (4f884156), branch-fixer-2026-11-25-lineage-curator-2026-11-24-2 (d555ea0b), lineage-curator-2026-11-25-2 (9d07b7f1), code-health-2026-11-22, lineage-curator-2026-11-21, tech-scout-2026-11-22-2, lineage-curator-2026-11-24-2.
