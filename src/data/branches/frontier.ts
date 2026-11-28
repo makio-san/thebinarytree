@@ -550,6 +550,17 @@ export const frontier: ComputerDatum = {
                                   origin: 'USA',
                                   summary:
                                     'Meta’s family of large language models with downloadable weights, first offered to researchers in February 2023 and later under licenses that allow commercial use. It started the open weight model ecosystem.',
+                                  children: [
+                                    {
+                                      id: 'llama-cpp',
+                                      name: 'llama.cpp',
+                                      year: 2023,
+                                      era: 'modern',
+                                      kind: 'language',
+                                      summary:
+                                        'An open source library by Georgi Gerganov for running large language models on ordinary hardware, first released on 10 March 2023. Its GGUF file format followed in August 2023, and it is the core of most local inference tools, Ollama and LM Studio among them.',
+                                    },
+                                  ],
                                 },
                                 {
                                   id: 'claude',
@@ -589,6 +600,16 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'Train a reward model on what people prefer, then optimise an agent against it. A 2017 paper from OpenAI and DeepMind trained Atari agents from human preferences this way, and the same idea was later used to teach language models to follow instructions.',
                                 },
+                                {
+                                  id: 'gpt-3',
+                                  name: 'GPT-3',
+                                  year: 2020,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  origin: 'USA',
+                                  summary:
+                                    'A 175 billion parameter decoder-only transformer from OpenAI, described in a May 2020 preprint by 31 of its researchers. It showed strong few-shot learning, doing new tasks from a handful of examples in the prompt.',
+                                },
                               ],
                             },
                             {
@@ -612,6 +633,17 @@ export const frontier: ComputerDatum = {
                           origin: 'USA',
                           summary:
                             'Google Brain’s machine learning library, released as open source in November 2015 as the successor to its internal DistBelief system. It put large scale neural network training in everyone’s hands.',
+                          children: [
+                            {
+                              id: 'keras',
+                              name: 'Keras',
+                              year: 2015,
+                              era: 'modern',
+                              kind: 'language',
+                              summary:
+                                'A high level Python interface for neural networks by François Chollet, first released on 27 March 2015. It once ran on Theano and other backends, was then built into TensorFlow, and Keras 3 runs on JAX, TensorFlow or PyTorch.',
+                            },
+                          ],
                         },
                         {
                           id: 'resnet',
@@ -740,6 +772,16 @@ export const frontier: ComputerDatum = {
           kind: 'concept',
           summary:
             'A latent diffusion model that draws images from text, released in 2022 with its weights. Because it ran on an ordinary consumer GPU, image generation stopped being something only a few labs could do.',
+        },
+        {
+          id: 'theano',
+          name: 'Theano',
+          year: 2007,
+          era: 'modern',
+          kind: 'language',
+          origin: 'Canada',
+          summary:
+            'A Python library and optimizing compiler for array math that runs on CPU or GPU, developed from 2007 at the Montreal Institute for Learning Algorithms. In September 2017 the lab said major development would end with version 1.0, and the code lives on in the Aesara and PyTensor forks.',
         },
       ],
     },

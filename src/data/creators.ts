@@ -821,6 +821,18 @@ export const CREATORS: Record<string, string[]> = {
   'trapped-ion-quantum': ['Ignacio Cirac', 'Peter Zoller'],
   'ray-tracing': ['Arthur Appel'],
   roff: ['Ken Thompson'],
+
+  // Scout inboxes 2026-11-25 to 2026-11-28 (remainders), web reader inbox 2026-11-27
+  rocksdb: ['Dhruba Borthakur'],
+  'bloom-filter': ['Burton Howard Bloom'],
+  'consistent-hashing': ['David Karger', 'Eric Lehman', 'Tom Leighton', 'Rina Panigrahy', 'Matthew Levine', 'Daniel Lewin'],
+  'linux-namespaces': ['Al Viro'],
+  'euclidean-algorithm': ['Euclid'],
+  keras: ['François Chollet'],
+  'llama-cpp': ['Georgi Gerganov'],
+  freertos: ['Richard Barry'],
+  'gnu-hurd': ['Thomas Bushnell'],
+  'the-multiprogramming-system': ['Edsger W. Dijkstra'],
 }
 
 const NONE: readonly string[] = []
