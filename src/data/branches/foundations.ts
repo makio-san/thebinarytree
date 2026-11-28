@@ -482,6 +482,27 @@ export const foundations: ComputerDatum = {
           kind: 'concept',
           summary:
             'Compute an index from the key and look there, so finding an item takes about as long with a million entries as with ten. Hans Peter Luhn described hashing with chaining in an internal IBM memorandum in January 1953.',
+          children: [
+            {
+              id: 'bloom-filter',
+              name: 'Bloom Filter',
+              year: 1970,
+              era: 'theory',
+              kind: 'concept',
+              summary:
+                'A compact probabilistic structure that answers whether an item is possibly in a set or definitely not, with false positives but never false negatives. Burton Howard Bloom conceived it in 1970 for cases where error-free hashing would need too much memory, such as a hyphenation dictionary that would otherwise go to disk.',
+            },
+            {
+              id: 'consistent-hashing',
+              name: 'Consistent Hashing',
+              year: 1997,
+              era: 'network',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A way of hashing in which resizing the table moves only a small share of the keys, so cache servers can come and go. David Karger and colleagues at MIT named it in a 1997 paper on web caching, and two of the authors, Daniel Lewin and Tom Leighton, founded Akamai on it in 1998.',
+            },
+          ],
         },
         {
           id: 'linked-list',
@@ -562,6 +583,15 @@ export const foundations: ComputerDatum = {
                 'Volker Strassen showed in 1969 that two matrices can be multiplied in fewer steps than the schoolbook method needs, proving the obvious algorithm was not optimal. It set off the long search for the true cost of matrix multiplication.',
             },
           ],
+        },
+        {
+          id: 'euclidean-algorithm',
+          name: 'Euclidean Algorithm',
+          year: -300,
+          era: 'theory',
+          kind: 'concept',
+          summary:
+            'A method for the greatest common divisor of two whole numbers, described by Euclid in his Elements around 300 BC and one of the oldest algorithms still in common use. Gabriel Lamé’s 1844 analysis of its steps is counted as the start of computational complexity theory, and its extended form finds the inverses that RSA needs.',
         },
       ],
     },

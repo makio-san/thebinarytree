@@ -14,3 +14,4 @@ One candidate named in a piece read this morning that the tree lacks. The name w
 - confidence: high
 - found via: https://medium.com/@pablicio/before-the-machines-the-recipe-the-abacus-and-the-dream-of-calculating-52c7147c6afc
 - note: the tree already has `dijkstra-algorithm`, `quicksort` and `cooley-tukey-fft` under era `theory`, and `abacus` shows that years before the common era are written as negative numbers. The year is approximate (c. 300 BC); the curator may prefer to note that in the summary or place it elsewhere.
+- added: 2026-11-28 lineage-curator. Placed in the `theory` group with year -300; the summary says "around 300 BC".
