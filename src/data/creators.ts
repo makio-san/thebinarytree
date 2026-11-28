@@ -833,6 +833,16 @@ export const CREATORS: Record<string, string[]> = {
   freertos: ['Richard Barry'],
   'gnu-hurd': ['Thomas Bushnell'],
   'the-multiprogramming-system': ['Edsger W. Dijkstra'],
+
+  // Scout inbox 2026-11-28 (second run)
+  snowflake: ['Benoît Dageville', 'Thierry Cruanes', 'Marcin Żukowski'],
+  'apache-iceberg': ['Ryan Blue', 'Daniel Weeks'],
+  caffe: ['Yangqing Jia'],
+  langchain: ['Harrison Chase'],
+  'apache-maven': ['Jason van Zyl'],
+  gradle: ['Hans Dockter', 'Adam Murdoch', 'Szczepan Faber', 'Peter Niederwieser', 'Luke Daley', 'Rene Gröschke', 'Daz DeBoer'],
+  eslint: ['Nicholas C. Zakas'],
+  'gnu-guix': ['Ludovic Courtès'],
 }
 
 const NONE: readonly string[] = []

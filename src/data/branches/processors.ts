@@ -375,6 +375,16 @@ export const processors: ComputerDatum = {
                                                           summary:
                                                             'Processor instructions that let a program keep code and data in an encrypted region of memory, an enclave, that even the operating system cannot read. Intel introduced it in 2015 with the sixth generation Core processors based on Skylake.',
                                                         },
+                                                        {
+                                                          id: 'rdrand',
+                                                          name: 'RDRAND',
+                                                          year: 2012,
+                                                          era: 'modern',
+                                                          kind: 'concept',
+                                                          origin: 'USA',
+                                                          summary:
+                                                            'A processor instruction that returns random numbers from a generator on the chip, seeded by an on-chip entropy source and built to the NIST SP 800-90A standard. Intel introduced it around 2012 in its Ivy Bridge processors and AMD added it in June 2015; the companion RDSEED, from Broadwell, gives lower level access to the entropy source.',
+                                                        },
                                                       ],
                                                     },
                                                   ],

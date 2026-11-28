@@ -210,6 +210,15 @@ export const frontier: ComputerDatum = {
           summary:
             'Europe’s first exascale supercomputer, inaugurated at Forschungszentrum Jülich in September 2025. Its booster, built by Eviden, holds about 24,000 NVIDIA GH200 Grace Hopper superchips.',
         },
+        {
+          id: 'openmp',
+          name: 'OpenMP',
+          year: 1997,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A standard set of compiler directives, library routines and environment variables for shared memory parallel programming in C, C++ and Fortran. Its review board of hardware and software vendors published the first specification, for Fortran, in October 1997. On clusters it is often paired with MPI, OpenMP inside each node and MPI between them.',
+        },
       ],
     },
     {
@@ -610,6 +619,15 @@ export const frontier: ComputerDatum = {
                                   summary:
                                     'A 175 billion parameter decoder-only transformer from OpenAI, described in a May 2020 preprint by 31 of its researchers. It showed strong few-shot learning, doing new tasks from a handful of examples in the prompt.',
                                 },
+                                {
+                                  id: 'langchain',
+                                  name: 'LangChain',
+                                  year: 2022,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'A framework for Python and JavaScript that wires large language models into applications, for document analysis, chatbots and code analysis. Harrison Chase launched it as an open source project in October 2022, while working at the startup Robust Intelligence.',
+                                },
                               ],
                             },
                             {
@@ -663,6 +681,17 @@ export const frontier: ComputerDatum = {
                           origin: 'USA',
                           summary:
                             'A deep learning library for Python from Facebook’s AI lab, now Meta’s, built around eager tensors and automatic differentiation and first released in September 2016. It became the default framework for research and for most large language models.',
+                          children: [
+                            {
+                              id: 'onnx',
+                              name: 'ONNX',
+                              year: 2017,
+                              era: 'modern',
+                              kind: 'concept',
+                              summary:
+                                'An open format for machine learning models, so a model trained in one framework such as PyTorch or TensorFlow can be exported and run elsewhere. The PyTorch team at Facebook built it as Toffee; it was renamed and announced with Microsoft in September 2017, and joined Linux Foundation AI in November 2019.',
+                            },
+                          ],
                         },
                         {
                           id: 'nerf',
@@ -683,6 +712,16 @@ export const frontier: ComputerDatum = {
                                 'A radiance field method that turns a set of photos into a three-dimensional scene and renders it in real time. Splatting dates from Lee Westover’s work in the early 1990s, and Bernhard Kerbl and Georgios Kopanas at Inria proposed the 3D Gaussian version in 2023.',
                             },
                           ],
+                        },
+                        {
+                          id: 'caffe',
+                          name: 'Caffe',
+                          year: 2013,
+                          era: 'modern',
+                          kind: 'concept',
+                          origin: 'USA',
+                          summary:
+                            'A deep learning framework in C++ with a Python interface, which Yangqing Jia wrote during his PhD in Trevor Darrell’s lab at UC Berkeley. An early version called DeCAF was used in the ImageNet challenge in spring 2013, and Caffe was released in December 2013. Its successor Caffe2 was merged into PyTorch in 2018.',
                         },
                       ],
                     },

@@ -370,6 +370,18 @@ export const networks: ComputerDatum = {
                   kind: 'concept',
                   summary:
                     'Grew out of the open sourcing of the Netscape code, and restarted browser competition.',
+                  children: [
+                    {
+                      id: 'kaios',
+                      name: 'KaiOS',
+                      year: 2017,
+                      era: 'modern',
+                      kind: 'os',
+                      origin: 'Hong Kong',
+                      summary:
+                        'A mobile Linux system for keypad feature phones, forked from Mozilla’s Firefox OS and running web apps on the Gecko engine. KaiOS Technologies of Hong Kong first released it in 2017, and the low cost JioPhone carried much of its growth.',
+                    },
+                  ],
                 },
               ],
             },

@@ -303,6 +303,16 @@ export const mobile: ComputerDatum = {
             'A head worn computer driven by eyes and hands instead of controllers, showing the room through cameras. Released in the US in February 2024, and Apple’s first new product category since the Watch.',
         },
         {
+          id: 'beagleboard',
+          name: 'BeagleBoard',
+          year: 2008,
+          era: 'modern',
+          kind: 'machine',
+          origin: 'USA',
+          summary:
+            'A low power open source single board computer from Texas Instruments, with Digi-Key and Newark element14, introduced on 28 July 2008. It was built to show off the OMAP3530 system on a chip and to teach open hardware and software in colleges.',
+        },
+        {
           id: 'raspberry-pi',
           name: 'Raspberry Pi',
           year: 2012,

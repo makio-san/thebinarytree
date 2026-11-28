@@ -66,6 +66,14 @@ export const openSource = group(
                   ],
                 },
               ),
+              item(
+                'gnu-guix',
+                'GNU Guix',
+                2013,
+                'modern',
+                'concept',
+                'A purely functional package manager from the GNU Project, inspired by Nix, that installs each package into a directory named by a hash of all its inputs, so versions can sit side by side and builds can be reproduced. Recipes are written in Guile Scheme, and Ludovic Courtès first released it on 18 January 2013.',
+              ),
             ],
           },
         ),
@@ -191,7 +199,19 @@ export const openSource = group(
           'modern',
           'concept',
           'Formed by the merger of two older groups to employ Linus Torvalds and to host the shared projects of the industry.',
-          { origin: 'USA' },
+          {
+            origin: 'USA',
+            children: [
+              item(
+                'zephyr',
+                'Zephyr',
+                2016,
+                'modern',
+                'os',
+                'A small real time operating system for microcontrollers and other constrained devices, with its own kernel, drivers, protocol stacks and firmware updates. The Linux Foundation and Wind River released it under the Apache License on 26 July 2016. It is named after Zephyrus, the Greek god of the west wind.',
+              ),
+            ],
+          },
         ),
         item(
           'stack-overflow',

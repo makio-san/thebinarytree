@@ -95,6 +95,26 @@ export const tools: ComputerDatum = {
               summary:
                 'An open source port of Blaze, the build tool Google began in 2006 for speed and correctness in one very large monorepo. First released in March 2015, with rules written in Starlark, a dialect of Python.',
             },
+            {
+              id: 'apache-maven',
+              name: 'Apache Maven',
+              year: 2004,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A build tool for Java projects that replaced spelled out build steps with conventions, so only the exceptions need to be written down, and fetches the declared dependencies from shared repositories. Jason van Zyl started it in 2002 as part of Apache Turbine, and version 1.0 came out on 13 July 2004.',
+              children: [
+                {
+                  id: 'gradle',
+                  name: 'Gradle',
+                  year: 2008,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A build tool that builds on the ideas of Ant and Maven but describes builds in Groovy or Kotlin instead of XML, ordering tasks by a directed acyclic graph and skipping work that is already up to date. First released on 21 April 2008.',
+                },
+              ],
+            },
           ],
         },
         {

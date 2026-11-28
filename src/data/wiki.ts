@@ -1174,6 +1174,24 @@ export const WIKI_TITLES: Record<string, string> = {
   'the-multiprogramming-system': 'THE multiprogramming system',
   'risc-os': 'RISC OS',
   inferno: 'Inferno (operating system)',
+
+  // Scout inbox 2026-11-28 (second run), web reader inbox 2026-11-28, HoloLens from 2026-11-28
+  snowflake: 'Snowflake Inc.',
+  'apache-iceberg': 'Apache Iceberg',
+  'apache-flink': 'Apache Flink',
+  caffe: 'Caffe (software)',
+  onnx: 'Open Neural Network Exchange',
+  langchain: 'LangChain',
+  beagleboard: 'BeagleBoard',
+  kaios: 'KaiOS',
+  zephyr: 'Zephyr (operating system)',
+  openmp: 'OpenMP',
+  'apache-maven': 'Apache Maven',
+  gradle: 'Gradle',
+  eslint: 'ESLint',
+  'gnu-guix': 'GNU Guix',
+  rdrand: 'RDRAND',
+  hololens: 'Microsoft HoloLens',
 }
 
 /**

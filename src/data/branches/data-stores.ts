@@ -268,6 +268,18 @@ export const dataStores: ComputerDatum = {
           kind: 'concept',
           summary:
             'A separate copy of the data, restructured for asking questions. Reporting queries and live transactions want opposite things from a layout.',
+          children: [
+            {
+              id: 'snowflake',
+              name: 'Snowflake',
+              year: 2012,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A data warehouse sold as a cloud service, running on Amazon Web Services, Microsoft Azure and Google Cloud, with compute kept separate from storage. Two former Oracle data architects and a Vectorwise co-founder started the company in San Mateo on 23 July 2012, and it came out of stealth in October 2014.',
+            },
+          ],
         },
         {
           id: 'olap',
@@ -356,6 +368,18 @@ export const dataStores: ComputerDatum = {
               era: 'modern',
               kind: 'concept',
               summary: 'The open implementation, and the start of the industry around big data.',
+              children: [
+                {
+                  id: 'apache-iceberg',
+                  name: 'Apache Iceberg',
+                  year: 2017,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'An open format for large analytic tables, begun at Netflix in 2017 to get past the scaling and consistency limits of Apache Hive tables. Spark, Trino, Flink and other engines can work on the same tables safely at the same time. It became a top level Apache project in 2020.',
+                },
+              ],
             },
             {
               id: 'spark',
@@ -378,6 +402,16 @@ export const dataStores: ComputerDatum = {
           origin: 'USA',
           summary:
             'A distributed log for streams of events, open sourced by LinkedIn in January 2011 and later an Apache project. It made processing data as it arrives, rather than in nightly batches, a normal part of company infrastructure.',
+        },
+        {
+          id: 'apache-flink',
+          name: 'Apache Flink',
+          year: 2011,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'Germany',
+          summary:
+            'An engine for stream and batch processing, written in Java and Scala, with event time processing and fault tolerant state. It began as a fork of the execution engine of Stratosphere, a Berlin research project started in 2010, entered the Apache Incubator in March 2014 and became a top level project that December.',
         },
       ],
     },

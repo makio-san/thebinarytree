@@ -299,6 +299,18 @@ export const games: ComputerDatum = {
               origin: 'USA',
               summary:
                 'A depth-sensing camera for the Xbox 360 that tracked a player’s body with no controller in hand. Built on technology from the Israeli company PrimeSense, shown as Project Natal in 2009 and released on 4 November 2010, it sold eight million units in sixty days.',
+              children: [
+                {
+                  id: 'hololens',
+                  name: 'Microsoft HoloLens',
+                  year: 2016,
+                  era: 'modern',
+                  kind: 'device',
+                  origin: 'USA',
+                  summary:
+                    'A mixed reality headset running Windows that lays images over the room around the wearer, with positional tracking that traces back to Kinect. The Development Edition shipped to developers in the United States and Canada on 30 March 2016 for 3,000 dollars, and HoloLens 2 was announced in February 2019.',
+                },
+              ],
             },
           ],
         },

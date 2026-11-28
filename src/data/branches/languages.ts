@@ -805,6 +805,15 @@ export const languages: ComputerDatum = {
               summary:
                 'Adds a compile time type system to JavaScript, and became the default for large front end projects.',
             },
+            {
+              id: 'eslint',
+              name: 'ESLint',
+              year: 2013,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A static analysis tool that flags problem patterns and style issues in JavaScript code, created by Nicholas C. Zakas and first released on 30 June 2013. Its rules can be configured and custom ones loaded, and with a plugin it also reads JSX and TypeScript.',
+            },
           ],
         },
         {
