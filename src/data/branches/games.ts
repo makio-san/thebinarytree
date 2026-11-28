@@ -71,6 +71,28 @@ export const games: ComputerDatum = {
               origin: 'USA',
               summary:
                 'A dungeon generated fresh each time, with permanent death. An entire genre still carries its name.',
+              children: [
+                {
+                  id: 'hack',
+                  name: 'Hack',
+                  year: 1984,
+                  era: 'personal',
+                  kind: 'concept',
+                  summary:
+                    'Begun in 1982 by Jay Fenlason and three friends at Lincoln-Sudbury Regional High School, and released on Usenet in a greatly extended version by Andries Brouwer in 1984. It added shops and many more monsters, items and spells.',
+                  children: [
+                    {
+                      id: 'nethack',
+                      name: 'NetHack',
+                      year: 1987,
+                      era: 'personal',
+                      kind: 'concept',
+                      summary:
+                        'A fork of Hack first released on 28 July 1987 and developed ever since by a team that works together over the internet. One of the oldest games still in active development, and an influence on Diablo.',
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },

@@ -471,6 +471,16 @@ export const frontier: ComputerDatum = {
                           facts: ['The common basis of today’s large language models'],
                           children: [
                             {
+                              id: 'mamba',
+                              name: 'Mamba',
+                              year: 2023,
+                              era: 'modern',
+                              kind: 'concept',
+                              origin: 'USA',
+                              summary:
+                                'A sequence model built on selective state spaces by Albert Gu and Tri Dao, posted in December 2023. It drops attention, scales linearly with sequence length, and its 3 billion parameter version matched Transformers twice its size.',
+                            },
+                            {
                               id: 'llm',
                               name: 'Large Language Models',
                               year: 2020,

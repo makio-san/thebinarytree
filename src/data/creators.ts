@@ -777,6 +777,14 @@ export const CREATORS: Record<string, string[]> = {
   bravo: ['Butler Lampson', 'Charles Simonyi'],
   'microsoft-word': ['Charles Simonyi', 'Richard Brodie'],
   wordstar: ['Rob Barnaby'],
+  // Scout inbox 2026-11-27 (second run)
+  oberon: ['Niklaus Wirth'],
+  hack: ['Jay Fenlason', 'Kenny Woodland', 'Mike Thome', 'Jonathan Payne', 'Andries Brouwer'],
+  nethack: ['NetHack Development Team'],
+  'google-search': ['Larry Page', 'Sergey Brin'],
+  neovim: ['Thiago de Arruda'],
+  mamba: ['Albert Gu', 'Tri Dao'],
+
   // Scout inboxes 2026-11-22, 2026-11-24 (second run) and 2026-11-25, web reader inbox 2026-11-24
   'b-tree': ['Rudolf Bayer', 'Edward McCreight'],
   'lsm-tree': ['Patrick O’Neil', 'Edward Cheng', 'Dieter Gawlick', 'Elizabeth O’Neil'],
