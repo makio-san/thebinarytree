@@ -78,6 +78,18 @@ export const dataStores: ComputerDatum = {
                   origin: 'USA',
                   summary:
                     'An embedded on-disk key-value store that Jeff Dean and Sanjay Ghemawat wrote at Google from early 2011, on the design of the Bigtable tablet stack but small enough to open source. Chrome uses it for IndexedDB, and Bitcoin Core keeps blockchain metadata in it.',
+                  children: [
+                    {
+                      id: 'rocksdb',
+                      name: 'RocksDB',
+                      year: 2012,
+                      era: 'modern',
+                      kind: 'concept',
+                      origin: 'USA',
+                      summary:
+                        'An embedded key-value store that Dhruba Borthakur started at Facebook in 2012 as a fork of LevelDB, tuned for multi-core processors and solid state drives. It still sits on an LSM tree and runs in production at Facebook, Yahoo and LinkedIn.',
+                    },
+                  ],
                 },
               ],
             },

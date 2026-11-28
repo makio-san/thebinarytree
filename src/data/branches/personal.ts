@@ -433,6 +433,18 @@ export const personal: ComputerDatum = {
               kind: 'machine',
               origin: 'England',
               summary: 'The first desktop computer with an ARM processor, and the fastest home machine of its day.',
+              children: [
+                {
+                  id: 'risc-os',
+                  name: 'RISC OS',
+                  year: 1987,
+                  era: 'personal',
+                  kind: 'os',
+                  origin: 'England',
+                  summary:
+                    'Acorn’s operating system for its ARM based Archimedes computers, first released as Arthur 1.20 in 1987 and called RISC OS from version 2 in 1989. RISC OS Open still develops it, and version 5 was open sourced in 2018.',
+                },
+              ],
             },
           ],
         },

@@ -1142,6 +1142,27 @@ export const WIKI_TITLES: Record<string, string> = {
   'ray-tracing': 'Ray tracing (graphics)',
   roff: 'Roff (software)',
   'cpu-cache': 'CPU cache',
+
+  // Scout inboxes 2026-11-25 to 2026-11-28 (remainders), web reader inbox 2026-11-27
+  rocksdb: 'RocksDB',
+  'bloom-filter': 'Bloom filter',
+  'consistent-hashing': 'Consistent hashing',
+  'linux-namespaces': 'Linux namespaces',
+  pypi: 'Python Package Index',
+  'euclidean-algorithm': 'Euclidean algorithm',
+  chromeos: 'ChromeOS',
+  'gpt-3': 'GPT-3',
+  theano: 'Theano (software)',
+  keras: 'Keras',
+  'llama-cpp': 'Llama.cpp',
+  esp32: 'ESP32',
+  vxworks: 'VxWorks',
+  freertos: 'FreeRTOS',
+  'gnu-hurd': 'GNU Hurd',
+  'tops-20': 'TOPS-20',
+  'the-multiprogramming-system': 'THE multiprogramming system',
+  'risc-os': 'RISC OS',
+  inferno: 'Inferno (operating system)',
 }
 
 /**

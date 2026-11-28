@@ -63,6 +63,16 @@ export const operatingSystems: ComputerDatum = {
             'A very ambitious joint project of MIT, Bell Labs, and GE. It introduced virtual memory, a hierarchical file system, and dynamic linking, but stayed heavy.',
           facts: ['The first operating system written in a high level language', 'Protection rings'],
         },
+        {
+          id: 'the-multiprogramming-system',
+          name: 'THE Multiprogramming System',
+          year: 1965,
+          era: 'integrated',
+          kind: 'os',
+          origin: 'Netherlands',
+          summary:
+            'A batch multiprogramming system built at the Technische Hogeschool Eindhoven by a team led by Edsger Dijkstra, described in 1965 and 1966 and published in 1968. It was built in layers that depend only on the ones below, and had an early form of software paged virtual memory.',
+        },
       ],
     },
     {
@@ -447,6 +457,25 @@ export const operatingSystems: ComputerDatum = {
                           summary:
                             'A Linux interface for asynchronous I/O built on two ring buffers shared between the program and the kernel, one for requests and one for completions. Jens Axboe wrote the design, and it was merged in Linux 5.1 in May 2019 after earlier attempts to fix asynchronous I/O had failed.',
                         },
+                        {
+                          id: 'linux-namespaces',
+                          name: 'Linux Namespaces',
+                          year: 2002,
+                          era: 'modern',
+                          kind: 'component',
+                          summary:
+                            'A kernel feature that gives a group of processes its own view of mounts, process ids, network interfaces and users. Al Viro’s mount namespace came first, in kernel 2.4.19 in 2002, after the per-process namespaces of Plan 9, and with cgroups it is what Docker and other containers are built on.',
+                        },
+                        {
+                          id: 'chromeos',
+                          name: 'ChromeOS',
+                          year: 2011,
+                          era: 'modern',
+                          kind: 'os',
+                          origin: 'USA',
+                          summary:
+                            'Google’s operating system with the Chrome browser as its main interface, derived from ChromiumOS and through it from Gentoo Linux. Announced in July 2009, it first shipped on Chromebooks on 15 June 2011.',
+                        },
                       ],
                     },
                   ],
@@ -512,6 +541,18 @@ export const operatingSystems: ComputerDatum = {
               origin: 'USA',
               summary:
                 'The people who wrote Unix trying again. Every resource is reached through a file system, and UTF-8 was designed in this project.',
+              children: [
+                {
+                  id: 'inferno',
+                  name: 'Inferno',
+                  year: 1996,
+                  era: 'network',
+                  kind: 'os',
+                  origin: 'USA',
+                  summary:
+                    'A distributed operating system that Bell Labs started in 1995 and released in 1996, to take ideas from Plan 9 to a wider range of devices and networks. Programs are written in Limbo and run on the Dis virtual machine.',
+                },
+              ],
             },
             {
               id: 'roff',
@@ -776,6 +817,43 @@ export const operatingSystems: ComputerDatum = {
           kind: 'os',
           summary:
             'Google’s open source, capability-based operating system on its own Zircon kernel instead of Linux. The code appeared publicly in August 2016 and it first shipped in 2021 on the first-generation Nest Hub.',
+        },
+        {
+          id: 'tops-20',
+          name: 'TOPS-20',
+          year: 1976,
+          era: 'micro',
+          kind: 'os',
+          origin: 'USA',
+          summary:
+            'DEC’s time sharing system for its 36-bit DECSYSTEM-20 machines, shipped as a product from 1976. It began in 1969 as TENEX at Bolt, Beranek and Newman.',
+        },
+        {
+          id: 'vxworks',
+          name: 'VxWorks',
+          year: 1987,
+          era: 'personal',
+          kind: 'os',
+          summary:
+            'A proprietary real time operating system from Wind River Systems, first released in 1987 and grown out of enhancements to the VRTX kernel. It runs embedded systems in aerospace, defense, medical, industrial and automotive equipment.',
+        },
+        {
+          id: 'gnu-hurd',
+          name: 'GNU Hurd',
+          year: 1990,
+          era: 'personal',
+          kind: 'os',
+          summary:
+            'The GNU Project’s kernel, a set of servers running on the GNU Mach microkernel, in development since 1990 as a replacement for the Unix kernel. Once Linux proved workable, its development slowed.',
+        },
+        {
+          id: 'freertos',
+          name: 'FreeRTOS',
+          year: 2003,
+          era: 'network',
+          kind: 'os',
+          summary:
+            'A small real time kernel for microcontrollers that Richard Barry wrote around 2003. Amazon Web Services took over its stewardship in 2017, it is under the MIT License, and it has been ported to about 40 microcontroller platforms.',
         },
       ],
     },

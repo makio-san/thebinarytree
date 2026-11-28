@@ -322,6 +322,17 @@ export const mobile: ComputerDatum = {
           origin: 'Italy',
           summary:
             'An open hardware board so that people who are not electronics engineers can program a microcontroller.',
+          children: [
+            {
+              id: 'esp32',
+              name: 'ESP32',
+              year: 2016,
+              era: 'modern',
+              kind: 'processor',
+              summary:
+                'A family of low cost microcontrollers from Espressif Systems with Wi-Fi and Bluetooth built in, launched on 6 September 2016 as the successor to the ESP8266. An Arduino core supports it, and many Arduino-style boards are built around it.',
+            },
+          ],
         },
       ],
     },

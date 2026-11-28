@@ -743,6 +743,15 @@ export const languages: ComputerDatum = {
               summary:
                 'A build of CPython without the global interpreter lock, so Python threads can run on several cores at once. Sam Gross proposed it in PEP 703, and it shipped as an experimental build of Python 3.13 in October 2024.',
             },
+            {
+              id: 'pypi',
+              name: 'Python Package Index',
+              year: 2003,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'The official repository of third party Python packages, proposed in PEP 301 in October 2002 and launched in 2003. pip installs from it by default, and it held more than 600,000 packages by March 2025.',
+            },
           ],
         },
         {
