@@ -422,6 +422,16 @@ export const peripherals: ComputerDatum = {
                   summary:
                     'A cache coherent link built on the PCI Express physical layer, so processors can share memory with accelerators and reach memory beyond the DIMM slots. Version 1.0 came out in March 2019, the month nine companies including Intel, Google and Microsoft formed its consortium.',
                 },
+                {
+                  id: 'ucie',
+                  name: 'Universal Chiplet Interconnect Express',
+                  year: 2022,
+                  era: 'modern',
+                  kind: 'component',
+                  origin: 'International',
+                  summary:
+                    'An open standard for connecting chiplets from different makers inside one package, with a protocol layer that carries PCI Express and CXL. Version 1.0 came out on 2 March 2022 from a group that includes AMD, Arm, Intel, Qualcomm, Samsung and TSMC; version 4.0 followed on 12 November 2026.',
+                },
               ],
             },
           ],
@@ -435,6 +445,17 @@ export const peripherals: ComputerDatum = {
           origin: 'USA',
           summary:
             'One plug and one protocol for keyboards, mice, printers and drives, with power on the same cable. USB 1.0 came out in January 1996 from seven companies including Intel, Compaq and Microsoft, and replaced serial, parallel and game ports.',
+          children: [
+            {
+              id: 'usb4',
+              name: 'USB4',
+              year: 2019,
+              era: 'modern',
+              kind: 'component',
+              summary:
+                'The USB specification announced in 2019, based on the Thunderbolt 3 protocol and defined only for USB-C connectors. It shares one link of 20, 40 or 80 Gbit/s by tunnelling USB 3, DisplayPort and PCI Express inside it.',
+            },
+          ],
         },
       ],
     },

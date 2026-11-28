@@ -400,7 +400,36 @@ export const foundations: ComputerDatum = {
                   summary:
                     'Irving Reed and Gustave Solomon built codes on symbols rather than single bits, so a whole burst of damage can be repaired. They sit inside CDs, DVDs, Blu-ray, QR codes, DSL and RAID 6.',
                 },
+                {
+                  id: 'ldpc',
+                  name: 'LDPC Codes',
+                  year: 1960,
+                  era: 'theory',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'Low-density parity-check codes, which Robert Gallager devised in his 1960 doctoral dissertation at MIT. They were ignored for decades because decoding was too costly, came back in the mid 1990s, and are now used from wireless links to flash storage.',
+                },
+                {
+                  id: 'turbo-code',
+                  name: 'Turbo Codes',
+                  year: 1993,
+                  era: 'network',
+                  kind: 'concept',
+                  origin: 'France',
+                  summary:
+                    'Error correcting codes that were the first practical ones to come close to the Shannon limit. The patent was filed in 1991 with Claude Berrou as sole inventor, the paper by Berrou, Alain Glavieux and Punya Thitimajshima followed in 1993, and 3G and 4G mobile networks use them.',
+                },
               ],
+            },
+            {
+              id: 'kolmogorov-complexity',
+              name: 'Kolmogorov Complexity',
+              year: 1963,
+              era: 'theory',
+              kind: 'concept',
+              summary:
+                'The information in a string measured as the length of the shortest program that prints it. Andrey Kolmogorov first published on it in 1963, it also carries the names of Ray Solomonoff and Gregory Chaitin, and no single program can compute it exactly for infinitely many strings.',
             },
           ],
         },
@@ -434,6 +463,46 @@ export const foundations: ComputerDatum = {
           origin: 'USA',
           summary:
             'Norbert Wiener put feedback and control in one framework covering both animals and machines.',
+        },
+        {
+          id: 'simplex-algorithm',
+          name: 'Simplex Algorithm',
+          year: 1947,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'George Dantzig’s method for linear programming: walk the corners of the feasible region until none is better. It grew out of his planning work for the US Army Air Force and took shape in mid-1947, once he added an objective function to the problem.',
+        },
+        {
+          id: 'hash-table',
+          name: 'Hash Table',
+          year: 1953,
+          era: 'theory',
+          kind: 'concept',
+          summary:
+            'Compute an index from the key and look there, so finding an item takes about as long with a million entries as with ten. Hans Peter Luhn described hashing with chaining in an internal IBM memorandum in January 1953.',
+        },
+        {
+          id: 'linked-list',
+          name: 'Linked List',
+          year: 1956,
+          era: 'theory',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Each element points to the next, so items go in or out without moving the rest. Allen Newell, Cliff Shaw and Herbert Simon built it in 1955 and 1956 at RAND and Carnegie Mellon as the main structure of their Information Processing Language.',
+          children: [
+            {
+              id: 'skip-list',
+              name: 'Skip List',
+              year: 1989,
+              era: 'personal',
+              kind: 'concept',
+              summary:
+                'A sorted linked list with extra layers of shortcut links chosen at random, which gives logarithmic search and insertion on average with no rebalancing. William Pugh invented it in 1989 and published it in 1990 as a probabilistic alternative to balanced trees.',
+            },
+          ],
         },
         {
           id: 'dijkstra-algorithm',
@@ -482,6 +551,15 @@ export const foundations: ComputerDatum = {
               kind: 'concept',
               summary:
                 'Stephen Cook showed satisfiability to be among the hardest problems in NP. Whether P equals NP is still open.',
+            },
+            {
+              id: 'strassen-algorithm',
+              name: 'Strassen Algorithm',
+              year: 1969,
+              era: 'theory',
+              kind: 'concept',
+              summary:
+                'Volker Strassen showed in 1969 that two matrices can be multiplied in fewer steps than the schoolbook method needs, proving the obvious algorithm was not optimal. It set off the long search for the true cost of matrix multiplication.',
             },
           ],
         },

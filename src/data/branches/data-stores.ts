@@ -38,6 +38,50 @@ export const dataStores: ComputerDatum = {
           origin: 'USA',
           summary:
             'Indexed sequential access on disk: read a record by key without scanning. The first practical random access to business data.',
+          children: [
+            {
+              id: 'b-tree',
+              name: 'B-tree',
+              year: 1970,
+              era: 'integrated',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'A balanced tree whose nodes hold many keys each, so a large sorted index stays shallow and a key is found in a few disk reads. Rudolf Bayer and Edward McCreight invented it at Boeing Research Labs and first circulated the paper in July 1970.',
+              children: [
+                {
+                  id: 'red-black-tree',
+                  name: 'Red-Black Tree',
+                  year: 1978,
+                  era: 'micro',
+                  kind: 'concept',
+                  summary:
+                    'A self-balancing binary search tree in which one extra bit per node, its color, keeps search, insertion and deletion logarithmic. Rudolf Bayer invented its forerunner in 1972 as a special case of the B-tree, and Guibas and Sedgewick described the red and black form in 1978.',
+                },
+              ],
+            },
+            {
+              id: 'lsm-tree',
+              name: 'Log-Structured Merge-Tree',
+              year: 1996,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'An index that takes new records in memory and merges them to disk in batches, written sequentially. Patrick O’Neil and three colleagues described it in 1996 for files with a very high volume of inserts.',
+              children: [
+                {
+                  id: 'leveldb',
+                  name: 'LevelDB',
+                  year: 2011,
+                  era: 'modern',
+                  kind: 'concept',
+                  origin: 'USA',
+                  summary:
+                    'An embedded on-disk key-value store that Jeff Dean and Sanjay Ghemawat wrote at Google from early 2011, on the design of the Bigtable tablet stack but small enough to open source. Chrome uses it for IndexedDB, and Bitcoin Core keeps blockchain metadata in it.',
+                },
+              ],
+            },
+          ],
         },
         {
           id: 'ims',
@@ -239,6 +283,17 @@ export const dataStores: ComputerDatum = {
               origin: 'USA',
               summary:
                 "An open columnar file format begun jointly by Twitter and Cloudera on the record shredding scheme of Google's Dremel paper. Version 1.0 came out in July 2013, and it became a top level Apache project in 2015.",
+              children: [
+                {
+                  id: 'apache-arrow',
+                  name: 'Apache Arrow',
+                  year: 2016,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A standard column-oriented layout for data held in memory, so analytic tools in different languages can hand each other tables without converting them. Parquet is how such tables rest on disk; Arrow is how they sit in memory. It was first released on 10 October 2016.',
+                },
+              ],
             },
             {
               id: 'duckdb',
@@ -250,7 +305,27 @@ export const dataStores: ComputerDatum = {
               summary:
                 'An embedded column store for analytical queries, built at CWI in Amsterdam and presented in 2019. It does for analysis what SQLite did for small transactional databases: a whole database in one library, no server.',
             },
+            {
+              id: 'clickhouse',
+              name: 'ClickHouse',
+              year: 2016,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'Russia',
+              summary:
+                'A column-oriented database for analytical queries answered in real time. Yandex built it to power its Metrica web analytics, where it went into production in 2012, and released it as open source on 15 June 2016.',
+            },
           ],
+        },
+        {
+          id: 'google-file-system',
+          name: 'Google File System',
+          year: 2003,
+          era: 'modern',
+          kind: 'concept',
+          origin: 'USA',
+          summary:
+            'Google’s file system for very large files spread over clusters of cheap machines, with every chunk kept on three of them by default. Sanjay Ghemawat, Howard Gobioff and Shun-Tak Leung described it in 2003; Colossus replaced it inside Google in 2010.',
         },
         {
           id: 'mapreduce',
@@ -358,6 +433,15 @@ export const dataStores: ComputerDatum = {
               kind: 'concept',
               summary: 'The managed service version, sold by the request rather than the server.',
             },
+            {
+              id: 'crdt',
+              name: 'Conflict-Free Replicated Data Types',
+              year: 2011,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Data structures that every replica can update on its own and that merge without coordination, so all copies end up the same. Formally defined in 2011 by Marc Shapiro, Nuno Preguiça, Carlos Baquero and Marek Zawirski, with collaborative text editing as an early motive.',
+            },
           ],
         },
         {
@@ -378,6 +462,17 @@ export const dataStores: ComputerDatum = {
               origin: 'Italy',
               summary:
                 'An in-memory store with real data structures rather than just strings, which made it a queue and a lock service as well as a cache.',
+              children: [
+                {
+                  id: 'valkey',
+                  name: 'Valkey',
+                  year: 2024,
+                  era: 'modern',
+                  kind: 'concept',
+                  summary:
+                    'A fork of Redis kept under the BSD licence and hosted by the Linux Foundation. Its first release came on 28 March 2024.',
+                },
+              ],
             },
           ],
         },
@@ -408,6 +503,17 @@ export const dataStores: ComputerDatum = {
           kind: 'concept',
           summary:
             'Google Spanner and its successors took the guarantees back, using synchronised clocks to get global transactions. The relational model returning at scale.',
+          children: [
+            {
+              id: 'cockroachdb',
+              name: 'CockroachDB',
+              year: 2017,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'A distributed SQL database from three former Google engineers who had used Bigtable and Spanner and wanted to build something similar. Spencer Kimball began the open source project in February 2014, the first release came in 2017, and it speaks the PostgreSQL wire protocol.',
+            },
+          ],
         },
       ],
     },

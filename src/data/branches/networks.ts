@@ -111,6 +111,16 @@ export const networks: ComputerDatum = {
               summary:
                 'A mail routing program Allman derived from his earlier delivermail at UC Berkeley. It shipped with 4.1c BSD in 1983, the first BSD with TCP/IP, and carried much of the early Internet\'s mail.',
             },
+            {
+              id: 'exchange-server',
+              name: 'Microsoft Exchange Server',
+              year: 1996,
+              era: 'modern',
+              kind: 'concept',
+              origin: 'USA',
+              summary:
+                'Microsoft’s mail and calendar server, first released on 2 April 1996 as Exchange Server 4.0, the successor to Microsoft Mail 3.5. It speaks its own MAPI protocol to clients and SMTP to other mail servers.',
+            },
           ],
         },
         {
@@ -239,6 +249,15 @@ export const networks: ComputerDatum = {
               summary:
                 'A link state routing protocol for IP networks inside one autonomous system, first standardised in 1989 as RFC 1131. Each router builds a map of the network and computes shortest paths over it.',
             },
+            {
+              id: 'nat',
+              name: 'Network Address Translation',
+              year: 1994,
+              era: 'network',
+              kind: 'concept',
+              summary:
+                'Rewriting the addresses in packets as they pass a router, so a whole private network can share one public IPv4 address. RFC 1631 called it a short-term solution to address depletion in 1994, and by 2004 it was widespread.',
+            },
           ],
         },
       ],
@@ -289,6 +308,17 @@ export const networks: ComputerDatum = {
           kind: 'network',
           summary:
             'The 802.11 standard made wireless local networking uniform. Laptops and phones being genuinely portable depends on it.',
+          children: [
+            {
+              id: 'wifi-7',
+              name: 'Wi-Fi 7',
+              year: 2024,
+              era: 'modern',
+              kind: 'network',
+              summary:
+                'IEEE 802.11be, built upon Wi-Fi 6 and working in the 2.4, 5 and 6 GHz bands. The Wi-Fi Alliance opened its Wi-Fi Certified 7 program on 8 January 2024, after draft based products had reached shops in early 2023.',
+            },
+          ],
         },
         {
           id: 'bluetooth',
@@ -482,6 +512,24 @@ export const networks: ComputerDatum = {
             },
           ],
         },
+        {
+          id: 'web-2-0',
+          name: 'Web 2.0',
+          year: 2004,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'The name for websites built on what their users contribute. Darcy DiNucci coined it in 1999, and Tim O’Reilly and Dale Dougherty made it common at the first Web 2.0 Conference in 2004.',
+        },
+        {
+          id: 'ladybird',
+          name: 'Ladybird',
+          year: 2022,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'An open source browser whose engine is not based on Chromium, Gecko or WebKit. It began in 2019 as part of SerenityOS, Andreas Kling made it a separate project in September 2022, and a first alpha came out in 2026.',
+        },
       ],
     },
     {
@@ -555,6 +603,16 @@ export const networks: ComputerDatum = {
               ],
             },
           ],
+        },
+        {
+          id: 'icq',
+          name: 'ICQ',
+          year: 1996,
+          era: 'network',
+          kind: 'network',
+          origin: 'Israel',
+          summary:
+            'The first widely adopted instant messenger, released in November 1996 by the Israeli company Mirabilis. A central service with personal accounts and one to one chats set the pattern for later messengers. It passed 100 million registered accounts around 2001 and shut down in June 2024.',
         },
       ],
     },

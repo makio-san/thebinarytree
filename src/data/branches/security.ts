@@ -47,7 +47,7 @@ export const security: ComputerDatum = {
           kind: 'concept',
           origin: 'USA',
           summary:
-            'A truly random key as long as the message, used once. The only cipher proven unbreakable, and almost unusable for exactly the reason that makes it so.',
+            'A truly random key as long as the message, used once. Frank Miller described it in 1882 and it was reinvented in 1917, when Gilbert Vernam built the XOR cipher and Joseph Mauborgne saw that a random, never reused key made it unbreakable. The only cipher proven unbreakable, and almost unusable for exactly the reason that makes it so.',
         },
         {
           id: 'enigma',
@@ -68,7 +68,7 @@ export const security: ComputerDatum = {
           kind: 'machine',
           origin: 'Germany',
           summary:
-            'High command traffic, far stronger than Enigma. Breaking it needed Colossus, so cryptanalysis is what built the first electronic computers.',
+            'Teleprinter cipher for German High Command traffic, far stronger than Enigma. Broken first by hand and then with the Robinson machines and the Colossus computers, so cryptanalysis is what built the first electronic computers.',
         },
       ],
     },
@@ -87,7 +87,7 @@ export const security: ComputerDatum = {
           kind: 'concept',
           origin: 'USA',
           summary:
-            'The first public standard cipher, and the first to be studied openly by everyone. Its 56 bit key was arguably too short on the day it shipped and was brute forced in 1998.',
+            'An IBM cipher based on Horst Feistel’s Lucifer, published as a US federal standard in January 1977. The open academic scrutiny it received shaped the modern understanding of block ciphers. Its 56 bit key was arguably too short on the day it shipped, and the EFF’s DES cracker broke it by brute force in 1998.',
         },
         {
           id: 'aes',
@@ -160,6 +160,15 @@ export const security: ComputerDatum = {
               summary:
                 'The ITU standard format for public key certificates, first issued in July 1988 alongside the X.500 directory. Every TLS certificate behind HTTPS is an X.509 certificate.',
             },
+            {
+              id: 'homomorphic-encryption',
+              name: 'Fully Homomorphic Encryption',
+              year: 2009,
+              era: 'modern',
+              kind: 'concept',
+              summary:
+                'Encryption that lets a computer calculate on data without decrypting it. The problem was posed in 1978, within a year of RSA, and Craig Gentry described the first plausible fully homomorphic scheme in 2009 using lattice-based cryptography.',
+            },
           ],
         },
         {
@@ -215,7 +224,7 @@ export const security: ComputerDatum = {
           era: 'modern',
           kind: 'concept',
           summary:
-            'A hash that was everywhere, then shown to allow collisions. Still used for checksums where nobody is attacking, which is a narrower set than people assume.',
+            'Ron Rivest designed it in 1991 to replace MD4, and it was specified in 1992 as RFC 1321. A hash that was everywhere, then shown to allow collisions. Still used for checksums where nobody is attacking, which is a narrower set than people assume.',
         },
         {
           id: 'sha-2',
@@ -273,7 +282,7 @@ export const security: ComputerDatum = {
           kind: 'concept',
           origin: 'USA',
           summary:
-            'Bob Thomas wrote it at BBN as an experiment that moved between TENEX machines on the ARPANET. Counted as the first worm, and Reaper, written to remove it, as the first antivirus program.',
+            'Bob Thomas wrote it at BBN as an experiment that moved between TENEX machines on the ARPANET, and Ray Tomlinson made a later version that copied itself instead. That self copying version is counted as the first worm, and Reaper, written to remove it, as the first antivirus program.',
         },
         {
           id: 'morris-worm',
@@ -283,7 +292,7 @@ export const security: ComputerDatum = {
           kind: 'concept',
           origin: 'USA',
           summary:
-            'The first worm to disrupt the internet at large, exploiting a buffer overflow and weak passwords. It created the first coordinated response team.',
+            'One of the first worms spread over the internet and the first to draw wide media attention, exploiting a buffer overflow and weak passwords. It led DARPA to fund the CERT Coordination Center at Carnegie Mellon, the first team to use the name computer emergency response team.',
         },
         {
           id: 'stuxnet',
@@ -346,7 +355,7 @@ export const security: ComputerDatum = {
           era: 'modern',
           kind: 'concept',
           summary:
-            'Stop treating the internal network as safe and authenticate every request. An admission that the perimeter model had failed.',
+            'Stop treating the internal network as safe and authenticate every request. The term first appeared in a 1994 thesis; John Kindervag of Forrester Research gave it this meaning in 2010. An admission that the perimeter model had failed.',
         },
         {
           id: 'spectre',
@@ -355,7 +364,25 @@ export const security: ComputerDatum = {
           era: 'modern',
           kind: 'concept',
           summary:
-            'Speculative execution leaks data through timing. A bug in the performance idea itself rather than in any one chip, and it cost every processor real speed to mitigate.',
+            'Speculative execution leaks data through timing. Made public in January 2018, it is a flaw in a performance technique used across modern processors rather than in any one chip, and the patches cost real speed, 2 to 14 percent in some Intel benchmarks.',
+        },
+        {
+          id: 'log4shell',
+          name: 'Log4Shell',
+          year: 2021,
+          era: 'modern',
+          kind: 'concept',
+          summary:
+            'A flaw in the Java logging library Log4j that let attackers run their own code on a server through its lookups to LDAP and JNDI servers. It had gone unnoticed since 2013 until Chen Zhaojun of Alibaba Cloud reported it on 24 November 2021, and Apache gave it the highest severity score, 10.',
+        },
+        {
+          id: 'tpm',
+          name: 'Trusted Platform Module',
+          year: 2003,
+          era: 'modern',
+          kind: 'component',
+          summary:
+            'A secure cryptoprocessor that checks a computer boots from trusted hardware and software and that stores disk encryption keys. The Trusted Computing Group conceived it, version 1.1b was the first deployed in 2003, and it became ISO/IEC 11889 in 2009.',
         },
       ],
     },

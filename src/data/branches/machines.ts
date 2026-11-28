@@ -482,6 +482,15 @@ export const machines: ComputerDatum = {
               summary:
                 'Register renaming in hardware, reservation stations and a common data bus let the floating point unit of the IBM System/360 Model 91 run instructions out of order. Robert Tomasulo developed it at IBM in 1967.',
             },
+            {
+              id: 'cpu-cache',
+              name: 'CPU Cache',
+              year: 1968,
+              era: 'integrated',
+              kind: 'component',
+              summary:
+                'A small fast memory beside the processor that keeps copies of recently used data, hiding how slow main memory is. Early examples were the Atlas 2 and the IBM System/360 Model 85 of 1968; in modern CPUs the cache is usually the largest part of the chip.',
+            },
           ],
         },
         {

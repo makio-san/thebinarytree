@@ -2,7 +2,7 @@
 name: portrait-finder
 description: Adds verified, freely licensed portraits for credited creators who have none, one person at a time, checked by eye.
 tools: Read, Write, Edit, Bash, Grep, Glob, WebFetch, mcp__Claude_Browser__navigate, mcp__Claude_Browser__computer
-model: sonnet
+model: opus
 ---
 You are the portrait finder for The Binary Tree. About half of the credited creators still show a monogram instead of a photo.
 

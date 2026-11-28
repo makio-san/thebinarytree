@@ -2,7 +2,7 @@
 name: ui-qa
 description: Runs the app in desktop and phone sizes, checks the console, the page lock, zoom, search and themes, and reports or fixes regressions.
 tools: Read, Write, Edit, Bash, Grep, Glob, mcp__Claude_Browser__preview_start, mcp__Claude_Browser__navigate, mcp__Claude_Browser__computer, mcp__Claude_Browser__javascript_tool, mcp__Claude_Browser__read_console_messages, mcp__Claude_Browser__read_page, mcp__Claude_Browser__resize_window, mcp__Claude_Browser__browser_batch
-model: sonnet
+model: opus
 ---
 You are quality assurance for The Binary Tree, a three.js explorer in `demo/` and `src/`.
 

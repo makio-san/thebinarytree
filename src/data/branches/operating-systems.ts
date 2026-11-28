@@ -113,6 +113,16 @@ export const operatingSystems: ComputerDatum = {
                       summary:
                         'Brian Fox’s free replacement for the Bourne shell, written for the GNU Project in 1989. Its syntax is a superset of the Bourne shell’s, and it is the default login shell of many Linux distributions.',
                     },
+                    {
+                      id: 'zsh',
+                      name: 'Z Shell',
+                      year: 1990,
+                      era: 'network',
+                      kind: 'language',
+                      origin: 'USA',
+                      summary:
+                        'A Unix shell that keeps most of the Bourne shell’s syntax and adds features from ksh and tcsh, such as programmable completion and extended globbing. Paul Falstad wrote it in 1990 as a student at Princeton, and it is now the default interactive shell of macOS.',
+                    },
                   ],
                 },
                 {
@@ -191,6 +201,17 @@ export const operatingSystems: ComputerDatum = {
                               origin: 'USA',
                               summary:
                                 'A file system and volume manager in one, designed at Sun by a team led by Jeff Bonwick, Bill Moore and Matthew Ahrens. It was published as open source with OpenSolaris in 2005, reached Solaris 10 in 2006, and lives on as OpenZFS.',
+                              children: [
+                                {
+                                  id: 'btrfs',
+                                  name: 'Btrfs',
+                                  year: 2007,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'A copy-on-write file system and volume manager in one, created by Chris Mason in 2007 to give Linux pooling, snapshots and integrity checking. Its on-disk format was declared stable in Linux 3.13 in November 2013.',
+                                },
+                              ],
                             },
                           ],
                         },
@@ -223,6 +244,17 @@ export const operatingSystems: ComputerDatum = {
                               era: 'modern',
                               kind: 'os',
                               summary: 'The same system under its current name.',
+                              children: [
+                                {
+                                  id: 'apfs',
+                                  name: 'Apple File System',
+                                  year: 2017,
+                                  era: 'modern',
+                                  kind: 'concept',
+                                  summary:
+                                    'Apple’s replacement for HFS+, built for solid state storage with encryption and snapshots. It arrived on iOS 10.3 on 27 March 2017 and on the Mac with macOS 10.13 on 25 September 2017.',
+                                },
+                              ],
                             },
                             {
                               id: 'ios',
@@ -293,6 +325,15 @@ export const operatingSystems: ComputerDatum = {
                       ],
                       children: [
                         {
+                          id: 'rpm',
+                          name: 'RPM Package Manager',
+                          year: 1995,
+                          era: 'modern',
+                          kind: 'concept',
+                          summary:
+                            'The package format and package manager that Erik Troan and Marc Ewing wrote for Red Hat Linux in 1995. It became the baseline package format of the Linux Standard Base and is used by Fedora, openSUSE, CentOS and many other distributions.',
+                        },
+                        {
                           id: 'slackware',
                           name: 'Slackware',
                           year: 1993,
@@ -338,6 +379,27 @@ export const operatingSystems: ComputerDatum = {
                           summary:
                             'A mobile system on the Linux kernel, and now the most used operating system in the world.',
                           facts: ['First device: HTC Dream, 2008'],
+                          children: [
+                            {
+                              id: 'flutter',
+                              name: 'Flutter',
+                              year: 2017,
+                              era: 'modern',
+                              kind: 'concept',
+                              origin: 'USA',
+                              summary:
+                                'Google’s open source toolkit for building apps for Android, iOS, the web and the desktop from one codebase, with apps written in Dart. First described in 2015 and released in May 2017, it draws every pixel with its own rendering engine.',
+                            },
+                            {
+                              id: 'harmonyos',
+                              name: 'HarmonyOS',
+                              year: 2019,
+                              era: 'modern',
+                              kind: 'os',
+                              summary:
+                                'Huawei’s operating system for phones, tablets, watches, televisions and personal computers. From 2019 to 2024 it was built on the Android Open Source Project together with OpenHarmony, and HarmonyOS NEXT then removed all Android code.',
+                            },
+                          ],
                         },
                         {
                           id: 'ebpf',
@@ -365,6 +427,25 @@ export const operatingSystems: ComputerDatum = {
                           kind: 'os',
                           summary:
                             'The init system and service manager that runs as process 1 on nearly every Linux distribution since about 2015. It replaced shell script startup and brought logging, devices and logins under one suite.',
+                        },
+                        {
+                          id: 'cgroups',
+                          name: 'cgroups',
+                          year: 2007,
+                          era: 'modern',
+                          kind: 'component',
+                          origin: 'USA',
+                          summary:
+                            'The Linux kernel feature that limits, accounts for and isolates the CPU, memory and disk I/O of a group of processes. Engineers at Google began it in 2006 as process containers; it was renamed control groups in late 2007 and merged into kernel 2.6.24, released in January 2008.',
+                        },
+                        {
+                          id: 'io-uring',
+                          name: 'io_uring',
+                          year: 2019,
+                          era: 'modern',
+                          kind: 'component',
+                          summary:
+                            'A Linux interface for asynchronous I/O built on two ring buffers shared between the program and the kernel, one for requests and one for completions. Jens Axboe wrote the design, and it was merged in Linux 5.1 in May 2019 after earlier attempts to fix asynchronous I/O had failed.',
                         },
                       ],
                     },
@@ -408,6 +489,17 @@ export const operatingSystems: ComputerDatum = {
                   kind: 'os',
                   origin: 'USA',
                   summary: 'SGI’s Unix for graphics workstations.',
+                  children: [
+                    {
+                      id: 'xfs',
+                      name: 'XFS',
+                      year: 1994,
+                      era: 'network',
+                      kind: 'concept',
+                      summary:
+                        'A 64-bit journaling file system that Silicon Graphics created in 1993 and introduced with IRIX 5.3 in 1994. It was released under the GPL in 1999, ported to Linux in 2001, and is the default file system of Red Hat Enterprise Linux.',
+                    },
+                  ],
                 },
               ],
             },
@@ -442,6 +534,15 @@ export const operatingSystems: ComputerDatum = {
                     'A small capability based microkernel of the L4 family whose C implementation was proved correct against its formal specification by machine checked proof in 2009. It was released as open source in 2014.',
                 },
               ],
+            },
+            {
+              id: 'roff',
+              name: 'roff',
+              year: 1970,
+              era: 'network',
+              kind: 'concept',
+              summary:
+                'The first Unix text formatter, a descendant of RUNOFF from CTSS and Multics. Ken Thompson brought it to Unix around 1970 and again to the PDP-11 in 1971; it printed the manuals of the first Unix versions and led to nroff and troff.',
             },
           ],
         },
@@ -688,6 +789,15 @@ export const operatingSystems: ComputerDatum = {
           origin: 'Canada',
           summary:
             'A real time microkernel, widely used in car infotainment systems and medical devices.',
+        },
+        {
+          id: 'fuchsia',
+          name: 'Fuchsia',
+          year: 2016,
+          era: 'modern',
+          kind: 'os',
+          summary:
+            'Google’s open source, capability-based operating system on its own Zircon kernel instead of Linux. The code appeared publicly in August 2016 and it first shipped in 2021 on the first-generation Nest Hub.',
         },
       ],
     },
